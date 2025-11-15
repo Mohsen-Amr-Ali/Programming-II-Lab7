@@ -6,20 +6,24 @@ package Model;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
-import com.google.gson.Gson;
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 
 public class JsonDatabaseManager {
     private static JsonDatabaseManager instance; //conventional name for a singleton instnace, it'll be just one instance for the entire program
-    private ArrayList<Student> students = new ArrayList<Student>();
-    private ArrayList<Instructor> instructors = new ArrayList<Instructor>()
-    private ArrayList<Course> courses = new ArrayList<Course>();
+    private ArrayList<Student> students = new ArrayList<>();
+    private ArrayList<Instructor> instructors = new ArrayList<>();
+    private ArrayList<Course> courses = new ArrayList<>();
 
     private String usersFile = "Database/users.json";
     private String coursesFile = "Database/courses.json";
 
-    private static final Gson gson = new Gson();
+    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
+
+    //================= Constructor, setters and getters =================//
     private JsonDatabaseManager(){
         loadUsers();
         loadCourses();
@@ -35,13 +39,16 @@ public class JsonDatabaseManager {
         return instance;
     }
 
+    //================= Load Functions =================//
     private void loadUsers(){
-        User user;
         try{
             FileReader reader = new FileReader(usersFile);
-            user  = gson.fromJson(reader, User.class);
+            User[] users  = gson.fromJson(reader, User[].class);
 
-            if(user.isInstructor()) instructors.add(user);
+            for(User user : users){
+                if(user.isInstructor()) instructors.add(user);
+                else students.add(user);
+            }
 
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -51,6 +58,24 @@ public class JsonDatabaseManager {
 
     private void loadCourses(){
 
+    }
+
+    //================= Save Functions =================//
+    private void saveUsers(){
+        try(FileWriter writer = new FileWriter(usersFile)){
+            gson.toJson(students, writer);
+            gson.toJson(instructors, writer);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void saveCourses(){
+        try(FileWriter writer = new FileWriter(coursesFile)){
+            gson.toJson(courses, writer);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

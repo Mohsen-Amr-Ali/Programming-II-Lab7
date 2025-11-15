@@ -1,4 +1,4 @@
 package Model;
 
-public class Instructor {
+public class Instructor extends User{
 }
