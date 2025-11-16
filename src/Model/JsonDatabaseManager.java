@@ -191,11 +191,13 @@ public class JsonDatabaseManager {
     }
 
     public void addUser(Instructor instructor){
+        instructor.setId(generateUserId("instructor"));
         instructors.add(instructor);
         saveUsers();
     }
 
     public void addUser(Student student){
+        student.setId(generateUserId("student"));
         students.add(student);
         saveUsers();
     }
@@ -219,7 +221,12 @@ public class JsonDatabaseManager {
     }
 
     private int generateCourseId(){
+        int id;
+        do {
+            id = 900000 + random.nextInt(10000);
+        } while(!isCourseIdUnique(id));
 
+        return id;
     }
 
     public void addCourse(Course course){

@@ -1,6 +1,7 @@
 package View;
 
 import View.StyledComponents.*;
+import Controller.LoginController;
 import javax.swing.*;
 import java.awt.*;
 
@@ -12,6 +13,7 @@ public class LoginAndSignupFrame extends JFrame {
     private SBtn switchToSignupButton;
     private SBtn switchToLoginButton;
     private JPanel navigationPanel;
+    private LoginController loginController;
 
     public LoginAndSignupFrame() {
         //----------------------Instantiation----------------------//
@@ -19,8 +21,9 @@ public class LoginAndSignupFrame extends JFrame {
 
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
-        loginPanel = new LoginPanel();
-        signupPanel = new SignupPanel();
+        loginController = new LoginController();
+        loginPanel = new LoginPanel(this);
+        signupPanel = new SignupPanel(this);
 
         switchToSignupButton = new SBtn("Don't have an account? Sign Up");
         switchToLoginButton = new SBtn("Already have an account? Login");
@@ -88,5 +91,62 @@ public class LoginAndSignupFrame extends JFrame {
         cardLayout.show(cardPanel, "SIGNUP");
         switchToSignupButton.setVisible(false);
         switchToLoginButton.setVisible(true);
+    }
+
+    // Intermediary methods that panels will call
+    public void validateLogin(String emailOrId, String password) {
+        // This will eventually call loginController.validateLogin(emailOrId, password);
+        // For now, the controller has no methods, so this is just a placeholder
+        loginController.validateLogin(emailOrId, password);
+    }
+
+    public void validateSignup(String name, String email, String password, String confirmPassword, String role) {
+        // This will eventually call loginController.validateSignup(name, email, password, confirmPassword, role);
+        // For now, the controller has no methods, so this is just a placeholder
+        loginController.validateSignup(name, email, password, confirmPassword, role);
+    }
+
+    public String getLoginIdOrEmail() {
+        return loginPanel.getIdOrEmail();
+    }
+
+    public String getLoginPassword() {
+        return loginPanel.getPassword();
+    }
+
+    public String getSignupName() {
+        return signupPanel.getName();
+    }
+
+    public String getSignupEmail() {
+        return signupPanel.getEmail();
+    }
+
+    public String getSignupPassword() {
+        return signupPanel.getPassword();
+    }
+
+    public String getSignupConfirmPassword() {
+        return signupPanel.getConfirmPassword();
+    }
+
+    public String getSignupRole() {
+        return signupPanel.getRole();
+    }
+
+    public void displayLoginMessage(String message) {
+        loginPanel.displayMessage(message);
+    }
+
+    public void displaySignupMessage(String message) {
+        signupPanel.displayMessage(message);
+    }
+
+    public void clearLoginFields() {
+        loginPanel.clearFields();
+    }
+
+    public void clearSignupFields() {
+        signupPanel.clearFields();
     }
 }
