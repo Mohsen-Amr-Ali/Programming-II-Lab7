@@ -67,4 +67,11 @@ public class Student extends User{
     public boolean isLessonCompleted(String courseID, String lessonID){
         return progress.containsKey(courseID) && progress.get(courseID).contains(lessonID);
     }
+
+    @Override
+    public void showDshboard(){
+        System.out.println("Student Dashboard:");
+        System.out.println("Enrolled Courses: " + enrolledCourses);
+        System.out.println("Progress: " + progress);
+    }
 }
