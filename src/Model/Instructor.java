@@ -10,6 +10,10 @@ public class Instructor extends User {
         super(user_id, username, email, hashed_password, role);
         this.createdCourses = new ArrayList<>();
     }
+    public Instructor(String username, String email, String hashed_password, String role) {
+        super(username, email, hashed_password, role);
+        this.createdCourses = new ArrayList<>();
+    }
 //                                              GETTERS AND SETTERS
 
     public ArrayList<Integer> getCreatedCourses() {
