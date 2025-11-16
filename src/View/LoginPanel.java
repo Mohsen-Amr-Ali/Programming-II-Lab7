@@ -1,5 +1,6 @@
 package View;
 
+import Controller.LoginController;
 import View.StyledComponents.*;
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -10,8 +11,11 @@ public class LoginPanel extends JPanel {
     private STField idOrEmailField;
     private JPasswordField passwordField;
     private SBtn loginButton;
+    private LoginController loginController;
 
-    public LoginPanel() {
+    public LoginPanel(LoginController loginController) {
+        this.loginController = loginController;
+
         //----------------------Instantiation----------------------//
         setLayout(new GridBagLayout());
         idOrEmailField = new STField(20);
@@ -81,6 +85,13 @@ public class LoginPanel extends JPanel {
         gbc.insets.set(15, 8, 5, 8);
         gbc.fill = GridBagConstraints.NONE;
         add(loginButton, gbc);
+
+        // Login Button Action Listener
+        loginButton.addActionListener(e -> {
+            String emailOrId = getIdOrEmail();
+            String password = getPassword();
+            loginController.validateLogin(emailOrId, password);
+        });
     }
 
     public String getIdOrEmail() {
@@ -89,6 +100,11 @@ public class LoginPanel extends JPanel {
 
     public String getPassword() {
         return new String(passwordField.getPassword());
+    }
+
+    public void displayMessage(String message)
+    {
+        JOptionPane.showMessageDialog(this, message);
     }
 
     public void clearFields() {
@@ -100,4 +116,3 @@ public class LoginPanel extends JPanel {
         return loginButton;
     }
 }
-
