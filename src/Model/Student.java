@@ -54,11 +54,17 @@ public class Student extends User{
     }
 
     public boolean isEnrolled(String courseID){
-        if (enrolledCourses.contains(courseID))
-        {
-            return true;
+        return enrolledCourses.contains(courseID);
+    }
+
+    public void markLessonCompleted(String courseID, String lessonID){
+        progress.putIfAbsent(lessonID, new ArrayList<>());
+        if (!progress.get(lessonID).contains(courseID)) {
+            progress.get(lessonID).add(courseID);
         }
-        else
-            return false;
+    }
+
+    public boolean isLessonCompleted(String courseID, String lessonID){
+        return progress.containsKey(courseID) && progress.get(courseID).contains(lessonID);
     }
 }
