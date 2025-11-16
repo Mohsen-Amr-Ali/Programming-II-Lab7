@@ -27,7 +27,7 @@ public class JsonDatabaseManager {
     private static final Random random = new Random();
 
 
-    //================= Constructor, setters and getters =================//
+    //================= Constructor, setters and getters =================\\
     private JsonDatabaseManager(){
         loadUsers();
         loadCourses();
@@ -43,7 +43,7 @@ public class JsonDatabaseManager {
         return instance;
     }
 
-    //================= Load Functions =================//
+    //================= Load Functions =================\\
     private boolean isStudent(int id){
         while(id >= 100) id /=10;
         return id == 90;
@@ -84,7 +84,7 @@ public class JsonDatabaseManager {
         }
     }
 
-    //================= Save Functions =================//
+    //================= Save Functions =================\\
     private void saveUsers(){
         ArrayList<User> allUsers = new ArrayList<>();
         allUsers.addAll(students);
@@ -107,7 +107,7 @@ public class JsonDatabaseManager {
         }
     }
 
-    //================= User Operations =================//
+    //================= User Operations =================\\
     public User getUserByEmail(String email){
         User user = null;
 
@@ -170,7 +170,7 @@ public class JsonDatabaseManager {
         return true;
     }
 
-    private int generateId(String role){
+    private int generateUserId(String role){
         int id;
 
         if(role.equals("student")){
@@ -199,5 +199,53 @@ public class JsonDatabaseManager {
         students.add(student);
         saveUsers();
     }
+
+    //================= Course Operations =================\\
+    public Course getCourseById(int courseId){
+        Course retCourse = null;
+        for(Course course : courses){
+            if(course.getCourseId() == courseId){
+                retCourse = course;
+                break;
+            }
+        }
+
+        return retCourse;
+    }
+
+    private boolean isCourseIdUnique(int id){
+        if(getCourseById(id) == null) return false;
+        return true;
+    }
+
+    private int generateCourseId(){
+
+    }
+
+    public void addCourse(Course course){
+        courses.add(course);
+        saveCourses();
+    }
+
+    public void updateCourses(Course updatedCourse){
+        courses.remove(getCourseById(updatedCourse.getCourseId()));
+        courses.add(updatedCourse);
+        saveCourses();
+    }
+
+    public void removeCourse(Course removedCourse){
+        courses.remove(removedCourse);
+        for(Student student : students){
+            for(int id : removedCourse.getEnrolledStudents()){
+                if(student.getId() == id){
+                    student.getEnrolledCourses.remove(removedCourse.getCourseId());
+                }
+            }
+        }
+
+        getUserById(removedCourse.getInstructorId()).getCreatedCourses().remove(removedCourse.getCourseId());
+    }
+
+
 
 }
