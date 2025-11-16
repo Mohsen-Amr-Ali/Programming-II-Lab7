@@ -52,4 +52,13 @@ public class Student extends User{
             enrolledCourses.remove(courseID);
         }
     }
+
+    public boolean isEnrolled(String courseID){
+        if (enrolledCourses.contains(courseID))
+        {
+            return true;
+        }
+        else
+            return false;
+    }
 }
