@@ -6,8 +6,8 @@ public class Instructor extends User {
     private ArrayList<Integer> createdCourses;
 //                                              CONSTRUCTOR
 
-    public Instructor(ArrayList<Integer> createdCourses) {
-        super();
+    public Instructor(ArrayList<Integer> createdCourses, int user_id, String username, String email, String hashed_password, String role) {
+        super(user_id, username, email, hashed_password, role);
         this.createdCourses = new ArrayList<>();
     }
 //                                              GETTERS AND SETTERS
