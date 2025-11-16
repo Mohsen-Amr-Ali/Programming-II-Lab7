@@ -1,5 +1,6 @@
 package Model; ////YASSER'S TERRITORY
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Course {
     private int courseId;
@@ -7,7 +8,9 @@ public class Course {
     private String description;
     private int instructorId;
     private ArrayList<Lesson> lessons;
-    private ArrayList<String> students;
+    private ArrayList<Integer> students;
+
+    private static final Random random = new Random();
 //                                              CONSTRUCTOR
 
     public Course(int courseId, String title, String description, int instructorId) {
@@ -57,45 +60,70 @@ public class Course {
     }
 
     public void setLessons(ArrayList<Lesson> lessons) {
-        this.lessons = lessons;
+        this.lessons = lessons != null ? lessons : new ArrayList<>();
     }
-    public ArrayList<String> getStudents() {
+    public ArrayList<Integer> getStudents() {
         return students;
     }
-    public void setStudents(ArrayList<String> students) {
-        this.students = students;
+    public void setStudents(ArrayList<Integer> students) {
+        this.students = students != null ? students : new ArrayList<>();
     }
 
     //                                              METHODS
+    
+    private int generateLessonId(){
+        courseId = this.courseId % 10000;
+        int id;
+
+        do {
+            id = 500000000 + (courseId * 1000) + random.nextInt(1000);
+        } while (!isLessonIdUnique(id));
+
+        return id;
+    }
+
+    private boolean isLessonIdUnique(int lessonId) {
+        if (lessons == null) return true;
+        for (Lesson lesson : lessons) {
+            if (lesson.getLessonId() == lessonId) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     public void addLesson(Lesson lesson) {
+        lesson.setLessonId(generateLessonId());
         this.lessons.add(lesson);
     }
-    public void removeLesson(String lessonId) {
-        this.lessons.removeIf(lesson -> lesson.getLessonId().equals(lessonId));
+
+    public void removeLesson(int lessonId) {
+        this.lessons.removeIf(lesson -> lesson.getLessonId() == lessonId);
     }
-    public Lesson getLessonById(String lessonId) {
+
+    public Lesson getLessonById(int lessonId) {
         for (Lesson lesson : lessons) {
-            if (lesson.getLessonId().equals(lessonId)) {
+            if (lesson.getLessonId() == lessonId) {
                 return lesson;
             }
         }
         return null;
     }
+
     public boolean updateLesson(Lesson updatedLesson) {
         for (int i = 0; i < lessons.size(); i++) {
-            if (lessons.get(i).getLessonId().equals(updatedLesson.getLessonId())) {
+            if (lessons.get(i).getLessonId() == updatedLesson.getLessonId()) {
                 lessons.set(i, updatedLesson);
                 return true;
             }
         }
         return false;
     }
-    public void dropStudent(String studentId) {
+    
+    public void dropStudent(Integer studentId) {
         this.students.remove(studentId);
     }
-    public void enrollStudent(String studentId) {
+    public void enrollStudent(Integer studentId) {
         this.students.add(studentId);
     }
-
 }

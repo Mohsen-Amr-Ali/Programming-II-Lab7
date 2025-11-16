@@ -6,9 +6,9 @@ public class Instructor extends User {
     private ArrayList<Integer> createdCourses;
 //                                              CONSTRUCTOR
 
-    public Instructor(ArrayList<Integer> createdCourses, int user_id, String username, String email, String hashed_password, String role) {
-        super(user_id, username, email, hashed_password, role);
-        this.createdCourses = new ArrayList<>();
+    public Instructor(ArrayList<Integer> createdCourses, int id, String username, String email, String hashed_password, String role) {
+        super(id, username, email, hashed_password, role);
+        this.createdCourses = createdCourses != null ? createdCourses : new ArrayList<>();
     }
     public Instructor(String username, String email, String hashed_password, String role) {
         super(username, email, hashed_password, role);
@@ -21,7 +21,7 @@ public class Instructor extends User {
     }
 
     public void setCreatedCourses(ArrayList<Integer> createdCourses) {
-        this.createdCourses = createdCourses;
+        this.createdCourses = createdCourses != null ? createdCourses : new ArrayList<>();
     }
     //                                              METHODS
 

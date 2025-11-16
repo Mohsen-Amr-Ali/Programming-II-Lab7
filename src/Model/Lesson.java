@@ -3,6 +3,7 @@ package Model;
 import java.util.ArrayList;
 public class Lesson {
     private int lessonId;
+    private int courseId;
     private String title;
     private String content;
 //                                              CONSTRUCTOR
@@ -36,5 +37,9 @@ public class Lesson {
 
     public void setLessonId(int lessonId) {
         this.lessonId = lessonId;
+    }
+
+    public int getCourseId(){
+        return courseId;
     }
 }

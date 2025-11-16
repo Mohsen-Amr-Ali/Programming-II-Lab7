@@ -52,14 +52,19 @@ public class JsonDatabaseManager {
     private void loadUsers(){
         try(FileReader reader = new FileReader(usersFile)){
             JsonArray jsonArray = JsonParser.parseReader(reader).getAsJsonArray();
+            
+            if (jsonArray == null || jsonArray.size() == 0) {
+                System.out.println("\nNo users found in file");
+                return;
+            }
 
             for (JsonElement userElement : jsonArray) {
                 JsonObject userObject = userElement.getAsJsonObject();
 
-                int id = userObject.get("id").getAsInt();
+                String role = userObject.get("role").getAsString();
 
 
-                if (isStudent(id)) {
+                if (role.equals("student")) {
                     Student student = gson.fromJson(userObject, Student.class);
                     students.add(student);
                 } else{
@@ -78,7 +83,11 @@ public class JsonDatabaseManager {
     private void loadCourses(){
         try(FileReader reader = new FileReader(coursesFile)){
             Type coursesType  = new TypeToken<ArrayList<Course>>(){}.getType();
-            courses = gson.fromJson(reader, coursesType);
+            ArrayList<Course> loadedCourses = gson.fromJson(reader, coursesType);
+            if (loadedCourses != null) {
+                courses = loadedCourses;
+            }
+            System.out.println("\nCourses loaded successfully");
         }catch (IOException e) {
             System.out.println("\nException in JsonDatabaseManager - loadCourses()");
         }
@@ -153,21 +162,7 @@ public class JsonDatabaseManager {
     }
 
     private boolean isUserIdUnique(int id){
-        if(isStudent(id)){
-            for(Student student : students){
-                if(student.getId() == id){
-                    return false;
-                }
-            }
-        }else{
-            for(Instructor instructor : instructors){
-                if(instructor.getId() == id){
-                    return false;
-                }
-            }
-        }
-
-        return true;
+        return getUserById(id) == null;
     }
 
     private int generateUserId(String role){
@@ -216,41 +211,90 @@ public class JsonDatabaseManager {
     }
 
     private boolean isCourseIdUnique(int id){
-        if(getCourseById(id) == null) return false;
-        return true;
+        return getCourseById(id) == null;
     }
 
     private int generateCourseId(){
         int id;
         do {
-            id = 900000 + random.nextInt(10000);
+            id = 700000 + random.nextInt(10000);
         } while(!isCourseIdUnique(id));
 
         return id;
     }
 
     public void addCourse(Course course){
+        course.setCourseId(generateCourseId());
         courses.add(course);
         saveCourses();
     }
 
     public void updateCourses(Course updatedCourse){
-        courses.remove(getCourseById(updatedCourse.getCourseId()));
-        courses.add(updatedCourse);
+        for (int i = 0; i < courses.size(); i++) {
+            if (courses.get(i).getCourseId() == updatedCourse.getCourseId()) {
+                courses.set(i, updatedCourse);
+            }
+        }
         saveCourses();
     }
 
     public void removeCourse(Course removedCourse){
         courses.remove(removedCourse);
-        for(Student student : students){
-            for(int id : removedCourse.getEnrolledStudents()){
-                if(student.getId() == id){
-                    student.getEnrolledCourses.remove(removedCourse.getCourseId());
-                }
+
+        for (Integer studentId : removedCourse.getStudents()) {
+            User user = getUserById(studentId);
+            if (user instanceof Student) {
+                Student student = (Student) user;
+                student.getEnrolledCoursesIDs().remove((Integer) removedCourse.getCourseId());
+                student.getProgress().remove((Integer) removedCourse.getCourseId());
             }
         }
 
-        getUserById(removedCourse.getInstructorId()).getCreatedCourses().remove(removedCourse.getCourseId());
+        User instructorUser = getUserById(removedCourse.getInstructorId());
+        if (instructorUser instanceof Instructor) {
+            Instructor instructor = (Instructor) instructorUser;
+            instructor.getCreatedCourses().remove((Integer)removedCourse.getCourseId());
+        }
+
+        saveCourses();
+        saveUsers();
+    }
+
+    public ArrayList<Course> getCourseByTitle(String title) {
+        ArrayList<Course> results = new ArrayList<>();
+        for (Course course : courses) {
+            if (course.getTitle().toLowerCase().contains(title))
+                results.add(course);
+        }
+        return results;
+    }
+
+    public ArrayList<Course> getCourseByTitle(ArrayList<Course> courses, String title) {
+        ArrayList<Course> results = new ArrayList<>();
+        for (Course course : courses) {
+            if (course.getTitle().toLowerCase().contains(title))
+                results.add(course);
+        }
+        return results;
+    }
+
+    public void removeLesson(Lesson removedLesson){
+        Course course = getCourseById(removedLesson.getCourseId());
+        if (course == null) return;
+        
+        course.removeLesson(removedLesson.getLessonId());
+        
+        for (Student student : students) {
+            if (student.isEnrolled(course.getCourseId())) {
+                ArrayList<Integer> completedLessons = student.getCompletedLessons(course.getCourseId());
+                if (completedLessons != null) {
+                    completedLessons.remove((Integer)removedLesson.getLessonId());
+                }
+            }
+        }
+        
+        saveCourses();
+        saveUsers();
     }
 
 

@@ -4,13 +4,13 @@ import util.PasswordHasher;
 
 public abstract class User {
     protected String username;
-    protected int user_id;
+    protected int id;
     protected String role;
     protected String email;
     protected String hashed_password;
 
-    public User(int user_id, String username, String email, String hashed_password, String role) {
-        this.user_id = user_id;
+    public User(int id, String username, String email, String hashed_password, String role) {
+        this.id = id;
         this.username = username;
         this.email = email;
         this.hashed_password = hashed_password;
@@ -24,12 +24,12 @@ public abstract class User {
         this.role = role;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public int getId() {
+        return id;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getUsername() {
