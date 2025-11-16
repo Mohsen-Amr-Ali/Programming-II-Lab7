@@ -2,11 +2,12 @@ package Controller;
 
 import Model.Course;
 import Model.JsonDatabaseManager;
+import Model.Lesson;
 import Model.Student;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 
 public class StudentController {
 
@@ -35,22 +36,34 @@ public class StudentController {
         this.currentStudent = currentStudent;
     }
 
-    // course management
+    // course management (all same methods in student class?)
 
-    public ArrayList<Course> getAvailableCourses(){
+    // lesson access and progress
+    public ArrayList<Lesson> getLessonsForCourse(String courseID)
+    {
+        Course course = dbManager.getCourseById(courseID);
 
-        ArrayList<Course> allCourses = dbManager.getCourses();
-        ArrayList<Course> enrolledCourses = currentStudent.getEnrolledCourses();
-        ArrayList<Course> availableCourses = new ArrayList<>();
-        HashSet<String> enrolledCourseIds = new HashSet<>();
-        for (Course c : enrolledCourses) {
-            enrolledCourseIds.add(c.getCourseId());
+        if (course == null)
+        {
+            return new ArrayList<>();
         }
-        for (Course c : allCourses) {
-            if (!enrolledCourseIds.contains(c.getCourseId())) {
-                availableCourses.add(c);
-            }
-        }
-        return availableCourses;
+
+        return course.getLessons();
     }
+
+    public boolean recordLessonCompletion(String courseID, String lessonID)
+    {
+        HashMap<String, ArrayList<String>> progress = currentStudent.getProgress();
+        progress.putIfAbsent(courseID, new ArrayList<>());
+
+        if(!progress.get(courseID).contains(lessonID))
+        {
+            progress.get(courseID).add(lessonID);
+            // dbManager.saveUsers(); method is not public idk
+            return true;
+        }
+        return false;
+    }
+
+
 }
