@@ -1,7 +1,7 @@
 package View;
 
 import View.StyledComponents.*;
-import Controller.LoginController;
+import Controller.MainController;
 import javax.swing.*;
 import java.awt.*;
 
@@ -13,15 +13,15 @@ public class LoginAndSignupFrame extends JFrame {
     private SBtn switchToSignupButton;
     private SBtn switchToLoginButton;
     private JPanel navigationPanel;
-    private LoginController loginController;
+    private MainController mainController;
 
-    public LoginAndSignupFrame() {
+    public LoginAndSignupFrame(MainController mainController) {
         //----------------------Instantiation----------------------//
         super("SkillForge");
 
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
-        loginController = new LoginController();
+        this.mainController = mainController;
         loginPanel = new LoginPanel(this);
         signupPanel = new SignupPanel(this);
 
@@ -95,15 +95,11 @@ public class LoginAndSignupFrame extends JFrame {
 
     // Intermediary methods that panels will call
     public void validateLogin(String emailOrId, String password) {
-        // This will eventually call loginController.validateLogin(emailOrId, password);
-        // For now, the controller has no methods, so this is just a placeholder
-        loginController.validateLogin(emailOrId, password);
+        mainController.login(emailOrId, password);
     }
 
-    public void validateSignup(String name, String email, String password, String confirmPassword, String role) {
-        // This will eventually call loginController.validateSignup(name, email, password, confirmPassword, role);
-        // For now, the controller has no methods, so this is just a placeholder
-        loginController.validateSignup(name, email, password, confirmPassword, role);
+    public void validateSignup(String name, String email, String password, String confirmPassword) {
+        mainController.signup(name, email, password, confirmPassword);
     }
 
     public String getLoginIdOrEmail() {
