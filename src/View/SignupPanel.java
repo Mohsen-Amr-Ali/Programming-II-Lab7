@@ -11,15 +11,19 @@ public class SignupPanel extends JPanel {
     private STField emailField;
     private JPasswordField passwordField;
     private JPasswordField confirmPasswordField;
+    private JComboBox<String> roleComboBox;
     private SBtn signupButton;
+    private LoginAndSignupFrame parentFrame;
 
-    public SignupPanel() {
+    public SignupPanel(LoginAndSignupFrame parentFrame) {
+        this.parentFrame = parentFrame;
         //----------------------Instantiation----------------------//
         setLayout(new GridBagLayout());
         nameField = new STField(20);
         emailField = new STField(20);
         passwordField = new JPasswordField(20);
         confirmPasswordField = new JPasswordField(20);
+        roleComboBox = new JComboBox<>(new String[]{"Instructor", "Student"});
         signupButton = new SBtn("Sign Up");
 
         //---------------------- Styling ----------------------//
@@ -54,6 +58,11 @@ public class SignupPanel extends JPanel {
         confirmPasswordField.setBackground(StyleColors.CARD);
         confirmPasswordField.setCaretColor(StyleColors.TEXT);
         confirmPasswordField.setBorder(BorderFactory.createCompoundBorder(flatBorder, padding));
+
+        // Role ComboBox Styling
+        roleComboBox.setBackground(StyleColors.CARD);
+        roleComboBox.setForeground(StyleColors.TEXT);
+        roleComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
         //---------------------- Adding Components ----------------------//
         GridBagConstraints gbc = new GridBagConstraints();
@@ -109,12 +118,35 @@ public class SignupPanel extends JPanel {
         gbc.insets.set(3, 8, 6, 8);
         add(confirmPasswordField, gbc);
 
-        // Signup Button
+        // Role Label
         gbc.gridx = 0;
         gbc.gridy = 8;
+        gbc.insets.set(4, 8, 0, 8);
+        add(new SLabel("Role:"), gbc);
+
+        // Role ComboBox
+        gbc.gridx = 0;
+        gbc.gridy = 9;
+        gbc.insets.set(3, 8, 6, 8);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        add(roleComboBox, gbc);
+
+        // Signup Button
+        gbc.gridx = 0;
+        gbc.gridy = 10;
         gbc.insets.set(12, 8, 5, 8);
         gbc.fill = GridBagConstraints.NONE;
         add(signupButton, gbc);
+
+        // Signup Button Action Listener
+        signupButton.addActionListener(e -> {
+            String name = getName();
+            String email = getEmail();
+            String password = getPassword();
+            String confirmPassword = getConfirmPassword();
+            String role = getRole();
+            parentFrame.validateSignup(name, email, password, confirmPassword, role);
+        });
     }
 
     public String getName() {
@@ -133,6 +165,11 @@ public class SignupPanel extends JPanel {
         return new String(confirmPasswordField.getPassword());
     }
 
+    public String getRole() {
+        String selectedRole = (String) roleComboBox.getSelectedItem();
+        return selectedRole != null ? selectedRole.toLowerCase() : "";
+    }
+
     public void displayMessage(String message)
     {
         JOptionPane.showMessageDialog(this, message);
@@ -143,6 +180,7 @@ public class SignupPanel extends JPanel {
         emailField.setText("");
         passwordField.setText("");
         confirmPasswordField.setText("");
+        roleComboBox.setSelectedIndex(0);
     }
 
     public SBtn getSignupButton() {

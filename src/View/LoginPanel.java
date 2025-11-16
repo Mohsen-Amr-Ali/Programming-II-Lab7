@@ -1,6 +1,5 @@
 package View;
 
-import Controller.LoginController;
 import View.StyledComponents.*;
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -11,10 +10,10 @@ public class LoginPanel extends JPanel {
     private STField idOrEmailField;
     private JPasswordField passwordField;
     private SBtn loginButton;
-    private LoginController loginController;
+    private LoginAndSignupFrame parentFrame;
 
-    public LoginPanel(LoginController loginController) {
-        this.loginController = loginController;
+    public LoginPanel(LoginAndSignupFrame parentFrame) {
+        this.parentFrame = parentFrame;
 
         //----------------------Instantiation----------------------//
         setLayout(new GridBagLayout());
@@ -90,7 +89,7 @@ public class LoginPanel extends JPanel {
         loginButton.addActionListener(e -> {
             String emailOrId = getIdOrEmail();
             String password = getPassword();
-            loginController.validateLogin(emailOrId, password);
+            parentFrame.validateLogin(emailOrId, password);
         });
     }
 
@@ -116,3 +115,4 @@ public class LoginPanel extends JPanel {
         return loginButton;
     }
 }
+
