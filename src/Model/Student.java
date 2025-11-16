@@ -1,7 +1,5 @@
 package Model;
 
-import com.google.gson.Gson;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -10,21 +8,19 @@ public class Student extends User{
     private ArrayList<String> enrolledCourses;
     private HashMap<String, ArrayList<String>> progress;
 
-    private int studentID;
-    private String role;
-    private String username;
-    private String email;
-    private String passwordHash;
-
-    Gson gson = new Gson();
-
-    public Student(int studentID, String role, String username, String email, String passwordHash) {
-            super(studentID, role, username, username, email, passwordHash);
-            this.enrolledCourses = new ArrayList<>();
-            this.progress = new HashMap<>();
+    public Student(int studentID, String username, String email, String passwordHash, String role) {
+        super(studentID, username, email, passwordHash, role);
+        enrolledCourses = new ArrayList<>();
+        progress = new HashMap<>();
     }
 
-    public ArrayList<String> getEnrolledCourses() {
+    public Student(ArrayList<String> enrolledCourses, HashMap<String, ArrayList<String>> progress, int studentID, String username, String email, String passwordHash, String role) {
+        super(studentID, username, email, passwordHash, role);
+        this.enrolledCourses = enrolledCourses;
+        this.progress = progress;
+    }
+
+    public ArrayList<String> getEnrolledCoursesIDs() {
         return enrolledCourses;
     }
 
@@ -58,9 +54,9 @@ public class Student extends User{
     }
 
     public void markLessonCompleted(String courseID, String lessonID){
-        progress.putIfAbsent(lessonID, new ArrayList<>());
-        if (!progress.get(lessonID).contains(courseID)) {
-            progress.get(lessonID).add(courseID);
+        progress.putIfAbsent(courseID, new ArrayList<>());
+        if (!progress.get(courseID).contains(lessonID)) {
+            progress.get(courseID).add(lessonID);
         }
     }
 
