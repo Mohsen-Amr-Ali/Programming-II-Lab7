@@ -8,8 +8,8 @@ public class Student extends User{
     private ArrayList<String> enrolledCourses;
     private HashMap<String, ArrayList<String>> progress;
 
-    public Student(int studentID, String username, String email, String passwordHash, String role) {
-        super(studentID, username, email, passwordHash, role);
+    public Student(String username, String email, String passwordHash, String role) {
+        super(username, email, passwordHash, role);
         enrolledCourses = new ArrayList<>();
         progress = new HashMap<>();
     }
