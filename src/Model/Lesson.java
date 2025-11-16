@@ -2,12 +2,12 @@
 package Model;
 import java.util.ArrayList;
 public class Lesson {
-    private String lessonId;
+    private int lessonId;
     private String title;
     private String content;
 //                                              CONSTRUCTOR
 
-    public Lesson(String lessonId, String title, String content) {
+    public Lesson(int lessonId, String title, String content) {
         this.lessonId = lessonId;
         this.title = title;
         this.content = content;
@@ -30,11 +30,11 @@ public class Lesson {
         this.content = content;
     }
 
-    public String getLessonId() {
+    public int getLessonId() {
         return lessonId;
     }
 
-    public void setLessonId(String lessonId) {
+    public void setLessonId(int lessonId) {
         this.lessonId = lessonId;
     }
 }
