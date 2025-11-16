@@ -144,8 +144,7 @@ public class SignupPanel extends JPanel {
             String email = getEmail();
             String password = getPassword();
             String confirmPassword = getConfirmPassword();
-            String role = getRole();
-            parentFrame.validateSignup(name, email, password, confirmPassword, role);
+            parentFrame.validateSignup(name, email, password, confirmPassword);
         });
     }
 
