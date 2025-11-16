@@ -16,6 +16,7 @@ public abstract class User {
         this.hashed_password = hashed_password;
         this.role = role;
     }
+
     public User(String username, String email, String hashed_password, String role) {
         this.username = username;
         this.email = email;
@@ -29,6 +30,22 @@ public abstract class User {
 
     public void setUser_id(int user_id) {
         this.user_id = user_id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getEmail() {
