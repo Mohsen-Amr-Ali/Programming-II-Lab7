@@ -133,6 +133,11 @@ public class SignupPanel extends JPanel {
         return new String(confirmPasswordField.getPassword());
     }
 
+    public void displayMessage(String message)
+    {
+        JOptionPane.showMessageDialog(this, message);
+    }
+
     public void clearFields() {
         nameField.setText("");
         emailField.setText("");
