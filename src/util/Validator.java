@@ -5,7 +5,7 @@ import javax.swing.*;
 public class Validator {
     public static boolean checkEmail(String email)
     {
-        return email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\\\.[A-Za-z]{2,6}$");
+        return email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$");
     }
     public static boolean checkPassword(String password)
     {
