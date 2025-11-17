@@ -68,6 +68,20 @@ public class StudentDashboardFrame extends JFrame {
         cardLayout.show(getContentPane(), MAIN_PANEL);
     }
 
+    public void setLogoutListener(Runnable logoutAction) {
+        navBar.getLogoutBtn().addActionListener(e -> {
+            int result = SOptionPane.showConfirmDialog(
+                StudentDashboardFrame.this,
+                "Are you sure you want to exit?",
+                "Logout",
+                JOptionPane.YES_NO_OPTION
+            );
+            if (result == JOptionPane.YES_OPTION) {
+                logoutAction.run();
+            }
+        });
+    }
+
     private void createMainPanel() {
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(StyleColors.BACKGROUND);

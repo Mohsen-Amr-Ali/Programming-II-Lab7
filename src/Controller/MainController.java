@@ -7,6 +7,7 @@ import View.LoginAndSignupFrame;
 import View.LoginPanel;
 import View.SignupPanel;
 import View.StudentDashboardFrame;
+import View.StyledComponents.SOptionPane;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -42,10 +43,11 @@ public class MainController {
             loginFrame.dispose();
             Student student = (Student) user;
             StudentDashboardFrame dashboard = new StudentDashboardFrame(student);
+            dashboard.setLogoutListener(() -> logout(dashboard));
             dashboard.setVisible(true);
         } else if (user != null) {
             // For now, show a message for instructors
-            JOptionPane.showMessageDialog(loginFrame, 
+            SOptionPane.showMessageDialog(loginFrame, 
                 "Instructor dashboard is not yet implemented.", 
                 "Coming Soon", 
                 JOptionPane.INFORMATION_MESSAGE);
@@ -60,15 +62,24 @@ public class MainController {
                 loginFrame.dispose();
                 Student student = (Student) user;
                 StudentDashboardFrame dashboard = new StudentDashboardFrame(student);
+                dashboard.setLogoutListener(() -> logout(dashboard));
                 dashboard.setVisible(true);
             } else {
                 // For now, show a message for instructors
-                JOptionPane.showMessageDialog(loginFrame, 
+                SOptionPane.showMessageDialog(loginFrame, 
                     "Instructor dashboard is not yet implemented.", 
                     "Coming Soon", 
                     JOptionPane.INFORMATION_MESSAGE);
             }
         }
+    }
+
+    public void logout(StudentDashboardFrame dashboard) {
+        // Close the dashboard
+        dashboard.dispose();
+        
+        // Create and show a new login frame
+        start();
     }
 
     public static void main(String[] args) {
