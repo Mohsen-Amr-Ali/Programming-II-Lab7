@@ -70,6 +70,8 @@ public class LoginController {
 
     public User loginUser(String emailOrId, String password)
     {
+        loggedInUser = null;
+
         if (Validator.isFieldEmpty(emailOrId) || Validator.isFieldEmpty(password)) {
             loginPanel.displayMessage("Email/ID and Password can't be empty!");
             loginPanel.clearFields();
@@ -87,11 +89,12 @@ public class LoginController {
         {
             loginPanel.displayMessage("Incorrect Format of email or ID entered");
             loginPanel.clearFields();
-            return null;
+            return loggedInUser;
         }
     }
     public User registerUser(String username, String email, String password, String repeatedPassword)
     {
+        loggedInUser = null;
         if (username.isEmpty()) {
             signupPanel.displayMessage("Username can't be empty!");
             return null;
@@ -104,6 +107,11 @@ public class LoginController {
         if (!Validator.checkEmail(email))
         {
             signupPanel.displayMessage("Wrong email format!");
+            return null;
+        }
+        if (db.getUserByEmail(email) != null)
+        {
+            signupPanel.displayMessage("This email is already used!");
             return null;
         }
         if (!Validator.checkPassword(password))
