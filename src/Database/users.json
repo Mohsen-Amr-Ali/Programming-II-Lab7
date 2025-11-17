@@ -1,0 +1,88 @@
+[
+  {
+    "enrolledCourses": [
+      700002,
+      700004,
+      700005
+    ],
+    "progress": {
+      "700002": [
+        502001,
+        502002,
+        502003
+      ],
+      "700004": [
+        504001,
+        504002,
+        504003,
+        504004
+      ]
+    },
+    "username": "Alice",
+    "hashed_password": "ecd71870d1963316a97e3ac3408c9835ad8cf0f3c1bc703527c30265534f75ae",
+    "id": 900001,
+    "role": "student",
+    "email": "alice@test.com"
+  },
+  {
+    "enrolledCourses": [
+      700002,
+      700004,
+      700005
+    ],
+    "progress": {
+      "700002": [
+        502001,
+        502002,
+        502003
+      ],
+      "700004": [],
+      "700005": [
+        505001
+      ]
+    },
+    "username": "Bob",
+    "hashed_password": "ecd71870d1963316a97e3ac3408c9835ad8cf0f3c1bc703527c30265534f75ae",
+    "id": 900002,
+    "role": "student",
+    "email": "bob@test.com"
+  },
+  {
+    "enrolledCourses": [
+      700001
+    ],
+    "progress": {
+      "700001": [
+        501001
+      ]
+    },
+    "username": "Charlie",
+    "hashed_password": "ecd71870d1963316a97e3ac3408c9835ad8cf0f3c1bc703527c30265534f75ae",
+    "id": 900003,
+    "role": "student",
+    "email": "charlie@test.com"
+  },
+  {
+    "createdCourses": [
+      700001,
+      700002
+    ],
+    "username": "Dr. Smith",
+    "hashed_password": "ecd71870d1963316a97e3ac3408c9835ad8cf0f3c1bc703527c30265534f75ae",
+    "id": 100001,
+    "role": "instructor",
+    "email": "smith@test.com"
+  },
+  {
+    "createdCourses": [
+      700003,
+      700004,
+      700005
+    ],
+    "username": "Prof. Jones",
+    "hashed_password": "ecd71870d1963316a97e3ac3408c9835ad8cf0f3c1bc703527c30265534f75ae",
+    "id": 100002,
+    "role": "instructor",
+    "email": "jones@test.com"
+  }
+]

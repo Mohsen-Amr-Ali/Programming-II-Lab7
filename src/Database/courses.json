@@ -1,0 +1,213 @@
+[
+  {
+    "courseId": 700001,
+    "title": "Introduction to Java",
+    "description": "A beginner\u0027s course on Java programming.",
+    "instructorId": 100001,
+    "lessons": [
+      {
+        "lessonId": 501001,
+        "courseId": 0,
+        "title": "Java Basics",
+        "content": "Syntax, variables, and data types."
+      },
+      {
+        "lessonId": 501002,
+        "courseId": 0,
+        "title": "Control Flow",
+        "content": "If statements, loops, and switches."
+      },
+      {
+        "lessonId": 501003,
+        "courseId": 0,
+        "title": "Object-Oriented Programming",
+        "content": "Classes, objects, and inheritance."
+      },
+      {
+        "lessonId": 501004,
+        "courseId": 0,
+        "title": "Exception Handling",
+        "content": "Try, catch, and finally."
+      },
+      {
+        "lessonId": 501005,
+        "courseId": 0,
+        "title": "Collections Framework",
+        "content": "Lists, sets, and maps."
+      }
+    ],
+    "students": [
+      900003
+    ]
+  },
+  {
+    "courseId": 700002,
+    "title": "Advanced Java",
+    "description": "An advanced course on Java programming.",
+    "instructorId": 100001,
+    "lessons": [
+      {
+        "lessonId": 502001,
+        "courseId": 0,
+        "title": "Generics",
+        "content": "Generic classes and methods."
+      },
+      {
+        "lessonId": 502002,
+        "courseId": 0,
+        "title": "Concurrency",
+        "content": "Threads, locks, and synchronization."
+      },
+      {
+        "lessonId": 502003,
+        "courseId": 0,
+        "title": "Networking",
+        "content": "Sockets and URLs."
+      },
+      {
+        "lessonId": 502004,
+        "courseId": 0,
+        "title": "JavaFX",
+        "content": "Building graphical user interfaces."
+      },
+      {
+        "lessonId": 502005,
+        "courseId": 0,
+        "title": "Streams API",
+        "content": "Functional-style operations on streams of elements."
+      }
+    ],
+    "students": [
+      900002,
+      900001,
+      900001,
+      900001
+    ]
+  },
+  {
+    "courseId": 700003,
+    "title": "Data Structures",
+    "description": "A course on fundamental data structures.",
+    "instructorId": 100002,
+    "lessons": [
+      {
+        "lessonId": 503001,
+        "courseId": 0,
+        "title": "Arrays and Lists",
+        "content": "Understanding arrays and linked lists."
+      },
+      {
+        "lessonId": 503002,
+        "courseId": 0,
+        "title": "Stacks and Queues",
+        "content": "LIFO and FIFO structures."
+      },
+      {
+        "lessonId": 503003,
+        "courseId": 0,
+        "title": "Trees",
+        "content": "Binary trees, AVL trees, and B-trees."
+      },
+      {
+        "lessonId": 503004,
+        "courseId": 0,
+        "title": "Graphs",
+        "content": "Graph representations and traversal algorithms."
+      },
+      {
+        "lessonId": 503005,
+        "courseId": 0,
+        "title": "Hash Tables",
+        "content": "Hash functions and collision resolution."
+      }
+    ],
+    "students": []
+  },
+  {
+    "courseId": 700004,
+    "title": "Algorithms",
+    "description": "A course on fundamental algorithms.",
+    "instructorId": 100002,
+    "lessons": [
+      {
+        "lessonId": 504001,
+        "courseId": 0,
+        "title": "Sorting Algorithms",
+        "content": "Bubble sort, merge sort, and quick sort."
+      },
+      {
+        "lessonId": 504002,
+        "courseId": 0,
+        "title": "Searching Algorithms",
+        "content": "Linear search and binary search."
+      },
+      {
+        "lessonId": 504003,
+        "courseId": 0,
+        "title": "Graph Algorithms",
+        "content": "Dijkstra\u0027s and A*."
+      },
+      {
+        "lessonId": 504004,
+        "courseId": 0,
+        "title": "Dynamic Programming",
+        "content": "Memoization and tabulation."
+      },
+      {
+        "lessonId": 504005,
+        "courseId": 0,
+        "title": "Greedy Algorithms",
+        "content": "Making locally optimal choices."
+      }
+    ],
+    "students": [
+      900002,
+      900001,
+      900001,
+      900001
+    ]
+  },
+  {
+    "courseId": 700005,
+    "title": "Database Systems",
+    "description": "A course on database design and SQL.",
+    "instructorId": 100002,
+    "lessons": [
+      {
+        "lessonId": 505001,
+        "courseId": 0,
+        "title": "Relational Model",
+        "content": "Tables, keys, and relationships."
+      },
+      {
+        "lessonId": 505002,
+        "courseId": 0,
+        "title": "SQL",
+        "content": "Queries, joins, and subqueries."
+      },
+      {
+        "lessonId": 505003,
+        "courseId": 0,
+        "title": "Normalization",
+        "content": "First, second, and third normal forms."
+      },
+      {
+        "lessonId": 505004,
+        "courseId": 0,
+        "title": "Transactions",
+        "content": "ACID properties and concurrency control."
+      },
+      {
+        "lessonId": 505005,
+        "courseId": 0,
+        "title": "NoSQL Databases",
+        "content": "Document, key-value, and graph databases."
+      }
+    ],
+    "students": [
+      900002,
+      900001,
+      900001
+    ]
+  }
+]

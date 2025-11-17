@@ -103,7 +103,7 @@ public class LoginPanel extends JPanel {
 
     public void displayMessage(String message)
     {
-        JOptionPane.showMessageDialog(this, message);
+        SOptionPane.showMessageDialog(this, message);
     }
 
     public void clearFields() {

@@ -68,7 +68,7 @@ public class LoginAndSignupFrame extends JFrame {
 
         //---------------------- Frame Setup ----------------------//
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(450, 500);
+        setSize(500, 600);
         setLocationRelativeTo(null);
         setResizable(false);
     }

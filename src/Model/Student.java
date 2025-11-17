@@ -36,32 +36,37 @@ public class Student extends User{
         this.progress = progress != null ? progress : new HashMap<>();
     }
 
-    public void enroll(Integer courseID){
+    public void enrollInCourse(Integer courseID){
         if (!enrolledCourses.contains(courseID)) {
             enrolledCourses.add(courseID);
         }
     }
 
-    public void unenroll(Integer courseID){
-        if(enrolledCourses.contains(courseID)){
-            enrolledCourses.remove(courseID);
-        }
+    public void dropCourse(Integer courseID){
+        enrolledCourses.remove(courseID);
+        progress.remove(courseID);
     }
 
     public boolean isEnrolled(Integer courseID){
         return enrolledCourses.contains(courseID);
     }
 
-    public void markLessonCompleted(Integer courseID, Integer lessonID){
+    public void addCompletedLesson(Integer courseID, Integer lessonID){
         progress.putIfAbsent(courseID, new ArrayList<>());
         if (!progress.get(courseID).contains(lessonID)) {
             progress.get(courseID).add(lessonID);
         }
     }
 
+    public void removeCompletedLesson(Integer courseID, Integer lessonID){
+        if (progress.containsKey(courseID)) {
+            progress.get(courseID).remove(lessonID);
+        }
+    }
+
     public ArrayList<Integer> getCompletedLessons(int courseID){
-        // Always return the actual reference from the HashMap, or null if not found
-        return progress.get(courseID);
+        // Always return the actual reference from the HashMap, or an empty list if not found
+        return progress.getOrDefault(courseID, new ArrayList<>());
     }
 
 

@@ -20,8 +20,8 @@ public class JsonDatabaseManager {
     private ArrayList<Instructor> instructors = new ArrayList<>();
     private ArrayList<Course> courses = new ArrayList<>();
 
-    private String usersFile = "Database/users.json";
-    private String coursesFile = "Database/courses.json";
+    private String usersFile = "y:\\AlexU\\Term 5\\Programming 2\\Programming-II-Lab7\\src\\Database\\users.json";
+    private String coursesFile = "y:\\AlexU\\Term 5\\Programming 2\\Programming-II-Lab7\\src\\Database\\courses.json";
 
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private static final Random random = new Random();
@@ -41,6 +41,10 @@ public class JsonDatabaseManager {
     public static JsonDatabaseManager getInstance(){
         if(instance == null) instance = new JsonDatabaseManager();
         return instance;
+    }
+
+    public ArrayList<Course> getCourses() {
+        return courses;
     }
 
     //================= Load Functions =================\\
@@ -194,6 +198,25 @@ public class JsonDatabaseManager {
     public void addUser(Student student){
         student.setId(generateUserId("student"));
         students.add(student);
+        saveUsers();
+    }
+
+    public void updateUser(User updatedUser) {
+        if (updatedUser instanceof Student) {
+            for (int i = 0; i < students.size(); i++) {
+                if (students.get(i).getId() == updatedUser.getId()) {
+                    students.set(i, (Student) updatedUser);
+                    break;
+                }
+            }
+        } else if (updatedUser instanceof Instructor) {
+            for (int i = 0; i < instructors.size(); i++) {
+                if (instructors.get(i).getId() == updatedUser.getId()) {
+                    instructors.set(i, (Instructor) updatedUser);
+                    break;
+                }
+            }
+        }
         saveUsers();
     }
 
