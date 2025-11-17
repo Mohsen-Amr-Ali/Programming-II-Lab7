@@ -3,14 +3,18 @@ package Controller;
 import Model.JsonDatabaseManager;
 import Model.Student;
 import Model.User;
+import View.InstructorDashboardFrame;
 import View.LoginAndSignupFrame;
 import View.LoginPanel;
 import View.SignupPanel;
 import View.StudentDashboardFrame;
 import View.StyledComponents.SOptionPane;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+
+import Model.Instructor;
 
 public class MainController {
     private LoginController loginController;
@@ -45,12 +49,19 @@ public class MainController {
             StudentDashboardFrame dashboard = new StudentDashboardFrame(student);
             dashboard.setLogoutListener(() -> logout(dashboard));
             dashboard.setVisible(true);
+        } else if (user instanceof Instructor) {
+            // Close login frame and open instructor dashboard
+            loginFrame.dispose();
+            Instructor instructor = (Instructor) user;
+            InstructorDashboardFrame dashboard = new InstructorDashboardFrame(instructor);
+            dashboard.setLogoutListener(() -> logout(dashboard));
+            dashboard.setVisible(true);
         } else if (user != null) {
-            // For now, show a message for instructors
-            SOptionPane.showMessageDialog(loginFrame, 
-                "Instructor dashboard is not yet implemented.", 
-                "Coming Soon", 
-                JOptionPane.INFORMATION_MESSAGE);
+            // For now, show a message for other user types
+            SOptionPane.showMessageDialog(loginFrame,
+                    "Dashboard for this user type is not yet implemented.",
+                    "Coming Soon",
+                    JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -64,20 +75,27 @@ public class MainController {
                 StudentDashboardFrame dashboard = new StudentDashboardFrame(student);
                 dashboard.setLogoutListener(() -> logout(dashboard));
                 dashboard.setVisible(true);
+            } else if (user instanceof Instructor) {
+                // Close login frame and open instructor dashboard
+                loginFrame.dispose();
+                Instructor instructor = (Instructor) user;
+                InstructorDashboardFrame dashboard = new InstructorDashboardFrame(instructor);
+                dashboard.setLogoutListener(() -> logout(dashboard));
+                dashboard.setVisible(true);
             } else {
-                // For now, show a message for instructors
-                SOptionPane.showMessageDialog(loginFrame, 
-                    "Instructor dashboard is not yet implemented.", 
-                    "Coming Soon", 
-                    JOptionPane.INFORMATION_MESSAGE);
+                // For now, show a message for other user types
+                SOptionPane.showMessageDialog(loginFrame,
+                        "Dashboard for this user type is not yet implemented.",
+                        "Coming Soon",
+                        JOptionPane.INFORMATION_MESSAGE);
             }
         }
     }
 
-    public void logout(StudentDashboardFrame dashboard) {
+    public void logout(JFrame dashboard) {
         // Close the dashboard
         dashboard.dispose();
-        
+
         // Create and show a new login frame
         start();
     }
