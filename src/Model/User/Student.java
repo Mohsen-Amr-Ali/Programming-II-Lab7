@@ -1,4 +1,4 @@
-package Model;
+package Model.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,13 +8,13 @@ public class Student extends User{
     private ArrayList<Integer> enrolledCourses;
     private HashMap<Integer, ArrayList<Integer>> progress; //first integer is courseID, second integer is list of completed lessonIDs
 
-    public Student(String username, String email, String passwordHash, String role) {
+    public Student(String username, String email, String passwordHash, USER_ROLE role) {
         super(username, email, passwordHash, role);
         enrolledCourses = new ArrayList<>();
         progress = new HashMap<>();
     }
 
-    public Student(ArrayList<Integer> enrolledCourses, HashMap<Integer, ArrayList<Integer>> progress, int studentID, String username, String email, String passwordHash, String role) {
+    public Student(ArrayList<Integer> enrolledCourses, HashMap<Integer, ArrayList<Integer>> progress, int studentID, String username, String email, String passwordHash, USER_ROLE role) {
         super(studentID, username, email, passwordHash, role);
         this.enrolledCourses = enrolledCourses != null ? enrolledCourses : new ArrayList<>();
         this.progress = progress != null ? progress : new HashMap<>();

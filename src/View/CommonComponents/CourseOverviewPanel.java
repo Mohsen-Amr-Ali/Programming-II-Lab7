@@ -1,7 +1,7 @@
 package View.CommonComponents;
 
 import Controller.CourseController;
-import Model.Course;
+import Model.Course.Course;
 import View.StyledComponents.StyleColors;
 
 import javax.swing.*;

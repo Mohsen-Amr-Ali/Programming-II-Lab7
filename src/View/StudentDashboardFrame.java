@@ -19,9 +19,9 @@ import javax.swing.JSplitPane;
 
 import Controller.CourseController;
 import Controller.StudentController;
-import Model.Course;
-import Model.Lesson;
-import Model.Student;
+import Model.Course.Course;
+import Model.Course.Lesson;
+import Model.User.Student;
 import View.CommonComponents.CourseCard;
 import View.CommonComponents.CourseOverviewPanel;
 import View.CommonComponents.LessonCard;
@@ -264,9 +264,9 @@ public class StudentDashboardFrame extends JFrame {
         lessonsPanel.setBackground(StyleColors.BACKGROUND);
         lessonsPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
         
-        java.util.List<Model.Lesson> lessons = course.getLessons();
+        java.util.List<Lesson> lessons = course.getLessons();
         for (int i = 0; i < lessons.size(); i++) {
-            Model.Lesson lesson = lessons.get(i);
+            Lesson lesson = lessons.get(i);
             int lessonIndex = i;
             LessonCard lessonCard = new LessonCard(i + 1, lesson, studentController.getCompletedLessons(student.getId(), course.getCourseId()).contains(lesson.getLessonId()));
             lessonCard.addCheckBoxListener(e -> {
@@ -370,9 +370,9 @@ public class StudentDashboardFrame extends JFrame {
         lessonsPanel.setBackground(StyleColors.BACKGROUND);
         lessonsPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
         
-        java.util.List<Model.Lesson> lessons = course.getLessons();
+        java.util.List<Lesson> lessons = course.getLessons();
         for (int i = 0; i < lessons.size(); i++) {
-            Model.Lesson lesson = lessons.get(i);
+            Lesson lesson = lessons.get(i);
             LessonCard lessonCard = new LessonCard(i + 1, lesson);
             lessonCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, lessonCard.getPreferredSize().height));
             lessonsPanel.add(lessonCard);
@@ -555,9 +555,9 @@ public class StudentDashboardFrame extends JFrame {
         lessonsPanel.setBackground(StyleColors.BACKGROUND);
         lessonsPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
         
-        java.util.List<Model.Lesson> lessons = course.getLessons();
+        java.util.List<Lesson> lessons = course.getLessons();
         for (int i = 0; i < lessons.size(); i++) {
-            Model.Lesson lesson = lessons.get(i);
+            Lesson lesson = lessons.get(i);
             int lessonIndex = i;
             LessonCard lessonCard = new LessonCard(i + 1, lesson, studentController.getCompletedLessons(student.getId(), course.getCourseId()).contains(lesson.getLessonId()));
             lessonCard.addCheckBoxListener(e -> {

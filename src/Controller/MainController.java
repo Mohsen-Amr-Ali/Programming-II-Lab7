@@ -1,20 +1,18 @@
 package Controller;
 
 import Model.JsonDatabaseManager;
-import Model.Student;
-import Model.User;
+import Model.User.*;
 import View.InstructorDashboardFrame;
 import View.LoginAndSignupFrame;
-import View.LoginPanel;
-import View.SignupPanel;
+import View.LoginComponents.LoginPanel;
+import View.LoginComponents.SignupPanel;
 import View.StudentDashboardFrame;
 import View.StyledComponents.SOptionPane;
+import View.AdminDashboardFrame;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-
-import Model.Instructor;
 
 public class MainController {
     private LoginController loginController;
@@ -56,6 +54,13 @@ public class MainController {
             InstructorDashboardFrame dashboard = new InstructorDashboardFrame(instructor);
             dashboard.setLogoutListener(() -> logout(dashboard));
             dashboard.setVisible(true);
+        } else if (user instanceof Admin) {
+            // Close login frame and open admin dashboard
+            loginFrame.dispose();
+            Admin admin = (Admin) user;
+            AdminDashboardFrame dashboard = new AdminDashboardFrame(admin);
+            dashboard.setLogoutListener(() -> logout(dashboard));
+            dashboard.setVisible(true);
         } else if (user != null) {
             // For now, show a message for other user types
             SOptionPane.showMessageDialog(loginFrame,
@@ -80,6 +85,13 @@ public class MainController {
                 loginFrame.dispose();
                 Instructor instructor = (Instructor) user;
                 InstructorDashboardFrame dashboard = new InstructorDashboardFrame(instructor);
+                dashboard.setLogoutListener(() -> logout(dashboard));
+                dashboard.setVisible(true);
+            } else if (user instanceof Admin) {
+                // Close login frame and open admin dashboard
+                loginFrame.dispose();
+                Admin admin = (Admin) user;
+                AdminDashboardFrame dashboard = new AdminDashboardFrame(admin);
                 dashboard.setLogoutListener(() -> logout(dashboard));
                 dashboard.setVisible(true);
             } else {

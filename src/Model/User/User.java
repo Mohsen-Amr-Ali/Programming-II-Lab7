@@ -1,15 +1,15 @@
-package Model;
+package Model.User;
 
 import util.PasswordHasher;
 
 public abstract class User {
     protected String username;
     protected int id;
-    protected String role;
+    protected USER_ROLE role;
     protected String email;
     protected String hashed_password;
 
-    public User(int id, String username, String email, String hashed_password, String role) {
+    public User(int id, String username, String email, String hashed_password, USER_ROLE role) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -17,7 +17,7 @@ public abstract class User {
         this.role = role;
     }
 
-    public User(String username, String email, String hashed_password, String role) {
+    public User(String username, String email, String hashed_password, USER_ROLE role) {
         this.username = username;
         this.email = email;
         this.hashed_password = hashed_password;
@@ -40,11 +40,11 @@ public abstract class User {
         this.username = username;
     }
 
-    public String getRole() {
+    public USER_ROLE getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(USER_ROLE role) {
         this.role = role;
     }
 

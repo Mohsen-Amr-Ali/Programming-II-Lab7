@@ -2,8 +2,9 @@ package Model;
 
 //Instructor IDs start with 10----
 //Student IDs start with 90----
+//Course IDs start with 70----
+//Lesson IDs start with 50----***
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,6 +12,10 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Random;
 
+import Model.Course.Course;
+import Model.Course.Lesson;
+import Model.Course.COURSE_STATUS;
+import Model.User.*;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 
@@ -18,7 +23,11 @@ public class JsonDatabaseManager {
     private static JsonDatabaseManager instance; //conventional name for a singleton instnace, it'll be just one instance for the entire program
     private ArrayList<Student> students = new ArrayList<>();
     private ArrayList<Instructor> instructors = new ArrayList<>();
+    private ArrayList<Admin> admins = new ArrayList<>();
     private ArrayList<Course> courses = new ArrayList<>();
+    private ArrayList<Course> pendingCourses = new ArrayList<>();
+    private ArrayList<Course> approvedCourses = new ArrayList<>();
+    private ArrayList<Course> rejectedCourses = new ArrayList<>();
 
     private String usersFile = "y:\\AlexU\\Term 5\\Programming 2\\Programming-II-Lab7\\src\\Database\\users.json";
     private String coursesFile = "y:\\AlexU\\Term 5\\Programming 2\\Programming-II-Lab7\\src\\Database\\courses.json";
@@ -47,10 +56,28 @@ public class JsonDatabaseManager {
         return courses;
     }
 
+    public ArrayList<Course> getPendingCourses() {
+        return pendingCourses;
+    }
+
+    public ArrayList<Course> getApprovedCourses() {
+        return approvedCourses;
+    }
+
+    public ArrayList<Course> getRejectedCourses() {
+        return rejectedCourses;
+    }
+
     //================= Load Functions =================\\
     private boolean isStudent(int id){
         while(id >= 100) id /=10;
         return id == 90;
+    }
+
+    private boolean isInstructor(int id) {
+        while (id >= 100)
+            id /= 10;
+        return id == 10;
     }
 
     private void loadUsers(){
@@ -65,15 +92,17 @@ public class JsonDatabaseManager {
             for (JsonElement userElement : jsonArray) {
                 JsonObject userObject = userElement.getAsJsonObject();
 
-                String role = userObject.get("role").getAsString();
+                USER_ROLE role = USER_ROLE.valueOf(userObject.get("role").getAsString().toUpperCase());
 
-
-                if (role.equals("student")) {
+                if (role == USER_ROLE.STUDENT) {
                     Student student = gson.fromJson(userObject, Student.class);
                     students.add(student);
-                } else{
+                } else if (role == USER_ROLE.INSTRUCTOR) {
                     Instructor instructor = gson.fromJson(userObject, Instructor.class);
                     instructors.add(instructor);
+                } else if (role == USER_ROLE.ADMIN){
+                    Admin admin = gson.fromJson(userObject, Admin.class);
+                    admins.add(admin);
                 }
             }
 
@@ -85,11 +114,23 @@ public class JsonDatabaseManager {
     }
 
     private void loadCourses(){
+        pendingCourses.clear();
+        approvedCourses.clear();
+        rejectedCourses.clear();
         try(FileReader reader = new FileReader(coursesFile)){
             Type coursesType  = new TypeToken<ArrayList<Course>>(){}.getType();
             ArrayList<Course> loadedCourses = gson.fromJson(reader, coursesType);
             if (loadedCourses != null) {
                 courses = loadedCourses;
+                for (Course course : loadedCourses) {
+                    if (course.getStatus() == COURSE_STATUS.PENDING) {
+                        pendingCourses.add(course);
+                    } else if (course.getStatus() == COURSE_STATUS.APPROVED) {
+                        approvedCourses.add(course);
+                    } else if (course.getStatus() == COURSE_STATUS.REJECTED) {
+                        rejectedCourses.add(course);
+                    }
+                }
             }
             System.out.println("\nCourses loaded successfully");
         }catch (IOException e) {
@@ -102,6 +143,7 @@ public class JsonDatabaseManager {
         ArrayList<User> allUsers = new ArrayList<>();
         allUsers.addAll(students);
         allUsers.addAll(instructors);
+        allUsers.addAll(admins);
 
         try(FileWriter writer = new FileWriter(usersFile)){
             gson.toJson(allUsers, writer);
@@ -140,6 +182,15 @@ public class JsonDatabaseManager {
             }
         }
 
+        if (user == null) {
+            for (Admin admin: admins) {
+                if (admin.getEmail().equals(email)) {
+                    user = admin;
+                    break;
+                }
+            }
+        }
+
         return user;
     }
 
@@ -153,10 +204,17 @@ public class JsonDatabaseManager {
                     break;
                 }
             }
-        } else{
+        }else if(isInstructor(id)){
             for(Instructor instructor : instructors){
                 if(instructor.getId() == id){
                     user = instructor;
+                    break;
+                }
+            }
+        }else{
+            for(Admin admin : admins){
+                if(admin.getId() == id){
+                    user = admin;
                     break;
                 }
             }
@@ -169,35 +227,40 @@ public class JsonDatabaseManager {
         return getUserById(id) == null;
     }
 
-    private int generateUserId(String role){
+    private int generateUserId(USER_ROLE role){
         int id;
 
-        if(role.equals("student")){
-
+        if (role == USER_ROLE.STUDENT) {
             do {
                 id = 900000 + random.nextInt(10000);
-            } while(!isUserIdUnique(id));
-
-        }else{
-
+            } while (!isUserIdUnique(id));
+        } else if (role == USER_ROLE.INSTRUCTOR) {
             do {
                 id = 100000 + random.nextInt(10000);
-            } while(!isUserIdUnique(id));
-
+            } while (!isUserIdUnique(id));
+        } else {
+            do {
+                id = 200000 + random.nextInt(10000);
+            } while (!isUserIdUnique(id));
         }
-
         return id;
     }
 
     public void addUser(Instructor instructor){
-        instructor.setId(generateUserId("instructor"));
+        instructor.setId(generateUserId(USER_ROLE.INSTRUCTOR));
         instructors.add(instructor);
         saveUsers();
     }
 
     public void addUser(Student student){
-        student.setId(generateUserId("student"));
+        student.setId(generateUserId(USER_ROLE.STUDENT));
         students.add(student);
+        saveUsers();
+    }
+
+    public void addUser(Admin admin) {
+        admin.setId(generateUserId(USER_ROLE.ADMIN));
+        admins.add(admin);
         saveUsers();
     }
 
@@ -216,7 +279,15 @@ public class JsonDatabaseManager {
                     break;
                 }
             }
+        } else if (updatedUser instanceof Admin) {
+            for (int i = 0; i < admins.size(); i++) {
+                if (admins.get(i).getId() == updatedUser.getId()) {
+                    admins.set(i, (Admin) updatedUser);
+                    break;
+                }
+            }
         }
+
         saveUsers();
     }
 
@@ -249,20 +320,56 @@ public class JsonDatabaseManager {
     public void addCourse(Course course){
         course.setCourseId(generateCourseId());
         courses.add(course);
+        // Add to the correct status list
+        if (course.getStatus() == COURSE_STATUS.PENDING) {
+            pendingCourses.add(course);
+        } else if (course.getStatus() == COURSE_STATUS.APPROVED) {
+            approvedCourses.add(course);
+        } else if (course.getStatus() == COURSE_STATUS.REJECTED) {
+            rejectedCourses.add(course);
+        }
         saveCourses();
     }
 
-    public void updateCourses(Course updatedCourse){
+    public void updateCourses(Course updatedCourse) {
         for (int i = 0; i < courses.size(); i++) {
             if (courses.get(i).getCourseId() == updatedCourse.getCourseId()) {
+                // Remove from old status list
+                COURSE_STATUS oldStatus = courses.get(i).getStatus();
+                if (oldStatus == COURSE_STATUS.PENDING) {
+                    pendingCourses.remove(courses.get(i));
+                } else if (oldStatus == COURSE_STATUS.APPROVED) {
+                    approvedCourses.remove(courses.get(i));
+                } else if (oldStatus == COURSE_STATUS.REJECTED) {
+                    rejectedCourses.remove(courses.get(i));
+                }
+                // Update course
                 courses.set(i, updatedCourse);
+                // Add to new status list
+                if (updatedCourse.getStatus() == COURSE_STATUS.PENDING) {
+                    pendingCourses.add(updatedCourse);
+                } else if (updatedCourse.getStatus() == COURSE_STATUS.APPROVED) {
+                    approvedCourses.add(updatedCourse);
+                } else if (updatedCourse.getStatus() == COURSE_STATUS.REJECTED) {
+                    rejectedCourses.add(updatedCourse);
+                }
+                break;
             }
         }
         saveCourses();
     }
 
-    public void removeCourse(Course removedCourse){
+    public void removeCourse(Course removedCourse) {
         courses.remove(removedCourse);
+
+        // Remove from status list
+        if (removedCourse.getStatus() == COURSE_STATUS.PENDING) {
+            pendingCourses.remove(removedCourse);
+        } else if (removedCourse.getStatus() == COURSE_STATUS.APPROVED) {
+            approvedCourses.remove(removedCourse);
+        } else if (removedCourse.getStatus() == COURSE_STATUS.REJECTED) {
+            rejectedCourses.remove(removedCourse);
+        }
 
         for (Integer studentId : removedCourse.getStudents()) {
             User user = getUserById(studentId);
@@ -276,7 +383,7 @@ public class JsonDatabaseManager {
         User instructorUser = getUserById(removedCourse.getInstructorId());
         if (instructorUser instanceof Instructor) {
             Instructor instructor = (Instructor) instructorUser;
-            instructor.getCreatedCourses().remove((Integer)removedCourse.getCourseId());
+            instructor.getCreatedCourses().remove((Integer) removedCourse.getCourseId());
         }
 
         saveCourses();
@@ -290,6 +397,18 @@ public class JsonDatabaseManager {
                 results.add(course);
         }
         return results;
+    }
+
+    public ArrayList<Course> getCourseByTitle(COURSE_STATUS status, String title){
+        if(status == COURSE_STATUS.APPROVED){
+            return getCourseByTitle(approvedCourses,title);
+        } else if(status == COURSE_STATUS.PENDING){
+            return getCourseByTitle(pendingCourses, title);
+        } else if(status == COURSE_STATUS.REJECTED){
+            return getCourseByTitle(rejectedCourses, title);
+        }
+
+        return new ArrayList<>();
     }
 
     public ArrayList<Course> getCourseByTitle(ArrayList<Course> courses, String title) {
@@ -320,6 +439,32 @@ public class JsonDatabaseManager {
         saveUsers();
     }
 
+    public void changeCourseStatus(int courseId, COURSE_STATUS newStatus) {
+        Course course = getCourseById(courseId);
+        if (course == null) return;
 
+        COURSE_STATUS oldStatus = course.getStatus();
+        if (oldStatus == newStatus) return;
 
+        // Remove from old status list
+        if (oldStatus == COURSE_STATUS.PENDING) {
+            pendingCourses.remove(course);
+        } else if (oldStatus == COURSE_STATUS.APPROVED) {
+            approvedCourses.remove(course);
+        } else if (oldStatus == COURSE_STATUS.REJECTED) {
+            rejectedCourses.remove(course);
+        }
+
+        // Set new status and add to new list
+        course.setStatus(newStatus);
+        if (newStatus == COURSE_STATUS.PENDING) {
+            pendingCourses.add(course);
+        } else if (newStatus == COURSE_STATUS.APPROVED) {
+            approvedCourses.add(course);
+        } else if (newStatus == COURSE_STATUS.REJECTED) {
+            rejectedCourses.add(course);
+        }
+
+        saveCourses();
+    }
 }

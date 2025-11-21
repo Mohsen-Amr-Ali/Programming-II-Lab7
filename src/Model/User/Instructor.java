@@ -1,16 +1,19 @@
 //YASSER'S TERRITORY
-package Model;
+package Model.User;
+import Model.Course.Course;
+import Model.JsonDatabaseManager;
+
 import java.util.ArrayList;
 
 public class Instructor extends User {
     private ArrayList<Integer> createdCourses;
 //                                              CONSTRUCTOR
 
-    public Instructor(ArrayList<Integer> createdCourses, int id, String username, String email, String hashed_password, String role) {
+    public Instructor(ArrayList<Integer> createdCourses, int id, String username, String email, String hashed_password, USER_ROLE role) {
         super(id, username, email, hashed_password, role);
         this.createdCourses = createdCourses != null ? createdCourses : new ArrayList<>();
     }
-    public Instructor(String username, String email, String hashed_password, String role) {
+    public Instructor(String username, String email, String hashed_password, USER_ROLE role) {
         super(username, email, hashed_password, role);
         this.createdCourses = new ArrayList<>();
     }

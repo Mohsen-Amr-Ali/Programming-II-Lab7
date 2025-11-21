@@ -1,11 +1,10 @@
 package Controller;
 
-import Model.Instructor;
+import Model.User.Instructor;
 import Model.JsonDatabaseManager;
-import Model.Student;
-import Model.User;
-import View.LoginPanel;
-import View.SignupPanel;
+import Model.User.*;
+import View.LoginComponents.LoginPanel;
+import View.LoginComponents.SignupPanel;
 import util.PasswordHasher;
 import util.Validator;
 
@@ -124,21 +123,49 @@ public class LoginController {
             signupPanel.displayMessage("Passwords do not match!");
             return null;
         }
-        // If signup has buttons for student/instructor then get the value from there and add from db according to the button.
-        if (signupPanel.getRole().equals("student"))
-        {
-            Student student = new Student(username, email, PasswordHasher.hashPassword(password), "student");
-            db.addUser(student);
-            loggedInUser = student;
-            return student;
+        
+        // Convert the role string from the UI to the enum value
+        String roleString = signupPanel.getRole();
+        USER_ROLE role = null;
+
+        try {
+            role = USER_ROLE.valueOf(roleString.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            signupPanel.displayMessage("Invalid role selected.");
+            return null;
         }
-        if (signupPanel.getRole().equals("instructor"))
+
+        // --- UPDATED USER CREATION LOGIC ---
+        User newUser = null;
+        String hashedPassword = PasswordHasher.hashPassword(password);
+        
+        if (role == USER_ROLE.STUDENT)
         {
-            Instructor instructor = new Instructor(username, email, PasswordHasher.hashPassword(password),  "instructor");
-            db.addUser(instructor);
-            loggedInUser = instructor;
-            return instructor;
+            newUser = new Student(username, email, hashedPassword, USER_ROLE.STUDENT);
         }
-        return null;
+        else if (role == USER_ROLE.INSTRUCTOR)
+        {
+            newUser = new Instructor(username, email, hashedPassword, USER_ROLE.INSTRUCTOR);
+        }
+        else if (role == USER_ROLE.ADMIN) 
+        {
+            // Note: Admins are not available in the public signup combobox, 
+            // but this path supports manual creation or future changes.
+            newUser = new Admin(username, email, hashedPassword, USER_ROLE.ADMIN);
+        }
+
+        if (newUser != null) {
+            if (newUser instanceof Student) {
+                db.addUser((Student) newUser);
+            } else if (newUser instanceof Instructor) {
+                db.addUser((Instructor) newUser);
+            } else if (newUser instanceof Admin) {
+                db.addUser((Admin) newUser);
+            }
+            loggedInUser = newUser;
+            return newUser;
+        }
+        
+        return null; // Should not happen if roles are correctly mapped
     }
 }

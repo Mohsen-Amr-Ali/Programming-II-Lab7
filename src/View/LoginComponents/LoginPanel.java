@@ -1,5 +1,6 @@
-package View;
+package View.LoginComponents;
 
+import View.LoginAndSignupFrame;
 import View.StyledComponents.*;
 import javax.swing.*;
 import javax.swing.border.Border;

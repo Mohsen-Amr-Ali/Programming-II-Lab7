@@ -1,5 +1,7 @@
 package View;
 
+import View.LoginComponents.LoginPanel;
+import View.LoginComponents.SignupPanel;
 import View.StyledComponents.*;
 import Controller.MainController;
 import javax.swing.*;

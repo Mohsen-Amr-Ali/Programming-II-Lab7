@@ -1,6 +1,6 @@
 package View.CommonComponents;
 
-import Model.Lesson;
+import Model.Course.Lesson;
 import View.StyledComponents.StyleColors;
 
 import javax.swing.*;

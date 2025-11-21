@@ -1,4 +1,4 @@
-package Model; ////YASSER'S TERRITORY
+package Model.Course; ////YASSER'S TERRITORY
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -9,6 +9,8 @@ public class Course {
     private int instructorId;
     private ArrayList<Lesson> lessons;
     private ArrayList<Integer> students;
+    private String imagePath;
+    private COURSE_STATUS status;
 
     private static final Random random = new Random();
 //                                              CONSTRUCTOR
@@ -67,6 +69,14 @@ public class Course {
     }
     public void setStudents(ArrayList<Integer> students) {
         this.students = students != null ? students : new ArrayList<>();
+    }
+
+    public COURSE_STATUS getStatus(){
+        return status;
+    }
+
+    public void setStatus(COURSE_STATUS status){
+        this.status = status;
     }
 
     //                                              METHODS

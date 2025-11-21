@@ -1,6 +1,6 @@
 //YASSER'S TERRITORY
-package Model;
-import java.util.ArrayList;
+package Model.Course;
+
 public class Lesson {
     private int lessonId;
     private int courseId;

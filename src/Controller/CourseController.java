@@ -2,7 +2,7 @@ package Controller;
 
 import java.util.ArrayList;
 
-import Model.Course;
+import Model.Course.Course;
 import Model.JsonDatabaseManager;
 
 public class CourseController {

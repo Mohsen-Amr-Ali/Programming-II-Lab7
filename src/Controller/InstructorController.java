@@ -1,11 +1,10 @@
 //YASSER'S TERRITORY
 //the point of the controller is to act as an intermediary between the view and the model
 package Controller;
-import Model.Instructor;
+import Model.User.Instructor;
 import Model.JsonDatabaseManager;
 import java.util.ArrayList;
-import Model.Course;
-import Model.Lesson;
+import Model.Course.Course;
 
 public class InstructorController {
     private JsonDatabaseManager dbManager;

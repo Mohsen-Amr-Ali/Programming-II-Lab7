@@ -14,8 +14,8 @@ import javax.swing.JScrollPane;
 
 import Controller.CourseController;
 import Controller.InstructorController;
-import Model.Course;
-import Model.Instructor;
+import Model.Course.Course;
+import Model.User.Instructor;
 import View.CommonComponents.CourseCard;
 import View.InstructorComponents.InstructorNavBar;
 import View.StyledComponents.SLabel;

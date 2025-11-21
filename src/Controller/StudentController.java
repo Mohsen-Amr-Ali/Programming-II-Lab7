@@ -1,13 +1,10 @@
 package Controller;
 
-import Model.Course;
+import Model.Course.Course;
 import Model.JsonDatabaseManager;
-import Model.Lesson;
-import Model.Student;
-import com.google.gson.Gson;
+import Model.User.Student;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class StudentController {
 
