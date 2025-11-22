@@ -81,33 +81,36 @@ public class StudentController {
         return false;
     }
 
-        public Certificate generateCertificate(int studentId, int courseId) {
-            // Check completion
-            if (!isCourseCompleted(studentId, courseId)) {
-                return null; // cannot generate certificate
-            }
+    public Certificate generateCertificate(int studentId, int courseId) {
 
-            Student student = (Student) dbManager.getUserById(studentId);
-            if (student == null) return null;
-
-            // Generate certificateId (DB should handle ID creation)
-            String certificateId = dbManager.generateCertificateId();
-
-            // Get today's date
-            String issueDate = java.time.LocalDate.now().toString();
-
-
-            // Create certificate object
-            Certificate certificate = new Certificate(certificateId, studentId, courseId, issueDate);
-
-            // Add to student
-            student.getCertificates().add(certificate);
-
-            // Save updated student to JSON
-            dbManager.updateUser(student);
-
-            return certificate;
+        // 1) Check if student finished all lessons
+        if (!isCourseCompleted(studentId, courseId)) {
+            return null; // cannot issue certificate
         }
 
+        // 2) Load student
+        Student student = (Student) dbManager.getUserById(studentId);
+        if (student == null) return null;
+
+        // 3) Generate certificate fields
+        String certificateId = dbManager.generateCertificateId();
+        String issueDate = java.time.LocalDate.now().toString();
+
+        // 4) Create certificate object
+        Certificate certificate = new Certificate(certificateId, studentId, courseId, issueDate);
+
+        // 5) Attach certificate to student object
+        student.getCertificates().add(certificate);
+
+        // 6) Save student in JSON
+        dbManager.updateUser(student);
+
+        // 7) Generate PDF file
+        String outputPath = "certificates/" + certificateId + ".pdf";
+        util.CertificatePDFGenerator.generateCertificatePDF(certificate, outputPath);
+
+        System.out.println("Certificate PDF Created at: " + outputPath);
+
+        return certificate;
     }
 }
