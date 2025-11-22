@@ -2,11 +2,13 @@ package Model.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import util.Certificate;
 
 public class Student extends User{
 
     private ArrayList<Integer> enrolledCourses;
     private HashMap<Integer, ArrayList<Integer>> progress; //first integer is courseID, second integer is list of completed lessonIDs
+    private ArrayList<Certificate> certificates = new ArrayList<>();
 
     public Student(String username, String email, String passwordHash, USER_ROLE role) {
         super(username, email, passwordHash, role);
@@ -74,4 +76,11 @@ public class Student extends User{
         return progress.containsKey(courseID) && progress.get(courseID).contains(lessonID);
     }
 
+    public ArrayList<Certificate> getCertificates() {
+        return certificates;
+    }
+
+    public void setCertificates(ArrayList<Certificate> certificates) {
+        this.certificates = certificates;
+    }
 }
