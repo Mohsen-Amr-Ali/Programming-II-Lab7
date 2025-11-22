@@ -88,15 +88,17 @@ public class StudentController {
             return null; // cannot issue certificate
         }
 
-        // 2) Load student
+        // 2) Load student and course
         Student student = (Student) dbManager.getUserById(studentId);
         if (student == null) return null;
+        Course course = dbManager.getCourseById(courseId);
+        if (course == null) return null;
 
         // 3) Generate certificate fields
         String issueDate = java.time.LocalDate.now().toString();
 
         // 4) Create certificate object
-        Certificate certificate = new Certificate(certificateId, studentId, courseId, issueDate);
+        Certificate certificate = new Certificate(certificateId, course, student, issueDate);
 
         // 5) Attach certificate to student object
         student.getCertificates().add(certificate);
