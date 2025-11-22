@@ -1,33 +1,25 @@
 package util;
 
-import Model.Course.Lesson;
-import Model.JsonDatabaseManager;
+import Model.Course.Course;
+import Model.User.Student;
 
 public class Certificate {
 
         private int certificateId;
-        private int studentId;
-        private int courseId;
+        private Student student;
+        private Course course;
         private String issueDate;
 
-        public Certificate(int certificateId, int studentId, int courseId, String issueDate) {
+        public Certificate(int certificateId, Course course,Student student, String issueDate) {
             this.certificateId = certificateId;
-            this.studentId = studentId;
-            this.courseId = courseId;
+            this.course = course;
+            this.student = student;
             this.issueDate = issueDate;
         }
 
         // Getters
         public int getCertificateId() {
             return certificateId;
-        }
-
-        public int getStudentId() {
-            return studentId;
-        }
-
-        public int getCourseId() {
-            return courseId;
         }
 
         public String getIssueDate() {
@@ -38,25 +30,19 @@ public class Certificate {
             this.certificateId = certificateId;
         }
 
-        public void setStudentId(int studentId) {
-            this.studentId = studentId;
-        }
-
-        public void setCourseId(int courseId) {
-            this.courseId = courseId;
-        }
-
         public void setIssueDate(String issueDate) {
             this.issueDate = issueDate;
         }
-
-        @Override
-        public String toString() {
-            return "Certificate{" +
-                    "certificateId='" + certificateId + '\'' +
-                    ", studentId='" + studentId + '\'' +
-                    ", courseId='" + courseId + '\'' +
-                    ", issueDate='" + issueDate + '\'' +
-                    '}';
+        public String getStudentName() {
+            return student.getUsername();
+        }
+        public int getStudentId() {
+            return student.getId();
+        }
+        public int getCourseId() {
+            return course.getCourseId();
+        }
+        public String getCourseTitle() {
+            return course.getTitle();
         }
     }

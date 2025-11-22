@@ -26,14 +26,14 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
                 content.beginText();
                 content.setFont(PDType1Font.HELVETICA, 18);
                 content.newLineAtOffset(100, 650);
-                content.showText("Awarded to Student: " + certificate.getStudentId());
+                content.showText("Awarded to Student: " + certificate.getStudentName() + " ( "+ certificate.getStudentId() + " ) ");
                 content.endText();
 
                 // Course
                 content.beginText();
                 content.setFont(PDType1Font.HELVETICA, 18);
                 content.newLineAtOffset(100, 620);
-                content.showText("For completing Course: " + certificate.getCourseId());
+                content.showText("For completing Course: " + certificate.getCourseTitle() + " ( " + certificate.getCourseId() + " )");
                 content.endText();
 
                 // Date
