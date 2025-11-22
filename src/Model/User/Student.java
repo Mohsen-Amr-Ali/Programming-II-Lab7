@@ -3,9 +3,12 @@ package Model.User;
 import java.util.ArrayList;
 import java.util.HashMap;
 import util.Certificate;
+import java.util.Random;
+
 
 public class Student extends User {
 
+    private static final Random random = new Random();
     private ArrayList<Integer> enrolledCourses;
     private HashMap<Integer, ArrayList<Integer>> progress; //first integer is courseID, second integer is list of completed lessonIDs
     private ArrayList<Certificate> certificates = new ArrayList<>();
@@ -92,4 +95,14 @@ public class Student extends User {
         }
         return true;
     }
+    public int generateCertificateId(){
+        id = this.id % 10000;
+        int id1;
+
+        do {
+            id1 = 400000000 + (id * 1000) + random.nextInt(1000);
+
+        } while (!isCertificateIdUnique(id));
+
+        return id1; }
 }

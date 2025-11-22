@@ -81,7 +81,7 @@ public class StudentController {
         return false;
     }
 
-    public Certificate generateCertificate(int studentId, int courseId) {
+    public Certificate generateCertificate(int studentId, int courseId, int certificateId) {
 
         // 1) Check if student finished all lessons
         if (!isCourseCompleted(studentId, courseId)) {
@@ -93,7 +93,6 @@ public class StudentController {
         if (student == null) return null;
 
         // 3) Generate certificate fields
-        String certificateId = dbManager.generateCertificateId();
         String issueDate = java.time.LocalDate.now().toString();
 
         // 4) Create certificate object
