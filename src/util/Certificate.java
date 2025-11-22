@@ -1,13 +1,16 @@
 package util;
 
-    public class Certificate {
+import Model.Course.Lesson;
+import Model.JsonDatabaseManager;
 
-        private String certificateId;
-        private String studentId;
-        private String courseId;
+public class Certificate {
+
+        private int certificateId;
+        private int studentId;
+        private int courseId;
         private String issueDate;
 
-        public Certificate(String certificateId, String studentId, String courseId, String issueDate) {
+        public Certificate(int certificateId, int studentId, int courseId, String issueDate) {
             this.certificateId = certificateId;
             this.studentId = studentId;
             this.courseId = courseId;
@@ -15,15 +18,15 @@ package util;
         }
 
         // Getters
-        public String getCertificateId() {
+        public int getCertificateId() {
             return certificateId;
         }
 
-        public String getStudentId() {
+        public int getStudentId() {
             return studentId;
         }
 
-        public String getCourseId() {
+        public int getCourseId() {
             return courseId;
         }
 
@@ -31,15 +34,15 @@ package util;
             return issueDate;
         }
 
-        public void setCertificateId(String certificateId) {
+        public void setCertificateId(int certificateId) {
             this.certificateId = certificateId;
         }
 
-        public void setStudentId(String studentId) {
+        public void setStudentId(int studentId) {
             this.studentId = studentId;
         }
 
-        public void setCourseId(String courseId) {
+        public void setCourseId(int courseId) {
             this.courseId = courseId;
         }
 

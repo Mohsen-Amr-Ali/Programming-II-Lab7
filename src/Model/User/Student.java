@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import util.Certificate;
 
-public class Student extends User{
+public class Student extends User {
 
     private ArrayList<Integer> enrolledCourses;
     private HashMap<Integer, ArrayList<Integer>> progress; //first integer is courseID, second integer is list of completed lessonIDs
@@ -38,41 +38,41 @@ public class Student extends User{
         this.progress = progress != null ? progress : new HashMap<>();
     }
 
-    public void enrollInCourse(Integer courseID){
+    public void enrollInCourse(Integer courseID) {
         if (!enrolledCourses.contains(courseID)) {
             enrolledCourses.add(courseID);
         }
     }
 
-    public void dropCourse(Integer courseID){
+    public void dropCourse(Integer courseID) {
         enrolledCourses.remove(courseID);
         progress.remove(courseID);
     }
 
-    public boolean isEnrolled(Integer courseID){
+    public boolean isEnrolled(Integer courseID) {
         return enrolledCourses.contains(courseID);
     }
 
-    public void addCompletedLesson(Integer courseID, Integer lessonID){
+    public void addCompletedLesson(Integer courseID, Integer lessonID) {
         progress.putIfAbsent(courseID, new ArrayList<>());
         if (!progress.get(courseID).contains(lessonID)) {
             progress.get(courseID).add(lessonID);
         }
     }
 
-    public void removeCompletedLesson(Integer courseID, Integer lessonID){
+    public void removeCompletedLesson(Integer courseID, Integer lessonID) {
         if (progress.containsKey(courseID)) {
             progress.get(courseID).remove(lessonID);
         }
     }
 
-    public ArrayList<Integer> getCompletedLessons(int courseID){
+    public ArrayList<Integer> getCompletedLessons(int courseID) {
         // Always return the actual reference from the HashMap, or an empty list if not found
         return progress.getOrDefault(courseID, new ArrayList<>());
     }
 
 
-    public boolean isLessonCompleted(Integer courseID, Integer lessonID){
+    public boolean isLessonCompleted(Integer courseID, Integer lessonID) {
         return progress.containsKey(courseID) && progress.get(courseID).contains(lessonID);
     }
 
@@ -82,5 +82,14 @@ public class Student extends User{
 
     public void setCertificates(ArrayList<Certificate> certificates) {
         this.certificates = certificates;
+    }
+
+    private boolean isCertificateIdUnique(int certificateId) {
+        for (Certificate cert : certificates) {
+            if (cert.getCertificateId() == certificateId) {
+                return false;
+            }
+        }
+        return true;
     }
 }

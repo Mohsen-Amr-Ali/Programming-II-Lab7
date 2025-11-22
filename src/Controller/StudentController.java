@@ -3,6 +3,7 @@ package Controller;
 import Model.Course.Course;
 import Model.JsonDatabaseManager;
 import Model.User.Student;
+import util.Certificate;
 
 import java.util.ArrayList;
 
@@ -69,5 +70,44 @@ public class StudentController {
             student.removeCompletedLesson(courseId, lessonId);
             dbManager.updateUser(student);
         }
+    }
+    public boolean isCourseCompleted(int studentId, int courseId) {
+        Student student = (Student) dbManager.getUserById(studentId);
+        Course course = dbManager.getCourseById(courseId);
+        if (student != null && course != null) {
+            ArrayList<Integer> completedLessons = student.getCompletedLessons(courseId); // Get the completed lessons for the course
+            return completedLessons.size() == course.getLessons().size(); // Compare with total lessons in the course, if equal, course is completed
+        }
+        return false;
+    }
+
+        public Certificate generateCertificate(int studentId, int courseId) {
+            // Check completion
+            if (!isCourseCompleted(studentId, courseId)) {
+                return null; // cannot generate certificate
+            }
+
+            Student student = (Student) dbManager.getUserById(studentId);
+            if (student == null) return null;
+
+            // Generate certificateId (DB should handle ID creation)
+            String certificateId = dbManager.generateCertificateId();
+
+            // Get today's date
+            String issueDate = java.time.LocalDate.now().toString();
+
+
+            // Create certificate object
+            Certificate certificate = new Certificate(certificateId, studentId, courseId, issueDate);
+
+            // Add to student
+            student.getCertificates().add(certificate);
+
+            // Save updated student to JSON
+            dbManager.updateUser(student);
+
+            return certificate;
+        }
+
     }
 }
