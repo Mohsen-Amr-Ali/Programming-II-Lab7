@@ -1,16 +1,13 @@
 package util;
 
-import Model.Course.Course;
-import Model.Course.COURSE_STATUS;
-import Model.Course.Lesson;
-import Model.Course.Quiz;
+import Model.Course.*;
 import Model.User.Student;
 import Model.User.User;
 import Model.JsonDatabaseManager;
 
 import java.util.*;
 
-public class Analytics {
+public class  Analytics {
 
     // instructor analytics //
     public double getCourseCompletionPercentage (Course course) {

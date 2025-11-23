@@ -1,6 +1,5 @@
-package util;
+package Model.Course;
 
-import Model.Course.Course;
 import Model.User.Student;
 
 public class Certificate {

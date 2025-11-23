@@ -1,7 +1,6 @@
-package util;
+package Model.Course;
 
 import java.time.LocalDateTime;
-import Model.Course.Quiz;
 
 public class QuizResult {
 

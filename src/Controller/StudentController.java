@@ -4,10 +4,11 @@ import Model.Course.Course;
 import Model.Course.Lesson;
 import Model.Course.Question;
 import Model.Course.Quiz;
+import Model.Course.QuizResult;
 import Model.JsonDatabaseManager;
 import Model.User.Student;
-import util.Certificate;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -81,76 +82,52 @@ public class StudentController {
         Student student = (Student) dbManager.getUserById(studentId);
         Course course = dbManager.getCourseById(courseId);
         if (student == null || course == null) {
-            return; // Or throw an exception
+            return; // Or handle error
         }
 
         Lesson lesson = course.getLessonById(lessonId);
         if (lesson == null || lesson.getQuiz() == null) {
-            return; // Or throw an exception
+            // If no quiz exists, maybe mark complete immediately?
+            // For now, do nothing if quiz logic was requested but missing.
+            return;
         }
 
         Quiz quiz = lesson.getQuiz();
-        double score = calculateScore(quiz, answers);
-        student.addQuizScore(lessonId, score);
 
+        // 1. Calculate Score
+        int maxScore = quiz.getQuestions().size();
+        int correctAnswers = calculateCorrectAnswers(quiz, answers);
+
+        // 2. Determine Pass/Fail
+        double percentage = (double) correctAnswers / maxScore * 100.0;
+        boolean passed = percentage >= quiz.getPassThreshold(); // Assuming threshold is e.g. 60.0
+
+        // 3. Create Result Object
+        QuizResult result = new QuizResult(correctAnswers, maxScore, LocalDateTime.now(), passed);
+
+        // 4. Save Attempt
+        student.addQuizAttempt(lessonId, result);
+
+        // 5. Mark Lesson Complete if Passed (Check history to be safe)
         if (student.hasPassedQuiz(lessonId, quiz.getPassThreshold())) {
             markLessonAsCompleted(studentId, courseId, lessonId);
+        } else {
+            // Optionally remove completion if they failed a re-take?
+            // Usually we keep completion once earned.
         }
 
         dbManager.updateUser(student);
     }
 
-    private double calculateScore(Quiz quiz, HashMap<Integer, Integer> answers) {
+    private int calculateCorrectAnswers(Quiz quiz, HashMap<Integer, Integer> answers) {
         int correctAnswers = 0;
         for (Question question : quiz.getQuestions()) {
-            if (answers.containsKey(question.getQuestionId()) && answers.get(question.getQuestionId()).equals(question.getCorrectAnswerIndex())) {
+            // Check if answer exists and matches correct index
+            if (answers.containsKey(question.getQuestionId()) &&
+                    answers.get(question.getQuestionId()).equals(question.getCorrectAnswerIndex())) {
                 correctAnswers++;
             }
         }
-        return (double) correctAnswers / quiz.getQuestions().size() * 100;
-    }
-
-    public boolean isCourseCompleted(int studentId, int courseId) {
-        Student student = (Student) dbManager.getUserById(studentId);
-        Course course = dbManager.getCourseById(courseId);
-        if (student != null && course != null) {
-            ArrayList<Integer> completedLessons = student.getCompletedLessons(courseId); // Get the completed lessons for the course
-            return completedLessons.size() == course.getLessons().size(); // Compare with total lessons in the course, if equal, course is completed
-        }
-        return false;
-    }
-
-    public Certificate generateCertificate(int studentId, int courseId, int certificateId) {
-
-        // 1) Check if student finished all lessons
-        if (!isCourseCompleted(studentId, courseId)) {
-            return null; // cannot issue certificate
-        }
-
-        // 2) Load student and course
-        Student student = (Student) dbManager.getUserById(studentId);
-        if (student == null) return null;
-        Course course = dbManager.getCourseById(courseId);
-        if (course == null) return null;
-
-        // 3) Generate certificate fields
-        String issueDate = java.time.LocalDate.now().toString();
-
-        // 4) Create certificate object
-        Certificate certificate = new Certificate(certificateId, course, student, issueDate);
-
-        // 5) Attach certificate to student object
-        student.getCertificates().add(certificate);
-
-        // 6) Save student in JSON
-        dbManager.updateUser(student);
-
-        // 7) Generate PDF file
-        String outputPath = "certificates/" + certificateId + ".pdf";
-        util.CertificatePDFGenerator.generateCertificatePDF(certificate, outputPath);
-
-        System.out.println("Certificate PDF Created at: " + outputPath);
-
-        return certificate;
+        return correctAnswers;
     }
 }

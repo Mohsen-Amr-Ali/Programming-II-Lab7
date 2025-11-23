@@ -2,35 +2,39 @@ package Model.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import Model.Course.Quiz;
-import util.Certificate;
-import util.QuizResult;
+import Model.Course.Certificate;
+import Model.Course.QuizResult;
 
 import java.util.Random;
 
 public class Student extends User {
 
     private static final Random random = new Random();
-    private HashMap<Integer, ArrayList<Double>> quizScores; // Integer is quizID, Double is List of scores from attempts
     private ArrayList<Integer> enrolledCourses;
-    private HashMap<Integer, ArrayList<Integer>> progress; //first integer is courseID, second integer is list of completed lessonIDs
-    private ArrayList<Certificate> certificates = new ArrayList<>();
-    private HashMap<Integer, ArrayList<QuizResult>> quizResults;
+    private HashMap<Integer, ArrayList<Integer>> progress; // CourseID -> List of completed LessonIDs
+    private ArrayList<Certificate> certificates;
+    private HashMap<Integer, ArrayList<QuizResult>> quizResults; // LessonID -> List of attempts
 
     public Student(String username, String email, String passwordHash, USER_ROLE role) {
         super(username, email, passwordHash, role);
-        enrolledCourses = new ArrayList<>();
-        progress = new HashMap<>();
-        quizScores = new HashMap<>();
+        this.enrolledCourses = new ArrayList<>();
+        this.progress = new HashMap<>();
+        this.certificates = new ArrayList<>();
+        this.quizResults = new HashMap<>();
     }
 
-    public Student(ArrayList<Integer> enrolledCourses, HashMap<Integer, ArrayList<Integer>> progress, int studentID, String username, String email, String passwordHash, HashMap<Integer, ArrayList<Double>> quizScores, USER_ROLE role) {
+    public Student(ArrayList<Integer> enrolledCourses, HashMap<Integer, ArrayList<Integer>> progress, int studentID, String username, String email, String passwordHash, USER_ROLE role) {
         super(studentID, username, email, passwordHash, role);
         this.enrolledCourses = enrolledCourses != null ? enrolledCourses : new ArrayList<>();
         this.progress = progress != null ? progress : new HashMap<>();
-        this.quizScores = quizScores != null ? quizScores : new HashMap<>();
+        this.certificates = new ArrayList<>();
+        this.quizResults = new HashMap<>();
     }
+
+    // --- Getters & Setters ---
 
     public ArrayList<Integer> getEnrolledCoursesIDs() {
         return enrolledCourses;
@@ -48,6 +52,24 @@ public class Student extends User {
         this.progress = progress != null ? progress : new HashMap<>();
     }
 
+    public ArrayList<Certificate> getCertificates() {
+        return certificates;
+    }
+
+    public void setCertificates(ArrayList<Certificate> certificates) {
+        this.certificates = certificates != null ? certificates : new ArrayList<>();
+    }
+
+    public HashMap<Integer, ArrayList<QuizResult>> getQuizResultsMap() {
+        return quizResults;
+    }
+
+    public void setQuizResultsMap(HashMap<Integer, ArrayList<QuizResult>> quizResults) {
+        this.quizResults = quizResults != null ? quizResults : new HashMap<>();
+    }
+
+    // --- Core Methods ---
+
     public void enrollInCourse(int courseID){
         if (!enrolledCourses.contains(courseID)) {
             enrolledCourses.add(courseID);
@@ -55,7 +77,7 @@ public class Student extends User {
     }
 
     public void dropCourse(int courseID){
-        enrolledCourses.remove(courseID);
+        enrolledCourses.remove((Integer) courseID);
         progress.remove(courseID);
     }
 
@@ -72,52 +94,75 @@ public class Student extends User {
 
     public void removeCompletedLesson(int courseID, int lessonID){
         if (progress.containsKey(courseID)) {
-            progress.get(courseID).remove(lessonID);
+            progress.get(courseID).remove((Integer) lessonID);
         }
     }
 
-    public ArrayList<Integer> getCompletedLessons(int courseID) {
-        // Always return the actual reference from the HashMap, or an empty list if not found
+    public ArrayList<Integer> getCompletedLessons(int courseID){
         return progress.getOrDefault(courseID, new ArrayList<>());
     }
-
 
     public boolean isLessonCompleted(int courseID, int lessonID){
         return progress.containsKey(courseID) && progress.get(courseID).contains(lessonID);
     }
 
-    public void addQuizScore(int lessonID, double score)
-    {
-        quizScores.putIfAbsent(lessonID, new ArrayList<>());
-        quizScores.get(lessonID).add(score);
+    // --- Quiz Methods ---
+
+    /**
+     * Records a quiz attempt for a specific lesson.
+     * Use this method instead of addQuizScore to track full attempt history.
+     * @param lessonId The ID of the lesson taken.
+     * @param quizResult The result object containing score, date, and pass status.
+     */
+    public void addQuizAttempt(int lessonId, QuizResult quizResult) {
+        if (quizResults == null) quizResults = new HashMap<>();
+        quizResults.putIfAbsent(lessonId, new ArrayList<>());
+        quizResults.get(lessonId).add(quizResult);
     }
 
-    public ArrayList<Double> getQuizAttempts(int lessonID) {
-        return quizScores.getOrDefault(lessonID, new ArrayList<>());
-    }
-
-    public double getLatestQuizScore(int lessonID) {
-        ArrayList<Double> attempts = getQuizAttempts(lessonID);
-        if (attempts.isEmpty()) {
-            return -1.0; // No attempts made
+    public ArrayList<QuizResult> getQuizResults() {
+        ArrayList<QuizResult> results = new ArrayList<>();
+        if (quizResults != null) {
+            for (ArrayList<QuizResult> result : quizResults.values()) {
+                results.addAll(result);
+            }
         }
-        return attempts.getLast();
+        return results;
     }
 
-    public boolean hasPassedQuiz(int lessonID, double passMark) {
-        double latestScore = getLatestQuizScore(lessonID);
-        return latestScore >= passMark;
+    public QuizResult getLatestQuizResult(Quiz quiz) {
+        // Helper to get the latest attempt if needed, but logic should likely reside in controller
+        return null;
     }
 
-    public ArrayList<Certificate> getCertificates() {
-        return certificates;
+    /**
+     * Checks if the student has passed the quiz for a given lesson.
+     * @param lessonId The ID of the lesson associated with the quiz.
+     * @param threshold The passing score percentage (e.g., 60.0).
+     * @return true if any attempt for this lesson has a passing score.
+     */
+    public boolean hasPassedQuiz(int lessonId, double threshold) {
+        if (quizResults == null || !quizResults.containsKey(lessonId)) {
+            return false;
+        }
+
+        List<QuizResult> attempts = quizResults.get(lessonId);
+        for (QuizResult result : attempts) {
+            // Result should store pass status, but we can double check against threshold
+            // or rely on result.isPassed() if we trust it was set correctly.
+            // Here we calculate percentage to be safe.
+            double percentage = (double) result.getScore() / result.getMaxScore() * 100.0;
+            if (percentage >= threshold) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public void setCertificates(ArrayList<Certificate> certificates) {
-        this.certificates = certificates;
-    }
+    // --- Certificate Methods ---
 
     private boolean isCertificateIdUnique(int certificateId) {
+        if (certificates == null) return true;
         for (Certificate cert : certificates) {
             if (cert.getCertificateId() == certificateId) {
                 return false;
@@ -125,36 +170,13 @@ public class Student extends User {
         }
         return true;
     }
+
     public int generateCertificateId(){
-        id = this.id % 10000;
-        int id1;
-
+        int baseId = this.id % 10000;
+        int newId;
         do {
-            id1 = 400000000 + (id * 1000) + random.nextInt(1000);
-
-        } while (!isCertificateIdUnique(id));
-
-        return id1; }
-
-    public void addQuizAttempt (int lessonId,  QuizResult quizResult) {
-        quizResults.putIfAbsent(lessonId, new ArrayList<>());
-        quizResults.get(lessonId).add(quizResult);
+            newId = 400000000 + (baseId * 1000) + random.nextInt(1000);
+        } while (!isCertificateIdUnique(newId));
+        return newId;
     }
-
-    public ArrayList<QuizResult> getQuizResults() {
-        ArrayList<QuizResult> results = new ArrayList<>();
-        for (ArrayList<QuizResult> result: quizResults.values()) {
-            results.addAll(result);
-        }
-        return results;
-    }
-
-    public QuizResult getLatestQuizResult (Quiz quiz) {
-        ArrayList<QuizResult> attempts = quizResults.get(quiz.getQuizId());
-        if (attempts == null || attempts.isEmpty()) {
-            return null;
-        }
-        return attempts.get(attempts.size() - 1);
-    }
-
 }
