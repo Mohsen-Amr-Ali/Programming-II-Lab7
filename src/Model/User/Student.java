@@ -2,12 +2,16 @@ package Model.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import util.Certificate;
+import java.util.Random;
 
-public class Student extends User{
+public class Student extends User {
 
+    private static final Random random = new Random();
     private HashMap<Integer, ArrayList<Double>> quizScores; // Integer is quizID, Double is List of scores from attempts
     private ArrayList<Integer> enrolledCourses;
     private HashMap<Integer, ArrayList<Integer>> progress; //first integer is courseID, second integer is list of completed lessonIDs
+    private ArrayList<Certificate> certificates = new ArrayList<>();
 
     public Student(String username, String email, String passwordHash, USER_ROLE role) {
         super(username, email, passwordHash, role);
@@ -67,7 +71,7 @@ public class Student extends User{
         }
     }
 
-    public ArrayList<Integer> getCompletedLessons(int courseID){
+    public ArrayList<Integer> getCompletedLessons(int courseID) {
         // Always return the actual reference from the HashMap, or an empty list if not found
         return progress.getOrDefault(courseID, new ArrayList<>());
     }
@@ -100,4 +104,30 @@ public class Student extends User{
         return latestScore >= passMark;
     }
 
+    public ArrayList<Certificate> getCertificates() {
+        return certificates;
+    }
+
+    public void setCertificates(ArrayList<Certificate> certificates) {
+        this.certificates = certificates;
+    }
+
+    private boolean isCertificateIdUnique(int certificateId) {
+        for (Certificate cert : certificates) {
+            if (cert.getCertificateId() == certificateId) {
+                return false;
+            }
+        }
+        return true;
+    }
+    public int generateCertificateId(){
+        id = this.id % 10000;
+        int id1;
+
+        do {
+            id1 = 400000000 + (id * 1000) + random.nextInt(1000);
+
+        } while (!isCertificateIdUnique(id));
+
+        return id1; }
 }
