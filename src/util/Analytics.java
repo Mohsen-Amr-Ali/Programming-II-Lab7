@@ -20,7 +20,8 @@ public class Analytics {
         for (Lesson lesson : course.getLessons()) {
             Quiz quiz = lesson.getQuiz();
             if (quiz != null) {
-                if (!quiz.hasPassedQuiz(quiz))
+                QuizResult result = student.getLatestQuizResult(quiz);
+                if (result == null || !result.checkPassed(quiz))
                 {
                     return false;
                 }
@@ -39,12 +40,14 @@ public class Analytics {
 
         for (Lesson lesson : lessons) {
             Quiz quiz = lesson.getQuiz();
-            if (quiz != null && students.hasPassedQuiz(quiz)) {
-                passed++;
+            if (quiz != null) {
+                QuizResult result = student.getLatestQuizResult(quiz);
+                if (result != null && result.checkPassed(quiz)) {
+                    passed++;
+                }
             }
         }
 
         return (passed * 100.0) / lessons.size();
     }
-
 }
