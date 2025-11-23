@@ -13,6 +13,7 @@ public class Analytics {
 
     // instructor analytics //
 
+
     // student analytics //
     public String getQuizResult (QuizResult result) {
         return "You scored " + result.getScore() + "/" + result.getMaxScore();
@@ -39,10 +40,12 @@ public class Analytics {
         }
 
         int passed = 0;
+        int totalWithQuizzes = 0;
 
         for (Lesson lesson : lessons) {
             Quiz quiz = lesson.getQuiz();
             if (quiz != null) {
+                totalWithQuizzes++;
                 QuizResult result = student.getLatestQuizResult(quiz);
                 if (result != null && result.checkPassed(quiz)) {
                     passed++;
@@ -50,10 +53,10 @@ public class Analytics {
             }
         }
 
-        return (passed * 100.0) / lessons.size();
+        return totalWithQuizzes == 0 ? 0 : (passed * 100.0) / totalWithQuizzes; // lessons without quizzes won't affect the percentage
     }
 
-    // admin analytics
+    // admin analytics //
     public int getPendingCourseCount (ArrayList<Course> courses) {
         int pending = 0;
 
