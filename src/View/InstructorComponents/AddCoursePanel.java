@@ -4,123 +4,184 @@ import View.StyledComponents.*;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.io.File;
 
 public class AddCoursePanel {
-	private JPanel rootPanel;
-	private SLabel titleLabel;
-	private STField titleTextField;
-	private SLabel descLabel;
-	private JTextArea descTextArea;
-	private SBtn addButton;
+    private JPanel rootPanel;
 
-	public AddCoursePanel() {
-		// Theme Colors
-		Color bg = new Color(25, 25, 35);
-		Color card = new Color(40, 40, 60);
-		Color text = new Color(220, 220, 235);
-		Color accent = new Color(110, 90, 230);
+    private SLabel titleLabel;
+    private STField titleTextField;
 
-		// Instantiation
-		titleLabel = new SLabel("Course Title: ");
-		titleTextField = new STField(20);
-		descLabel = new SLabel("Course Description: ");
-		descTextArea = new JTextArea(6, 20);
-		descTextArea.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-		descTextArea.setLineWrap(true);
-		descTextArea.setWrapStyleWord(true);
-		descTextArea.setBackground(card);
-		descTextArea.setForeground(text);
-		descTextArea.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createLineBorder(accent, 1, true),
-				BorderFactory.createEmptyBorder(8, 8, 8, 8)
-		));
+    private SLabel descLabel;
+    private JTextArea descTextArea;
 
-		JScrollPane descScroll = new JScrollPane(descTextArea);
-		descScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		descScroll.setBorder(null);
-		descScroll.getViewport().setBackground(card);
+    private SLabel imageLabel;
+    private SBtn uploadImageBtn;
+    private JLabel selectedFileLabel; // Shows the name of the selected file
+    private File selectedImageFile;   // The actual file object
 
-		addButton = new SBtn("Add Course");
+    private SBtn addButton;
 
-		// Root Panel
-	rootPanel = new JPanel(new GridBagLayout());
-	rootPanel.setBackground(bg);
-	Border panelBorder = BorderFactory.createTitledBorder(
-		BorderFactory.createLineBorder(accent, 2),
-		"Add New Course",
-		TitledBorder.LEFT,
-		TitledBorder.TOP,
-		new Font("Segoe UI", Font.BOLD, 16),
-		accent
-	);
-	// Reduce outer and inner padding
-	rootPanel.setBorder(BorderFactory.createCompoundBorder(
-		BorderFactory.createEmptyBorder(8, 10, 10, 10),
-		BorderFactory.createCompoundBorder(panelBorder,
-			BorderFactory.createEmptyBorder(6, 8, 8, 8)
-		))
-	);
+    public AddCoursePanel() {
+        // --- Instantiation ---
 
-	GridBagConstraints gbc = new GridBagConstraints();
-	gbc.insets = new Insets(7, 7, 7, 7);
+        // Title
+        titleLabel = new SLabel("Course Title: ");
+        titleTextField = new STField(20);
 
-	// Row 0: Title label
-	gbc.gridx = 0; gbc.gridy = 0;
-	gbc.gridwidth = 1;
-	gbc.anchor = GridBagConstraints.WEST;
-	gbc.fill = GridBagConstraints.HORIZONTAL;
-	rootPanel.add(titleLabel, gbc);
+        // Description
+        descLabel = new SLabel("Course Description: ");
+        descTextArea = new JTextArea(6, 20);
+        descTextArea.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        descTextArea.setLineWrap(true);
+        descTextArea.setWrapStyleWord(true);
+        descTextArea.setBackground(StyleColors.CARD);
+        descTextArea.setForeground(StyleColors.TEXT);
+        descTextArea.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(StyleColors.ACCENT, 1, true),
+                BorderFactory.createEmptyBorder(8, 8, 8, 8)
+        ));
 
-	// Row 1: Title input (full width)
-	gbc.gridx = 0; gbc.gridy = 1;
-	gbc.gridwidth = 2;
-	gbc.weightx = 1.0;
-	gbc.fill = GridBagConstraints.HORIZONTAL;
-	rootPanel.add(titleTextField, gbc);
+        JScrollPane descScroll = new JScrollPane(descTextArea);
+        descScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        descScroll.setBorder(null);
+        descScroll.getViewport().setBackground(StyleColors.CARD);
 
-	// Row 2: Description label (below title)
-	gbc.gridx = 0; gbc.gridy = 2;
-	gbc.gridwidth = 2;
-	gbc.weightx = 0;
-	gbc.fill = GridBagConstraints.HORIZONTAL;
-	rootPanel.add(descLabel, gbc);
+        // Image Upload
+        imageLabel = new SLabel("Course Image: ");
+        uploadImageBtn = new SBtn("Upload Image");
+        selectedFileLabel = new SLabel("No file selected");
+        selectedFileLabel.setFont(new Font("Segoe UI", Font.ITALIC, 12));
+        selectedFileLabel.setForeground(StyleColors.TEXT.darker());
 
-	// Row 3: Description area (full width, max height)
-	gbc.gridx = 0; gbc.gridy = 3;
-	gbc.gridwidth = 2;
-	gbc.weightx = 1.0;
-	gbc.weighty = 1.0;
-	gbc.fill = GridBagConstraints.BOTH;
-	rootPanel.add(descScroll, gbc);
+        uploadImageBtn.addActionListener(e -> chooseImage());
 
-	// Row 4: Add button
-	gbc.gridx = 0; gbc.gridy = 4;
-	gbc.gridwidth = 2;
-	gbc.weightx = 0;
-	gbc.weighty = 0;
-	gbc.fill = GridBagConstraints.NONE;
-	gbc.anchor = GridBagConstraints.CENTER;
-	rootPanel.add(addButton, gbc);
-	}
+        // Add Button
+        addButton = new SBtn("Add Course");
 
-	public JPanel getRootPanel() {
-		return rootPanel;
-	}
+        // --- Root Panel Layout ---
+        rootPanel = new JPanel(new GridBagLayout());
+        rootPanel.setBackground(StyleColors.BACKGROUND);
+        Border panelBorder = BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(StyleColors.ACCENT, 2),
+                "Add New Course",
+                TitledBorder.LEFT,
+                TitledBorder.TOP,
+                new Font("Segoe UI", Font.BOLD, 16),
+                StyleColors.ACCENT
+        );
 
-	public String getTitleText() {
-		return titleTextField.getText();
-	}
+        rootPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(8, 10, 10, 10),
+                BorderFactory.createCompoundBorder(panelBorder,
+                        BorderFactory.createEmptyBorder(6, 8, 8, 8)
+                ))
+        );
 
-	public void setTitleText(String text) {
-		titleTextField.setText(text);
-	}
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(7, 7, 7, 7);
 
-	public String getDescriptionText() {
-		return descTextArea.getText();
-	}
+        // Row 0: Title label
+        gbc.gridx = 0; gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        rootPanel.add(titleLabel, gbc);
 
-	public void setDescriptionText(String text) {
-		descTextArea.setText(text);
-	}
+        // Row 1: Title input
+        gbc.gridx = 0; gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        rootPanel.add(titleTextField, gbc);
+
+        // Row 2: Description label
+        gbc.gridx = 0; gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        gbc.weightx = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        rootPanel.add(descLabel, gbc);
+
+        // Row 3: Description area
+        gbc.gridx = 0; gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        rootPanel.add(descScroll, gbc);
+
+        // Row 4: Image Upload Section
+        gbc.gridx = 0; gbc.gridy = 4;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0;
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        rootPanel.add(imageLabel, gbc);
+
+        // Panel for button and label
+        JPanel imageUploadPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        imageUploadPanel.setOpaque(false);
+        imageUploadPanel.add(uploadImageBtn);
+        imageUploadPanel.add(selectedFileLabel);
+
+        gbc.gridx = 0; gbc.gridy = 5;
+        gbc.gridwidth = 2;
+        gbc.weightx = 1.0;
+        rootPanel.add(imageUploadPanel, gbc);
+
+        // Row 6: Add button
+        gbc.gridx = 0; gbc.gridy = 6;
+        gbc.gridwidth = 2;
+        gbc.weightx = 0;
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.CENTER;
+        rootPanel.add(addButton, gbc);
+    }
+
+    private void chooseImage() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Select Course Image");
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        // Filter for images
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "jpg", "png", "jpeg", "gif");
+        fileChooser.setFileFilter(filter);
+
+        int result = fileChooser.showOpenDialog(rootPanel);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            selectedImageFile = fileChooser.getSelectedFile();
+            selectedFileLabel.setText(selectedImageFile.getName());
+            selectedFileLabel.setForeground(StyleColors.TEXT);
+        }
+    }
+
+    public JPanel getRootPanel() {
+        return rootPanel;
+    }
+
+    public String getTitleText() {
+        return titleTextField.getText();
+    }
+
+    public void setTitleText(String text) {
+        titleTextField.setText(text);
+    }
+
+    public String getDescriptionText() {
+        return descTextArea.getText();
+    }
+
+    public void setDescriptionText(String text) {
+        descTextArea.setText(text);
+    }
+
+    public File getSelectedImageFile() {
+        return selectedImageFile;
+    }
+
+    public SBtn getAddButton() {
+        return addButton;
+    }
 }

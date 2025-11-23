@@ -1,0 +1,838 @@
+\documentclass[12pt,a4paper]{article}
+
+%------------------- Packages -------------------%
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage[hidelinks]{hyperref}
+\usepackage{newtxtext,newtxmath} % Times-like (Times New Roman look)
+\usepackage{listings}
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+}
+
+
+%------------------- Page setup -------------------%
+\geometry{margin=1in}
+\setstretch{1.15}
+
+% Header and footer
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Programming II (CC272)}
+\lhead{Team Coordination — Lab 4}
+\cfoot{\thepage}
+
+% Section formatting
+\titleformat{\section}{\Large\bfseries}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection.}{0.5em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries}{\thesubsubsection.}{0.5em}{}
+
+% Slight paragraph spacing
+\setlength{\parskip}{0.6em}
+
+%------------------- Document start -------------------%
+\begin{document}
+
+%================== TITLE PAGE ==================%
+\begin{titlepage}
+    \begin{center}
+        \includegraphics[width=0.20\textwidth]{college_logo.png}\\[1cm]
+        {\Large \textbf{Alexandria University}}\\[0.4em]
+        {\large Faculty of Engineering}\\[0.2em]
+        {\large Computer and Communications Department}\\[1.8cm]
+        
+        {\Huge \textbf{Programming II (CC272)}}\\[0.6cm]
+        {\LARGE \textbf{Inventory Management System — Team Coordination Plan}}\\[1.6cm]
+        
+        \vspace{0.6cm}
+        \begin{center}
+            \textbf{Team Members:}\\[0.5em]
+            Mohsen \quad | \quad Yasser \quad | \quad MK \quad | \quad Malak\\[1.2em]
+            \textbf{Academic Year:} 2025--2026\
+        \end{center}
+
+               %================== QR Code Section ==================%
+\begin{center}
+    \href{https://github.com/Mohsen-Amr-Ali/Programming-II-Lab4}{
+        \includegraphics[width=0.3\textwidth]{qr-code.png}
+    }\\[1.5em]
+\end{center}
+        
+        \vfill
+        \textit{Alexandria University, Faculty of Engineering}\\
+        \textit{Computer and Communications Department}\\[0.6cm]
+        \rule{0.5\textwidth}{0.4pt}\\[1.5cm]
+        
+
+
+    \end{center}
+\end{titlepage}
+
+
+%================== TABLE OF CONTENTS ==================%
+\tableofcontents
+\newpage
+
+%================== PROJECT SUMMARY ==================%
+\section{Project Summary}
+This document is a team coordination plan for the Inventory Management System required in Programming II (CC272). It captures full class-level details (constructors and methods), precise data-file formats, and the division of work across four team members. The goal is to let each member work independently in Phase 1 and then integrate Phase 2 dependencies in a controlled way.
+
+\subsection*{Files and Formats}
+\begin{itemize}
+  \item \textbf{Employees.txt} — each line: \texttt{employeeId,name,email,address,phoneNumber}
+  \newline 
+        Example:
+        \texttt{E1200,Ahmed,ahmed\_1999@gmail.com,Alexandria,01088877345}
+  \item \textbf{Products.txt} — each line: \texttt{productID,productName,manufacturerName,supplierName,\newline quantity,price}  
+        Example:
+        \texttt{P2394,Laptop,Apple,TechSupplier,10,1500}
+  \item \textbf{CustomersProducts.txt} — each line: \texttt{customerSSN,productID,DD-MM-YYYY,paid}  
+        Example:
+        \texttt{7845345678,P2568,12-02-2022,true}
+\end{itemize}
+
+\subsection*{Team division rationale}
+Phase 1 assigns one independent class to each member so parallel work is possible. Phase 2 assigns dependent/database/role classes that build on Phase 1, minimizing merge conflicts and easing testing.
+
+\subsection*{Dependency overview}
+\begin{itemize}
+  \item \texttt{EmployeeUserDatabase} depends on \texttt{EmployeeUser}.
+  \item \texttt{ProductDatabase} depends on \texttt{Product}.
+  \item \texttt{CustomerProductDatabase} depends on \texttt{CustomerProduct}.
+  \item \texttt{AdminRole} uses \texttt{EmployeeUserDatabase}.
+  \item \texttt{EmployeeRole} uses \texttt{ProductDatabase} and \texttt{CustomerProductDatabase} (and may use \texttt{EmployeeUser} optionally for assigned employee).
+\end{itemize}
+
+\newpage
+
+%================== MOHSEN ==================%
+\section{Mohsen}
+
+\subsection{Phase 1 — \texttt{EmployeeUser} \quad (Constructors: 1 \; Methods: 2)}
+\textbf{Overview:} \texttt{EmployeeUser} models an employee's personal information used throughout the system. It provides CSV serialization and a search key for identification.
+
+\vspace{0.3em}
+\subsubsection*{Constructors (1)}
+\begin{itemize}
+  \item \textbf{Constructor 1:}
+    \begin{lstlisting}
+public EmployeeUser(String employeeId, String name, String email, String address, String phoneNumber)
+    \end{lstlisting}
+    \textbf{Purpose:} Initialize a new \texttt{EmployeeUser} instance with the provided fields. \texttt{employeeId} is expected to be unique in the scope of the system. Typical usage: create a model object before inserting into \texttt{EmployeeUserDatabase}.
+\end{itemize}
+
+\vspace{0.6em}
+\subsubsection*{Methods (2)}
+\begin{enumerate}
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public String lineRepresentation()
+    \end{verbatim}
+    \textbf{Behavior:} Returns a comma-separated string containing the five fields in this exact order: \texttt{employeeId,name,email,address,phoneNumber}. Use this string for writing to \texttt{Employees.txt}.  
+    \textbf{Example:}
+    \begin{lstlisting}
+EmployeeUser e = new EmployeeUser("E1200","Ahmed","ahmed_1999@gmail.com","Alexandria","01088877345");
+String line = e.lineRepresentation(); // "E1200,Ahmed,ahmed_1999@gmail.com,Alexandria,01088877345"
+    \end{lstlisting}
+
+  \item \textbf{Signature:}
+    \begin{lstlisting}
+public String getSearchKey()
+    \end{lstlisting}
+    \textbf{Behavior:} Returns the unique identifier \texttt{employeeId}. This is used by database classes to compare records when searching, deleting, or retrieving.  
+    \textbf{Example:}
+    \begin{lstlisting}
+String key = e.getSearchKey(); // "E1200"
+    \end{lstlisting}
+\end{enumerate}
+
+\bigskip
+
+\subsection{Phase 2 — \texttt{EmployeeUserDatabase} \quad (Constructors: 1 \; Methods: 8)}
+\textbf{Overview:} \texttt{EmployeeUserDatabase} manages persistence and in-memory collection of \texttt{EmployeeUser} objects. It handles reading/writing \texttt{Employees.txt} and provides CRUD-like operations on the collection.
+
+\vspace{0.3em}
+\subsubsection*{Constructors (1)}
+\begin{itemize}
+  \item \textbf{Constructor 1:}
+    \begin{verbatim}
+public EmployeeUserDatabase(String filename)
+    \end{verbatim}
+    \textbf{Purpose:} Store the filename (e.g., \texttt{"Employees.txt"}) and initialize the internal \texttt{records} list (an \texttt{ArrayList<EmployeeUser>}). After construction, call \texttt{readFromFile()} to populate records from the file.
+\end{itemize}
+
+\vspace{0.6em}
+\subsubsection*{Methods (8)}
+\begin{enumerate}
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public void readFromFile()
+    \end{verbatim}
+    \textbf{Behavior:} Open the file whose name is stored in \texttt{filename}, read each line, call \texttt{createRecordFrom(line)} to convert the line into an \texttt{EmployeeUser}, and add the object to \texttt{records}. On I/O exceptions, log or throw as per implementation policy. Trim whitespace and ignore empty lines.
+
+    \textbf{Notes:} Recommended to clear \texttt{records} before reading to avoid duplicates on repeated calls.
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public EmployeeUser createRecordFrom(String line)
+    \end{verbatim}
+    \textbf{Behavior:} Parse the input \texttt{line} by splitting on commas into five tokens: \texttt{employeeId}, \texttt{name}, \texttt{email}, \texttt{address}, \texttt{phoneNumber}. Create and return a new \texttt{EmployeeUser} with these values. If the line is malformed (wrong token count), throw or return \texttt{null} depending on chosen error policy.
+
+    \textbf{Example:}
+    \begin{lstlisting}
+EmployeeUser u = createRecordFrom("E1200,Ahmed,ahmed_1999@gmail.com,Alexandria,01088877345");
+    \end{lstlisting}
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public ArrayList<EmployeeUser> returnAllRecords()
+    \end{verbatim}
+    \textbf{Behavior:} Return a reference to the internal \texttt{records} \texttt{ArrayList}. Note whether you return a direct reference (allowing external modifications) or a shallow copy (safer). The PDF describes returning the reference.
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public boolean contains(String key)
+    \end{verbatim}
+    \textbf{Behavior:} Search \texttt{records} linearly and return \texttt{true} if an \texttt{EmployeeUser} with\newline \texttt{employeeId.equals(key)} exists, \texttt{false} otherwise.
+
+    \textbf{Complexity:} O(n) linear scan.
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public EmployeeUser getRecord(String key)
+    \end{verbatim}
+    \textbf{Behavior:} Return the \texttt{EmployeeUser} object whose \texttt{employeeId} equals \texttt{key}. If not found, return \texttt{null}.
+
+    \textbf{Example:}
+    \begin{verbatim}
+EmployeeUser e = db.getRecord("E1200");
+    \end{verbatim}
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public void insertRecord(EmployeeUser record)
+    \end{verbatim}
+    \textbf{Behavior:} Insert the provided \texttt{record} into \texttt{records}. Recommended behavior: check \texttt{contains(record.getSearchKey())} and avoid duplicates (throw or return without inserting). After insertion, the in-memory collection is updated; call \texttt{saveToFile()} when persistence is required.
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public void deleteRecord(String key)
+    \end{verbatim}
+    \textbf{Behavior:} Find the \texttt{EmployeeUser} with \texttt{employeeId == key} and remove it from \texttt{records}. If not found, do nothing or raise an informational warning. After deletion, persist with \texttt{saveToFile()} if immediate file update is desired.
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public void saveToFile()
+    \end{verbatim}
+    \textbf{Behavior:} Overwrite the existing file (stored in \texttt{filename}) with lines generated from each \texttt{EmployeeUser.lineRepresentation()} in \texttt{records}. Best practice: write to a temporary file and then rename to avoid corruption. Ensure proper newline termination and consistent encoding.
+\end{enumerate}
+
+\newpage
+
+%================== YASSER ==================%
+\section{Yasser}
+
+\subsection{Phase 1 — \texttt{Product} \quad (Constructors: 1 \; Methods: 2)}
+\textbf{Overview:} \texttt{Product} represents product metadata and inventory quantity. It serializes to a CSV line for \texttt{Products.txt} and provides the product search key.
+
+\vspace{0.3em}
+\subsubsection*{Constructors (1)}
+\begin{itemize}
+  \item \textbf{Constructor 1:}
+    \begin{lstlisting}
+public Product(String productID, String productName, String manufacturerName, String supplierName, int quantity, float price)
+    \end{lstlisting}
+    \textbf{Purpose:} Initialize a \texttt{Product} instance; \texttt{productID} must be unique. \texttt{quantity} represents available units; \texttt{price} uses float.
+\end{itemize}
+
+\vspace{0.6em}
+\subsubsection*{Methods (2) \; (excluding trivial getters/setters)}
+\begin{enumerate}
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public String lineRepresentation()
+    \end{verbatim}
+    \textbf{Behavior:} Return a CSV string: \texttt{productID,productName,manufacturerName,\newline supplierName,quantity,price}. Example:
+    \begin{verbatim}
+"P2394,Laptop,Apple,TechSupplier,10,1500"
+    \end{verbatim}
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public String getSearchKey()
+    \end{verbatim}
+    \textbf{Behavior:} Return \texttt{productID}, used for searching and indexing in \texttt{ProductDatabase}.
+\end{enumerate}
+
+\bigskip
+
+\subsection{Phase 2 — \texttt{ProductDatabase} \quad (Constructors: 1 \; Methods: 8)}
+\textbf{Overview:} \texttt{ProductDatabase} manages the in-memory collection of \texttt{Product} objects and persists them to \texttt{Products.txt}. It offers read, create, query, insert, delete and save operations.
+
+\vspace{0.3em}
+\subsubsection*{Constructors (1)}
+\begin{itemize}
+  \item \textbf{Constructor 1:}
+    \begin{verbatim}
+public ProductDatabase(String filename)
+    \end{verbatim}
+    \textbf{Purpose:} Initialize \texttt{filename} and \texttt{records} (\texttt{ArrayList<Product>}). Call \texttt{readFromFile()} to populate records.
+\end{itemize}
+
+\vspace{0.6em}
+\subsubsection*{Methods (8)}
+\begin{enumerate}
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public void readFromFile()
+    \end{verbatim}
+    \textbf{Behavior:} Read each line from the file and populate \texttt{records} via \texttt{createRecordFrom}. Handle parsing and ignore empty lines.
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public Product createRecordFrom(String line)
+    \end{verbatim}
+    \textbf{Behavior:} Parse tokens into \texttt{productID,productName,manufacturerName,\newline supplierName,quantity,price} and return a new \texttt{Product}. For malformed input, decide on error handling strategy (skip or throw).
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public ArrayList<Product> returnAllRecords()
+    \end{verbatim}
+    \textbf{Behavior:} Return reference to \texttt{records} as described in PDF.
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public boolean contains(String key)
+    \end{verbatim}
+    \textbf{Behavior:} Return true if any product has \texttt{productID.equals(key)}.
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public Product getRecord(String key)
+    \end{verbatim}
+    \textbf{Behavior:} Return matching \texttt{Product} or \texttt{null}.
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public void insertRecord(Product record)
+    \end{verbatim}
+    \textbf{Behavior:} Add product to \texttt{records} after checking uniqueness of \texttt{productID}. Recommended: if duplicate, ignore or update.
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public void deleteRecord(String key)
+    \end{verbatim}
+    \textbf{Behavior:} Remove product with id \texttt{key} from \texttt{records}.
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public void saveToFile()
+    \end{verbatim}
+    \textbf{Behavior:} Overwrite \texttt{Products.txt} with a line for each product using \texttt{lineRepresentation()}.
+\end{enumerate}
+
+\newpage
+
+%================== MK ==================%
+\section{MK}
+
+\subsection{Phase 1 — \texttt{CustomerProduct} \quad (Constructors: 1 \; Methods: 3)}
+\textbf{Overview:} \texttt{CustomerProduct} represents a single customer purchase (one product, one unit) including purchase date and paid status. It provides CSV serialization and composite search key formation.
+
+\vspace{0.3em}
+\subsubsection*{Constructors (1)}
+\begin{itemize}
+  \item \textbf{Constructor 1:}
+    \begin{verbatim}
+public CustomerProduct(String customerSSN, String productID, LocalDate purchaseDate)
+    \end{verbatim}
+    \textbf{Purpose:} Instantiate a purchase record. The field \texttt{paid} exists and can be updated with \texttt{setPaid(boolean)}; the constructor typically sets \texttt{paid} to \texttt{false} unless otherwise specified by implementation.
+\end{itemize}
+
+\vspace{0.6em}
+\subsubsection*{Methods (3) \; (excluding trivial getters/setters)}
+\begin{enumerate}
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public String lineRepresentation()
+    \end{verbatim}
+    \textbf{Behavior:} Returns a string in the format \texttt{"customerSSN,productID,DD-MM-YYYY,paid"} where \texttt{DD-MM-YYYY} represents the purchase date and \texttt{paid} is either \texttt{true} or \texttt{false}. Example:
+    \begin{verbatim}
+"7845345678,P2568,12-02-2022,true"
+    \end{verbatim}
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public boolean isPaid()
+    \end{verbatim}
+    \textbf{Behavior:} Returns the boolean value of \texttt{paid} indicating payment status.
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public String getSearchKey()
+    \end{verbatim}
+    \textbf{Behavior:} Returns a composite key string constructed as \texttt{customerSSN + "," + productID + "," + purchaseDate(formatted DD-MM-YYYY)}. This composite key is used by \texttt{CustomerProductDatabase} for lookups and deletions.
+\end{enumerate}
+
+\bigskip
+
+\subsection{Phase 2 — \texttt{CustomerProductDatabase} \quad (Constructors: 1 \; Methods: 8)}
+\textbf{Overview:} \texttt{CustomerProductDatabase} manages purchase records, reading/writing\newline \texttt{CustomersProducts.txt}, and provides query and manipulation operations around composite keys.
+
+\vspace{0.3em}
+\subsubsection*{Constructors (1)}
+\begin{itemize}
+  \item \textbf{Constructor 1:}
+    \begin{verbatim}
+public CustomerProductDatabase(String filename)
+    \end{verbatim}
+    \textbf{Purpose:} Initialize \texttt{filename} and the \texttt{records} list (ArrayList of \texttt{CustomerProduct}).
+\end{itemize}
+
+\vspace{0.6em}
+\subsubsection*{Methods (8)}
+\begin{enumerate}
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public void readFromFile()
+    \end{verbatim}
+    \textbf{Behavior:} Read all lines from the given file and populate \texttt{records} using \texttt{createRecordFrom}. Parse the date string \texttt{DD-MM-YYYY} into \texttt{LocalDate}.
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public CustomerProduct createRecordFrom(String line)
+    \end{verbatim}
+    \textbf{Behavior:} Parse a CSV line to construct a \texttt{CustomerProduct}. The input may contain the \texttt{paid} flag as the fourth token; parse it to boolean.
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public ArrayList<CustomerProduct> returnAllRecords()
+    \end{verbatim}
+    \textbf{Behavior:} Return the in-memory list of purchase records.
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public boolean contains(String key)
+    \end{verbatim}
+    \textbf{Behavior:} Key is a composite string \texttt{customerSSN+","+productID+",\newline"+purchaseDate(DD-MM-YYYY)}. Return true if a matching record exists.
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public CustomerProduct getRecord(String key)
+    \end{verbatim}
+    \textbf{Behavior:} Return the matching \texttt{CustomerProduct} or \texttt{null}.
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public void insertRecord(CustomerProduct record)
+    \end{verbatim}
+    \textbf{Behavior:} Add the record to \texttt{records}. Decide on duplicate handling policy.
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public void deleteRecord(String key)
+    \end{verbatim}
+    \textbf{Behavior:} Delete the purchase whose composite key equals \texttt{key}.
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public void saveToFile()
+    \end{verbatim}
+    \textbf{Behavior:} Overwrite the file with the CSV representation of records produced by \texttt{lineRepresentation()}.
+\end{enumerate}
+
+\newpage
+
+%================== MALAK ==================%
+\section{Malak}
+
+\subsection{Phase 1 — \texttt{AdminRole} \quad (Constructors: 1 \; Methods: 4)}
+\textbf{Overview:} \texttt{AdminRole} encapsulates administrative operations: adding/removing employees and retrieving the employee list. It uses an \texttt{EmployeeUserDatabase} instance for persistence.
+
+\vspace{0.3em}
+\subsubsection*{Constructors (1)}
+\begin{itemize}
+  \item \textbf{Constructor 1:}
+    \begin{verbatim}
+public AdminRole()
+    \end{verbatim}
+    \textbf{Purpose:} Initialize the internal \texttt{EmployeeUserDatabase} instance. The database may be constructed with default filename \texttt{"Employees.txt"} or injected via an alternate constructor (implementation choice).
+\end{itemize}
+
+\vspace{0.6em}
+\subsubsection*{Methods (4)}
+\begin{enumerate}
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public void addEmployee(String employeeId, String name, String email, String address, String phoneNumber)
+    \end{verbatim}
+    \textbf{Behavior:} Create a new \texttt{EmployeeUser} object using the constructor, call\newline \texttt{employeeUserDatabase.insertRecord(employee)}, and persist by calling \texttt{saveToFile()} if immediate persistence is desired. The method should ensure the \texttt{employeeId} is unique.
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public EmployeeUser[] getListOfEmployees()
+    \end{verbatim}
+    \textbf{Behavior:} Retrieve the list of employees from \texttt{EmployeeUserDatabase.returnAllRecords()}, convert the \texttt{ArrayList} to an array, and return it.
+
+    \textbf{Example:}
+    \begin{verbatim}
+EmployeeUser[] list = admin.getListOfEmployees();
+    \end{verbatim}
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public void removeEmployee(String key)
+    \end{verbatim}
+    \textbf{Behavior:} Use \texttt{employeeUserDatabase.deleteRecord(key)} to remove an employee by id. After deletion, save changes to file.
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public void logout()
+    \end{verbatim}
+    \textbf{Behavior:} Ensure all unsaved employee data is written to \texttt{Employees.txt} by calling \texttt{employeeUserDatabase.saveToFile()}.
+\end{enumerate}
+
+\bigskip
+
+\subsection{Phase 2 — \texttt{EmployeeRole} \quad (Constructors: 1 \; Methods: 7)}
+\textbf{Overview:} \texttt{EmployeeRole} implements employee-side workflows: adding products, performing sales, processing returns, and marking payments. It depends on \texttt{ProductDatabase} and \texttt{CustomerProductDatabase}.
+
+\vspace{0.3em}
+\subsubsection*{Constructors (1)}
+\begin{itemize}
+  \item \textbf{Constructor 1:}
+    \begin{verbatim}
+public EmployeeRole()
+    \end{verbatim}
+    \textbf{Purpose:} Initialize \texttt{productsDatabase} and \texttt{customerProductDatabase} (e.g., using \texttt{"Products.txt"} and \texttt{"CustomersProducts.txt"}), and optionally call \texttt{readFromFile()} on them to load current state.
+\end{itemize}
+
+\vspace{0.6em}
+\subsubsection*{Methods (7)}
+\begin{enumerate}
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public void addProduct(String productID, String productName, String manufacturerName, String supplierName, int quantity)
+    \end{verbatim}
+    \textbf{Behavior:} Instantiate a \texttt{Product} and insert it into the \texttt{ProductDatabase} (via \texttt{insertRecord}). Persist with \texttt{saveToFile()} if immediate persistence is required.
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public Product[] getListOfProducts()
+    \end{verbatim}
+    \textbf{Behavior:} Return an array of all products from \texttt{ProductDatabase.returnAllRecords()} (converted from \texttt{ArrayList}).
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public CustomerProduct[] getListOfPurchasingOperations()
+    \end{verbatim}
+    \textbf{Behavior:} Return an array of all purchase records from\newline \texttt{CustomerProductDatabase.returnAllRecords()}.
+
+  \item \textbf{Signature:}
+    \begin{lstlisting}
+public boolean purchaseProduct(String customerSSN, String productID, LocalDate purchaseDate)
+    \end{lstlisting}
+    \textbf{Behavior:} Attempt to purchase: check \texttt{ProductDatabase.getRecord(productID)}. If \texttt{quantity == 0}, return \texttt{false}. Otherwise:
+    \begin{enumerate}
+      \item Decrement product.quantity by 1.
+      \item Create a new \texttt{CustomerProduct(customerSSN, productID, purchaseDate)} and mark payment as appropriate (initially unpaid).
+      \item Insert the purchase into \texttt{CustomerProductDatabase}.
+      \item Persist both databases via \texttt{saveToFile()}.
+      \item Return \texttt{true}.
+    \end{enumerate}
+    \textbf{Example:} Successful purchase returns \texttt{true}; out-of-stock returns \texttt{false}.
+
+  \item \textbf{Signature:}
+    \begin{lstlisting}
+public double returnProduct(String customerSSN, String productID, LocalDate purchaseDate, LocalDate returnDate)
+    \end{lstlisting}
+    \textbf{Behavior:} Validate return request; return \texttt{-1} in any of these cases:
+    \begin{itemize}
+      \item \texttt{returnDate} is earlier than \texttt{purchaseDate}.
+      \item The product is not present in \texttt{Products.txt} (i.e., not found).
+      \item The composite purchase key (\texttt{customerSSN+","+productID+",\newline "+purchaseDate}) is not present in \texttt{CustomersProducts.txt}.
+      \item More than 14 days have elapsed between \texttt{purchaseDate} and \texttt{returnDate}.
+    \end{itemize}
+    \textbf{On success:}
+    \begin{enumerate}
+      \item Increment product.quantity by 1.
+      \item Remove the corresponding \texttt{CustomerProduct} record from\newline \texttt{CustomerProductDatabase}.
+      \item Persist both databases.
+      \item Return the \texttt{price} of the product (double/float).
+    \end{enumerate}
+
+  \item \textbf{Signature:}
+    \begin{lstlisting}
+public boolean applyPayment(String customerSSN, LocalDate purchaseDate)
+    \end{lstlisting}
+    \textbf{Behavior:} Search \texttt{CustomerProductDatabase} for the purchase that matches \texttt{customerSSN} and \texttt{purchaseDate}. If found and not already paid, set \texttt{paid = true}, save changes, and return \texttt{true}. If not found or already paid, return \texttt{false}.
+
+  \item \textbf{Signature:}
+    \begin{verbatim}
+public void logout()
+    \end{verbatim}
+    \textbf{Behavior:} Persist any unsaved changes to \texttt{Products.txt} and \texttt{CustomersProducts.txt} by calling their \texttt{saveToFile()} methods.
+\end{enumerate}
+
+\newpage
+
+%================== APPENDICES ==================%
+\section*{Appendices}
+\addcontentsline{toc}{section}{Appendices}
+
+\subsection*{Appendix A — Full Class Reference (verbatim details extracted from Lab 4)}
+\addcontentsline{toc}{subsection}{Appendix A — Full Class Reference}
+
+\subsubsection*{EmployeeUser (full)}
+\textbf{Fields (private):}
+\begin{itemize}
+  \item \texttt{String employeeId}
+  \item \texttt{String Name}
+  \item \texttt{String Email}
+  \item \texttt{String Address}
+  \item \texttt{String PhoneNumber}
+\end{itemize}
+
+\textbf{Constructor:}
+\begin{lstlisting}
+public EmployeeUser(String employeeId, String name, String email, String address, String phoneNumber)
+\end{lstlisting}
+
+\textbf{Methods (as in PDF):}
+\begin{itemize}
+  \item \texttt{public String lineRepresentation()} : returns CSV record.
+  \item \texttt{public String getSearchKey()} : returns employee id.
+\end{itemize}
+
+\bigskip
+
+\subsubsection*{EmployeeUserDatabase (full)}
+\textbf{Fields (private):}
+\begin{itemize}
+  \item \texttt{ArrayList<EmployeeUser> records}
+  \item \texttt{String filename}
+\end{itemize}
+
+\textbf{Constructor:}
+\begin{verbatim}
+public EmployeeUserDatabase(String filename)
+\end{verbatim}
+
+\textbf{Methods (as in PDF):}
+\begin{enumerate}
+  \item \texttt{public void readFromFile()}
+  \item \texttt{public EmployeeUser createRecordFrom(String line)}
+  \item \texttt{public ArrayList<EmployeeUser> returnAllRecords()}
+  \item \texttt{public boolean contains(String key)}
+  \item \texttt{public EmployeeUser getRecord(String key)}
+  \item \texttt{public void insertRecord(EmployeeUser record)}
+  \item \texttt{public void deleteRecord(String key)}
+  \item \texttt{public void saveToFile()}
+\end{enumerate}
+
+\bigskip
+
+\subsubsection*{AdminRole (full)}
+\textbf{Fields (private):}
+\begin{itemize}
+  \item \texttt{EmployeeUserDatabase database}
+\end{itemize}
+
+\textbf{Constructor:}
+\begin{verbatim}
+public AdminRole()
+\end{verbatim}
+
+\textbf{Methods (as in PDF):}
+\begin{enumerate}
+  \item \texttt{public void addEmployee(String employeeId, String name, String email, String address, String phoneNumber)}
+  \item \texttt{public EmployeeUser[] getListOfEmployees()}
+  \item \texttt{public void removeEmployee(String key)}
+  \item \texttt{public void logout()}
+\end{enumerate}
+
+\bigskip
+
+\subsubsection*{Product (full)}
+\textbf{Fields (private):}
+\begin{itemize}
+  \item \texttt{String productID}
+  \item \texttt{String productName}
+  \item \texttt{String manufacturerName}
+  \item \texttt{String supplierName}
+  \item \texttt{int quantity}
+  \item \texttt{float price}
+\end{itemize}
+
+\textbf{Constructor:}
+\begin{lstlisting}
+public Product(String productID, String productName, String manufacturerName, String supplierName, int quantity, float price)
+\end{lstlisting}
+
+\textbf{Methods (as in PDF):}
+\begin{enumerate}
+  \item \texttt{public int getQuantity()}
+  \item \texttt{public void setQuantity(int quantity)}
+  \item \texttt{public String lineRepresentation()}
+  \item \texttt{public String getSearchKey()}
+\end{enumerate}
+
+\bigskip
+
+\subsubsection*{ProductDatabase (full)}
+\textbf{Fields (private):}
+\begin{itemize}
+  \item \texttt{ArrayList<Product> records}
+  \item \texttt{String filename}
+\end{itemize}
+
+\textbf{Constructor:}
+\begin{verbatim}
+public ProductDatabase(String filename)
+\end{verbatim}
+
+\textbf{Methods (as in PDF):}
+\begin{enumerate}
+  \item \texttt{public void readFromFile()}
+  \item \texttt{public Product createRecordFrom(String line)}
+  \item \texttt{public ArrayList<Product> returnAllRecords()}
+  \item \texttt{public boolean contains(String key)}
+  \item \texttt{public Product getRecord(String key)}
+  \item \texttt{public void insertRecord(Product record)}
+  \item \texttt{public void deleteRecord(String key)}
+  \item \texttt{public void saveToFile()}
+\end{enumerate}
+
+\bigskip
+
+\subsubsection*{CustomerProduct (full)}
+\textbf{Fields (private):}
+\begin{itemize}
+  \item \texttt{String customerSSN}
+  \item \texttt{String productID}
+  \item \texttt{LocalDate purchaseDate}
+  \item \texttt{boolean paid}
+\end{itemize}
+
+\textbf{Constructor:}
+\begin{lstlisting}
+public CustomerProduct(String customerSSN, String productID, LocalDate purchaseDate)
+\end{lstlisting}
+
+\textbf{Methods (as in PDF):}
+\begin{enumerate}
+  \item \texttt{public String getCustomerSSN()}
+  \item \texttt{public String getProductID()}
+  \item \texttt{public LocalDate getPurchaseDate()}
+  \item \texttt{public String lineRepresentation()}
+  \item \texttt{public boolean isPaid()}
+  \item \texttt{public void setPaid(boolean paid)}
+  \item \texttt{public String getSearchKey()}
+\end{enumerate}
+
+\bigskip
+
+\subsubsection*{CustomerProductDatabase (full)}
+\textbf{Fields (private):}
+\begin{itemize}
+  \item \texttt{ArrayList<CustomerProduct> records}
+  \item \texttt{String filename}
+\end{itemize}
+
+\textbf{Constructor:}
+\begin{verbatim}
+public CustomerProductDatabase(String filename)
+\end{verbatim}
+
+\textbf{Methods (as in PDF):}
+\begin{enumerate}
+  \item \texttt{public void readFromFile()}
+  \item \texttt{public CustomerProduct createRecordFrom(String line)}
+  \item \texttt{public ArrayList<CustomerProduct> returnAllRecords()}
+  \item \texttt{public boolean contains(String key)}
+  \item \texttt{public CustomerProduct getRecord(String key)}
+  \item \texttt{public void insertRecord(CustomerProduct record)}
+  \item \texttt{public void deleteRecord(String key)}
+  \item \texttt{public void saveToFile()}
+\end{enumerate}
+
+\bigskip
+
+\subsubsection*{EmployeeRole (full)}
+\textbf{Fields (private):}
+\begin{itemize}
+  \item \texttt{ProductDatabase productsDatabase}
+  \item \texttt{CustomerProductDatabase customerProductDatabase}
+\end{itemize}
+
+\textbf{Constructor:}
+\begin{verbatim}
+public EmployeeRole()
+\end{verbatim}
+
+\textbf{Methods (as in PDF):}
+\begin{enumerate}
+  \item \texttt{public void addProduct(String productID, String productName,\newline String manufacturerName, String supplierName, int quantity)}
+  \item \texttt{public Product[] getListOfProducts()}
+  \item \texttt{public CustomerProduct[] getListOfPurchasingOperations()}
+  \item \texttt{public boolean purchaseProduct(String customerSSN, String productID, LocalDate purchaseDate)}
+  \item \texttt{public double returnProduct(String customerSSN, String productID,\newline LocalDate purchaseDate,LocalDate returnDate)}
+  \item \texttt{public boolean applyPayment(String customerSSN, LocalDate purchaseDate)}
+  \item \texttt{public void logout()}
+\end{enumerate}
+
+\newpage
+
+\subsection*{Appendix B — File Format Examples}
+\addcontentsline{toc}{subsection}{Appendix B — File Format Examples}
+
+\noindent\textbf{Employees.txt example:}
+\begin{verbatim}
+E1200,Ahmed,ahmed_1999@gmail.com,Alexandria,01088877345
+\end{verbatim}
+
+\noindent\textbf{Products.txt example:}
+\begin{verbatim}
+P2394,Laptop,Apple,TechSupplier,10,1500
+\end{verbatim}
+
+\noindent\textbf{CustomersProducts.txt example:}
+\begin{verbatim}
+7845345678,P2568,12-02-2022,true
+\end{verbatim}
+
+\bigskip
+
+\subsection*{Appendix C — Submission \& Policies (from Lab 4)}
+\addcontentsline{toc}{subsection}{Appendix C — Submission \& Policies}
+
+\begin{itemize}
+  \item Deliver a zipped file containing the \texttt{.java} files. Name the zip as \texttt{id1\_id2\_id3\_id4\_groupNumber} (example: \texttt{4678\_4557\_4558\_4559\_G2}).
+  \item Work in groups of four. Use GitHub throughout the lab work; submissions must be made through it.
+  \item No late submissions are allowed. Delivering a copy will be severely penalized.
+\end{itemize}
+
+\bigskip
+
+\subsection*{Appendix D — Refactoring Guidance (Part 2 hints)}
+\addcontentsline{toc}{subsection}{Appendix D — Refactoring Guidance}
+
+\begin{itemize}
+  \item Consider extracting a generic \texttt{Database<T>} interface for reading/writing records to minimize duplicated file I/O code between \texttt{EmployeeUserDatabase}, \texttt{ProductDatabase}, and \texttt{CustomerProductDatabase}.
+  \item Use inheritance or composition for shared serialization logic (e.g., an interface \texttt{LineRepresentable} with \texttt{lineRepresentation()} and \texttt{getSearchKey()} methods).
+  \item Apply exception handling and centralized logging for file I/O operations.
+  \item Use unit tests to validate parsing and the 14-day return rule (edge cases).
+\end{itemize}
+
+%================== END ==================%
+\end{document}

@@ -17,6 +17,8 @@ public class InstructorNavBar extends JPanel {
         this.instructor = instructor;
         setLayout(new BorderLayout(0, 8));
         setBackground(StyleColors.BACKGROUND);
+
+        // Matches StudentNavBar Styling exactly
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createEmptyBorder(15, 17, 17, 17),
                 BorderFactory.createCompoundBorder(

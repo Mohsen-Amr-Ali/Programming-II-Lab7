@@ -1,4 +1,5 @@
-package Model.Course; ////YASSER'S TERRITORY
+package Model.Course;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -13,8 +14,8 @@ public class Course {
     private COURSE_STATUS status;
 
     private static final Random random = new Random();
-//                                              CONSTRUCTOR
 
+    // CONSTRUCTOR
     public Course(int courseId, String title, String description, int instructorId) {
         this.courseId = courseId;
         this.title = title;
@@ -23,70 +24,44 @@ public class Course {
         this.lessons = new ArrayList<>();
         this.students = new ArrayList<>();
     }
-//                                              GETTERS AND SETTERS
 
-    public int getCourseId() {
-        return courseId;
-    }
+    // GETTERS AND SETTERS
+    public int getCourseId() { return courseId; }
+    public void setCourseId(int courseId) { this.courseId = courseId; }
 
-    public void setCourseId(int courseId) {
-        this.courseId = courseId;
-    }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
 
-    public String getTitle() {
-        return title;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    public int getInstructorId() { return instructorId; }
+    public void setInstructorId(int instructorId) { this.instructorId = instructorId; }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public int getInstructorId() {
-        return instructorId;
-    }
-
-    public void setInstructorId(int instructorId) {
-        this.instructorId = instructorId;
-    }
-
-    public ArrayList<Lesson> getLessons() {
-        return lessons;
-    }
-
+    public ArrayList<Lesson> getLessons() { return lessons; }
     public void setLessons(ArrayList<Lesson> lessons) {
         this.lessons = lessons != null ? lessons : new ArrayList<>();
     }
-    public ArrayList<Integer> getStudents() {
-        return students;
-    }
+
+    public ArrayList<Integer> getStudents() { return students; }
     public void setStudents(ArrayList<Integer> students) {
         this.students = students != null ? students : new ArrayList<>();
     }
 
-    public COURSE_STATUS getStatus(){
-        return status;
-    }
+    public COURSE_STATUS getStatus() { return status; }
+    public void setStatus(COURSE_STATUS status) { this.status = status; }
 
-    public void setStatus(COURSE_STATUS status){
-        this.status = status;
-    }
+    // METHODS
 
-    //                                              METHODS
-    
-    private int generateLessonId(){
-        courseId = this.courseId % 10000;
+    private int generateLessonId() {
+        // FIX: Do NOT modify this.courseId directly! Use a local variable.
+        // We want the last 4 digits for the lesson generation logic.
+        int shortId = this.courseId % 10000;
         int id;
 
         do {
-            id = 500000000 + (courseId * 1000) + random.nextInt(1000);
+            // Use the local shortId variable
+            id = 500000000 + (shortId * 1000) + random.nextInt(1000);
         } while (!isLessonIdUnique(id));
 
         return id;
@@ -129,11 +104,19 @@ public class Course {
         }
         return false;
     }
-    
+
     public void dropStudent(Integer studentId) {
         this.students.remove(studentId);
     }
     public void enrollStudent(Integer studentId) {
         this.students.add(studentId);
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    public String getImagePath() {
+        return imagePath;
     }
 }

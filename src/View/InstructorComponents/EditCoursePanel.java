@@ -1,6 +1,12 @@
 package View.InstructorComponents;
 
 import Model.Course.Course;
+import View.StyledComponents.SOptionPane;
+import View.StyledComponents.StyleColors;
+
+import javax.swing.*;
+import java.awt.event.ActionListener;
+import java.io.File;
 
 public class EditCoursePanel extends AddCoursePanel {
     private Course course;
@@ -8,9 +14,45 @@ public class EditCoursePanel extends AddCoursePanel {
     public EditCoursePanel(Course course) {
         super();
         this.course = course;
-        // Pre-fill the fields with course data
+
+        // 1. Pre-fill Title
         setTitleText(course.getTitle());
+
+        // 2. Pre-fill Description
+        // Description is plain text, so set it directly.
         setDescriptionText(course.getDescription());
+
+        // 3. Pre-fill Image Label (Visual indicator logic would go here)
+        // String imgPath = course.getImagePath();
+        // if (imgPath != null && !imgPath.isEmpty()) { ... }
+
+        // 4. Update Button Text
+        getAddButton().setText("Save Changes");
+    }
+
+    /**
+     * Adds an action listener to the Save button that triggers a warning dialog first.
+     * @param saveAction The controller action to execute if user confirms.
+     */
+    public void addSaveListener(ActionListener saveAction) {
+        // Remove existing listeners from parent init (which handles 'Add')
+        for (ActionListener al : getAddButton().getActionListeners()) {
+            getAddButton().removeActionListener(al);
+        }
+
+        getAddButton().addActionListener(e -> {
+            int result = SOptionPane.showConfirmDialog(
+                    getRootPanel(),
+                    "<html>Warning: Saving changes will update the course details permanently.<br>" +
+                            "Are you sure you want to continue?</html>",
+                    "Confirm Save",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (result == JOptionPane.YES_OPTION) {
+                saveAction.actionPerformed(e);
+            }
+        });
     }
 
     public Course getCourse() {

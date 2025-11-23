@@ -21,7 +21,7 @@
     },
     "username": "Alice",
     "id": 900001,
-    "role": "student",
+    "role": "STUDENT",
     "email": "alice@test.com",
     "hashed_password": "ecd71870d1963316a97e3ac3408c9835ad8cf0f3c1bc703527c30265534f75ae"
   },
@@ -44,7 +44,7 @@
     },
     "username": "Bob",
     "id": 900002,
-    "role": "student",
+    "role": "STUDENT",
     "email": "bob@test.com",
     "hashed_password": "ecd71870d1963316a97e3ac3408c9835ad8cf0f3c1bc703527c30265534f75ae"
   },
@@ -59,7 +59,7 @@
     },
     "username": "Charlie",
     "id": 900003,
-    "role": "student",
+    "role": "STUDENT",
     "email": "charlie@test.com",
     "hashed_password": "ecd71870d1963316a97e3ac3408c9835ad8cf0f3c1bc703527c30265534f75ae"
   },
@@ -76,7 +76,7 @@
     },
     "username": "Ahmed Yasser",
     "id": 904683,
-    "role": "student",
+    "role": "STUDENT",
     "email": "test4@test.com",
     "hashed_password": "8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e"
   },
@@ -87,7 +87,7 @@
     ],
     "username": "Dr. Smith",
     "id": 100001,
-    "role": "instructor",
+    "role": "INSTRUCTOR",
     "email": "smith@test.com",
     "hashed_password": "ecd71870d1963316a97e3ac3408c9835ad8cf0f3c1bc703527c30265534f75ae"
   },
@@ -99,7 +99,7 @@
     ],
     "username": "Prof. Jones",
     "id": 100002,
-    "role": "instructor",
+    "role": "INSTRUCTOR",
     "email": "jones@test.com",
     "hashed_password": "ecd71870d1963316a97e3ac3408c9835ad8cf0f3c1bc703527c30265534f75ae"
   },
@@ -107,7 +107,7 @@
     "createdCourses": [],
     "username": "Mohsen",
     "id": 101072,
-    "role": "instructor",
+    "role": "INSTRUCTOR",
     "email": "test@test.com",
     "hashed_password": "7f2a11755bcca294a54bb99fe2ded9f35dd4981ab0d1ed4481d9bf48fa892955"
   },
@@ -115,8 +115,18 @@
     "createdCourses": [],
     "username": "Mohsen",
     "id": 104282,
-    "role": "instructor",
+    "role": "INSTRUCTOR",
     "email": "test1@test.com",
+    "hashed_password": "8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e"
+  },
+  {
+    "createdCourses": [
+      703957
+    ],
+    "username": "Mohsen Amr",
+    "id": 100461,
+    "role": "INSTRUCTOR",
+    "email": "mohsenium@instructor.com",
     "hashed_password": "8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e"
   }
 ]

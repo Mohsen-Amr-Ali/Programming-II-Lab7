@@ -210,5 +210,34 @@
       900001,
       900001
     ]
+  },
+  {
+    "courseId": 703957,
+    "title": "Intro to Latex I guess",
+    "description": "Lorem Ipsum some text lol",
+    "instructorId": 100461,
+    "lessons": [
+      {
+        "lessonId": 503957950,
+        "courseId": 0,
+        "title": "Lesson 1",
+        "content": "Database/Assets/Course_703957/Lesson_503957950"
+      },
+      {
+        "lessonId": 503957388,
+        "courseId": 0,
+        "title": "Lesson to be editted",
+        "content": "Database/Assets/Course_703957/Lesson_503957388"
+      },
+      {
+        "lessonId": 503957477,
+        "courseId": 0,
+        "title": "Lesson number 2",
+        "content": "Database/Assets/Course_703957/Lesson_503957477"
+      }
+    ],
+    "students": [],
+    "imagePath": "Database/Assets/Default_Img.png",
+    "status": "PENDING"
   }
 ]

@@ -3,6 +3,7 @@ package View;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.Box;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -21,15 +23,13 @@ import Controller.CourseController;
 import Controller.StudentController;
 import Model.Course.Course;
 import Model.Course.Lesson;
+import Model.Course.COURSE_STATUS;
 import Model.User.Student;
 import View.CommonComponents.CourseCard;
 import View.CommonComponents.CourseOverviewPanel;
 import View.CommonComponents.LessonCard;
 import View.CommonComponents.LessonViewPanel;
-import View.StyledComponents.SBtn;
-import View.StyledComponents.SLabel;
-import View.StyledComponents.SOptionPane;
-import View.StyledComponents.StyleColors;
+import View.StyledComponents.*;
 import View.StudentDashboardComponents.StudentNavBar;
 
 public class StudentDashboardFrame extends JFrame {
@@ -52,7 +52,7 @@ public class StudentDashboardFrame extends JFrame {
         this.studentController = new StudentController();
         this.courseController = new CourseController();
 
-        setTitle("Student Dashboard");
+        setTitle("Student Dashboard - SkillForge");
         setSize(1200, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -71,10 +71,10 @@ public class StudentDashboardFrame extends JFrame {
     public void setLogoutListener(Runnable logoutAction) {
         navBar.getLogoutBtn().addActionListener(e -> {
             int result = SOptionPane.showConfirmDialog(
-                StudentDashboardFrame.this,
-                "Are you sure you want to exit?",
-                "Logout",
-                JOptionPane.YES_NO_OPTION
+                    StudentDashboardFrame.this,
+                    "Are you sure you want to exit?",
+                    "Logout",
+                    JOptionPane.YES_NO_OPTION
             );
             if (result == JOptionPane.YES_OPTION) {
                 logoutAction.run();
@@ -85,30 +85,26 @@ public class StudentDashboardFrame extends JFrame {
     private void createMainPanel() {
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(StyleColors.BACKGROUND);
+
         navBar = new StudentNavBar(student);
         mainPanel.add(navBar, BorderLayout.NORTH);
 
+        // --- Course Lists ---
         courseCardsPanel = new JPanel();
         courseCardsPanel.setLayout(new BoxLayout(courseCardsPanel, BoxLayout.Y_AXIS));
         courseCardsPanel.setBackground(StyleColors.BACKGROUND);
         courseCardsPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        
-        JScrollPane enrolledScrollPane = new JScrollPane(courseCardsPanel);
-        enrolledScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        enrolledScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        enrolledScrollPane.setBorder(null);
-        enrolledScrollPane.getViewport().setBackground(StyleColors.BACKGROUND);
+
+        // Use SScrollPane
+        SScrollPane enrolledScrollPane = new SScrollPane(courseCardsPanel);
 
         availableCoursesPanel = new JPanel();
         availableCoursesPanel.setLayout(new BoxLayout(availableCoursesPanel, BoxLayout.Y_AXIS));
         availableCoursesPanel.setBackground(StyleColors.BACKGROUND);
         availableCoursesPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        
-        JScrollPane availableScrollPane = new JScrollPane(availableCoursesPanel);
-        availableScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        availableScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        availableScrollPane.setBorder(null);
-        availableScrollPane.getViewport().setBackground(StyleColors.BACKGROUND);
+
+        // Use SScrollPane
+        SScrollPane availableScrollPane = new SScrollPane(availableCoursesPanel);
 
         CardLayout coursesCardLayout = new CardLayout();
         JPanel coursesContainer = new JPanel(coursesCardLayout);
@@ -118,6 +114,7 @@ public class StudentDashboardFrame extends JFrame {
 
         mainPanel.add(coursesContainer, BorderLayout.CENTER);
 
+        // Listeners
         navBar.addEnrolledCoursesButtonListener(e -> {
             coursesCardLayout.show(coursesContainer, "Enrolled");
             navBar.clearSearchText();
@@ -136,7 +133,7 @@ public class StudentDashboardFrame extends JFrame {
                 loadAvailableCourses();
                 return;
             }
-            
+
             // Determine which panel is visible
             if (courseCardsPanel.isShowing()) {
                 ArrayList<Course> enrolledCourses = studentController.getEnrolledCourses(student.getId());
@@ -147,6 +144,7 @@ public class StudentDashboardFrame extends JFrame {
                 ArrayList<Integer> enrolledCourseIds = student.getEnrolledCoursesIDs();
                 ArrayList<Course> availableCourses = allCourses.stream()
                         .filter(course -> !enrolledCourseIds.contains(course.getCourseId()))
+                        .filter(course -> course.getStatus() == COURSE_STATUS.APPROVED) // Filter Approved
                         .collect(Collectors.toCollection(ArrayList::new));
                 ArrayList<Course> searchResults = courseController.getCourseByTitle(availableCourses, searchText.toLowerCase());
                 loadCoursesToPanel(availableCoursesPanel, searchResults, false);
@@ -159,17 +157,17 @@ public class StudentDashboardFrame extends JFrame {
 
     private void loadCoursesToPanel(JPanel panel, ArrayList<Course> courses, boolean isEnrolled) {
         panel.removeAll();
-        
+
         if (courses.isEmpty()) {
             JPanel noResultsPanel = new JPanel(new BorderLayout());
             noResultsPanel.setBackground(StyleColors.BACKGROUND);
             noResultsPanel.setBorder(BorderFactory.createEmptyBorder(50, 20, 20, 20));
-            
+
             SLabel noResultsLabel = new SLabel("No results found");
             noResultsLabel.setFont(noResultsLabel.getFont().deriveFont(18f).deriveFont(java.awt.Font.BOLD));
             noResultsLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
             noResultsPanel.add(noResultsLabel, BorderLayout.CENTER);
-            
+
             panel.add(noResultsPanel);
         } else {
             for (Course course : courses) {
@@ -177,6 +175,7 @@ public class StudentDashboardFrame extends JFrame {
                 if (isEnrolled) {
                     int completedLessons = studentController.getCompletedLessons(student.getId(), course.getCourseId()).size();
                     card = new CourseCard(course, completedLessons, course.getLessons().size());
+
                     card.addMouseListener(new java.awt.event.MouseAdapter() {
                         public void mouseClicked(java.awt.event.MouseEvent evt) {
                             showCourseView(course);
@@ -190,9 +189,10 @@ public class StudentDashboardFrame extends JFrame {
                         }
                     });
                 }
-                card.setMaximumSize(new Dimension(Integer.MAX_VALUE, card.getPreferredSize().height));
+                // Fixed Height for Consistency
+                card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
                 panel.add(card);
-                panel.add(javax.swing.Box.createRigidArea(new Dimension(0, 10)));
+                panel.add(Box.createRigidArea(new Dimension(0, 10)));
             }
         }
         panel.revalidate();
@@ -209,9 +209,12 @@ public class StudentDashboardFrame extends JFrame {
         ArrayList<Integer> enrolledCourseIds = student.getEnrolledCoursesIDs();
         ArrayList<Course> availableCoursesList = allCourses.stream()
                 .filter(course -> !enrolledCourseIds.contains(course.getCourseId()))
+                .filter(course -> course.getStatus() == COURSE_STATUS.APPROVED) // Filter Approved
                 .collect(Collectors.toCollection(ArrayList::new));
         loadCoursesToPanel(availableCoursesPanel, availableCoursesList, false);
     }
+
+    // --- COURSE VIEW ---
 
     private void showCourseView(Course course) {
         JPanel courseViewPanel = new JPanel(new BorderLayout());
@@ -262,8 +265,7 @@ public class StudentDashboardFrame extends JFrame {
         JPanel lessonsPanel = new JPanel();
         lessonsPanel.setLayout(new BoxLayout(lessonsPanel, BoxLayout.Y_AXIS));
         lessonsPanel.setBackground(StyleColors.BACKGROUND);
-        lessonsPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
-        
+
         java.util.List<Lesson> lessons = course.getLessons();
         for (int i = 0; i < lessons.size(); i++) {
             Lesson lesson = lessons.get(i);
@@ -284,18 +286,15 @@ public class StudentDashboardFrame extends JFrame {
                     showLessonView(course, lessonIndex);
                 }
             });
-            lessonCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, lessonCard.getPreferredSize().height));
+            lessonCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
             lessonsPanel.add(lessonCard);
             if (i < lessons.size() - 1) {
-                lessonsPanel.add(javax.swing.Box.createRigidArea(new Dimension(0, 8)));
+                lessonsPanel.add(Box.createRigidArea(new Dimension(0, 8)));
             }
         }
-        
-        JScrollPane lessonsScrollPane = new JScrollPane(lessonsPanel);
-        lessonsScrollPane.setBorder(null);
-        lessonsScrollPane.getViewport().setBackground(StyleColors.BACKGROUND);
-        lessonsScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        lessonsScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        // Use SScrollPane for lessons
+        SScrollPane lessonsScrollPane = new SScrollPane(lessonsPanel);
         lessonsContainer.add(lessonsScrollPane, BorderLayout.CENTER);
 
         sidePanel.add(lessonsContainer, BorderLayout.CENTER);
@@ -317,10 +316,10 @@ public class StudentDashboardFrame extends JFrame {
         dropButton.setBackground(new Color(220, 53, 69));
         dropButton.addActionListener(e -> {
             int result = SOptionPane.showConfirmDialog(
-                StudentDashboardFrame.this,
-                "Are you sure you want to drop this course?\nAll current progress will be lost.",
-                "Drop Course",
-                JOptionPane.YES_NO_OPTION
+                    StudentDashboardFrame.this,
+                    "Are you sure you want to drop this course?\nAll current progress will be lost.",
+                    "Drop Course",
+                    JOptionPane.YES_NO_OPTION
             );
             if (result == JOptionPane.YES_OPTION) {
                 studentController.dropCourse(student.getId(), course.getCourseId());
@@ -335,10 +334,9 @@ public class StudentDashboardFrame extends JFrame {
         buttonsPanel.add(dropButton);
         sidePanel.add(buttonsPanel, BorderLayout.SOUTH);
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, courseViewPanel, sidePanel);
+        // Use SSplitPane
+        SSplitPane splitPane = new SSplitPane(JSplitPane.HORIZONTAL_SPLIT, courseViewPanel, sidePanel);
         splitPane.setDividerLocation(700);
-        splitPane.setBackground(StyleColors.BACKGROUND);
-        splitPane.setBorder(null);
 
         add(splitPane, COURSE_VIEW_PANEL);
         cardLayout.show(getContentPane(), COURSE_VIEW_PANEL);
@@ -368,24 +366,19 @@ public class StudentDashboardFrame extends JFrame {
         JPanel lessonsPanel = new JPanel();
         lessonsPanel.setLayout(new BoxLayout(lessonsPanel, BoxLayout.Y_AXIS));
         lessonsPanel.setBackground(StyleColors.BACKGROUND);
-        lessonsPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
-        
+
         java.util.List<Lesson> lessons = course.getLessons();
         for (int i = 0; i < lessons.size(); i++) {
             Lesson lesson = lessons.get(i);
             LessonCard lessonCard = new LessonCard(i + 1, lesson);
-            lessonCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, lessonCard.getPreferredSize().height));
+            lessonCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
             lessonsPanel.add(lessonCard);
             if (i < lessons.size() - 1) {
-                lessonsPanel.add(javax.swing.Box.createRigidArea(new Dimension(0, 8)));
+                lessonsPanel.add(Box.createRigidArea(new Dimension(0, 8)));
             }
         }
-        
-        JScrollPane lessonsScrollPane = new JScrollPane(lessonsPanel);
-        lessonsScrollPane.setBorder(null);
-        lessonsScrollPane.getViewport().setBackground(StyleColors.BACKGROUND);
-        lessonsScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        lessonsScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        SScrollPane lessonsScrollPane = new SScrollPane(lessonsPanel);
         lessonsContainer.add(lessonsScrollPane, BorderLayout.CENTER);
 
         sidePanel.add(lessonsContainer, BorderLayout.CENTER);
@@ -417,10 +410,8 @@ public class StudentDashboardFrame extends JFrame {
         buttonsPanel.add(enrollButton);
         sidePanel.add(buttonsPanel, BorderLayout.SOUTH);
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, courseViewPanel, sidePanel);
+        SSplitPane splitPane = new SSplitPane(JSplitPane.HORIZONTAL_SPLIT, courseViewPanel, sidePanel);
         splitPane.setDividerLocation(700);
-        splitPane.setBackground(StyleColors.BACKGROUND);
-        splitPane.setBorder(null);
 
         add(splitPane, COURSE_VIEW_PANEL);
         cardLayout.show(getContentPane(), COURSE_VIEW_PANEL);
@@ -473,10 +464,10 @@ public class StudentDashboardFrame extends JFrame {
                 showLessonView(course, lessonIndex + 1);
             } else {
                 SOptionPane.showMessageDialog(
-                    StudentDashboardFrame.this,
-                    "Congratulations! You've completed all lessons in this course.",
-                    "Course Complete",
-                    JOptionPane.INFORMATION_MESSAGE
+                        StudentDashboardFrame.this,
+                        "Congratulations! You've completed all lessons in this course.",
+                        "Course Complete",
+                        JOptionPane.INFORMATION_MESSAGE
                 );
                 getContentPane().remove(1);
                 showCourseView(course);
@@ -484,20 +475,18 @@ public class StudentDashboardFrame extends JFrame {
         });
 
         buttonsPanel.add(backButton);
-        buttonsPanel.add(javax.swing.Box.createRigidArea(new Dimension(0, 10)));
+        buttonsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         buttonsPanel.add(homeButton);
-        buttonsPanel.add(javax.swing.Box.createRigidArea(new Dimension(0, 10)));
+        buttonsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         buttonsPanel.add(nextButton);
-        
+
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setBackground(StyleColors.BACKGROUND);
         bottomPanel.add(buttonsPanel, BorderLayout.NORTH);
         leftPanel.add(bottomPanel, BorderLayout.SOUTH);
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
+        SSplitPane splitPane = new SSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
         splitPane.setDividerLocation(800);
-        splitPane.setBackground(StyleColors.BACKGROUND);
-        splitPane.setBorder(null);
 
         add(splitPane, LESSON_VIEW_PANEL);
         cardLayout.show(getContentPane(), LESSON_VIEW_PANEL);
@@ -510,7 +499,7 @@ public class StudentDashboardFrame extends JFrame {
 
         // Unclickable CourseCard at the top
         CourseCard courseCard = new CourseCard(course);
-        courseCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, courseCard.getPreferredSize().height));
+        courseCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
         sidePanel.add(courseCard, BorderLayout.NORTH);
 
         JPanel centerPanel = new JPanel(new BorderLayout());
@@ -553,8 +542,7 @@ public class StudentDashboardFrame extends JFrame {
         JPanel lessonsPanel = new JPanel();
         lessonsPanel.setLayout(new BoxLayout(lessonsPanel, BoxLayout.Y_AXIS));
         lessonsPanel.setBackground(StyleColors.BACKGROUND);
-        lessonsPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
-        
+
         java.util.List<Lesson> lessons = course.getLessons();
         for (int i = 0; i < lessons.size(); i++) {
             Lesson lesson = lessons.get(i);
@@ -575,18 +563,14 @@ public class StudentDashboardFrame extends JFrame {
                     showLessonView(course, lessonIndex);
                 }
             });
-            lessonCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, lessonCard.getPreferredSize().height));
+            lessonCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
             lessonsPanel.add(lessonCard);
             if (i < lessons.size() - 1) {
-                lessonsPanel.add(javax.swing.Box.createRigidArea(new Dimension(0, 8)));
+                lessonsPanel.add(Box.createRigidArea(new Dimension(0, 8)));
             }
         }
-        
-        JScrollPane lessonsScrollPane = new JScrollPane(lessonsPanel);
-        lessonsScrollPane.setBorder(null);
-        lessonsScrollPane.getViewport().setBackground(StyleColors.BACKGROUND);
-        lessonsScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        lessonsScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        SScrollPane lessonsScrollPane = new SScrollPane(lessonsPanel);
         lessonsContainer.add(lessonsScrollPane, BorderLayout.CENTER);
 
         centerPanel.add(lessonsContainer, BorderLayout.CENTER);

@@ -1,9 +1,7 @@
 package View.StudentDashboardComponents;
 
 import Model.User.Student;
-import View.StyledComponents.SBtn;
-import View.StyledComponents.STField;
-import View.StyledComponents.StyleColors;
+import View.StyledComponents.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,6 +18,8 @@ public class StudentNavBar extends JPanel {
         this.student = student;
         setLayout(new BorderLayout(0, 8));
         setBackground(StyleColors.BACKGROUND);
+
+        // Consistent styling with InstructorNavBar
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createEmptyBorder(15, 17, 17, 17),
                 BorderFactory.createCompoundBorder(
@@ -89,39 +89,29 @@ public class StudentNavBar extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 0.5;
+        gbc.weightx = 0;
         gbc.weighty = 0;
 
-        // Enrolled Courses button (left half)
+        // Enrolled Courses button
         enrolledCoursesBtn = new SBtn("Enrolled Courses");
         gbc.gridx = 0;
         gbc.gridy = 0;
         lowerPanel.add(enrolledCoursesBtn, gbc);
 
-        // Available Courses button (right half)
+        // Available Courses button
         availableCoursesBtn = new SBtn("Available Courses");
-        gbc.gridx = 2;
+        gbc.gridx = 1;
         gbc.gridy = 0;
         lowerPanel.add(availableCoursesBtn, gbc);
 
-        // Search field (spans most of the width)
+        // Search field (spans remaining width)
         searchField = new STField("Search courses...");
-        
-        // Add mouse listener to clear placeholder on click
-        searchField.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent e) {
-                if (searchField.getText().startsWith("Search courses...")) {
-                    searchField.setText("");
-                }
-            }
-        });
-        
-        // Add focus listener to clear placeholder on focus
+
+        // Add focus listener logic for placeholder
         searchField.addFocusListener(new java.awt.event.FocusAdapter() {
             @Override
             public void focusGained(java.awt.event.FocusEvent e) {
-                if (searchField.getText().startsWith("Search courses...")) {
+                if (searchField.getText().equals("Search courses...")) {
                     searchField.setText("");
                 }
             }
@@ -132,44 +122,28 @@ public class StudentNavBar extends JPanel {
                 }
             }
         });
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 3;
-        gbc.weightx = 1.0;
+
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0; // Takes up remaining space
         lowerPanel.add(searchField, gbc);
 
         // Search button (to the right of search field)
         searchBtn = new SBtn("Search");
         gbc.gridx = 3;
-        gbc.gridy = 1;
-        gbc.gridwidth = 1;
+        gbc.gridy = 0;
         gbc.weightx = 0;
-        gbc.fill = GridBagConstraints.VERTICAL;
         lowerPanel.add(searchBtn, gbc);
 
         return lowerPanel;
     }
 
-    // Getter methods for buttons and search field to add action listeners
-    public SBtn getEnrolledCoursesBtn() {
-        return enrolledCoursesBtn;
-    }
-
-    public SBtn getAvailableCoursesBtn() {
-        return availableCoursesBtn;
-    }
-
-    public STField getSearchField() {
-        return searchField;
-    }
-
-    public SBtn getSearchBtn() {
-        return searchBtn;
-    }
-
-    public SBtn getLogoutBtn() {
-        return logoutBtn;
-    }
+    // Getter methods and listeners
+    public SBtn getEnrolledCoursesBtn() { return enrolledCoursesBtn; }
+    public SBtn getAvailableCoursesBtn() { return availableCoursesBtn; }
+    public STField getSearchField() { return searchField; }
+    public SBtn getSearchBtn() { return searchBtn; }
+    public SBtn getLogoutBtn() { return logoutBtn; }
 
     public void addEnrolledCoursesButtonListener(java.awt.event.ActionListener listener) {
         enrolledCoursesBtn.addActionListener(listener);
@@ -192,8 +166,6 @@ public class StudentNavBar extends JPanel {
     }
 
     public void clearSearchText() {
-        searchField.setText("");
-        searchField.requestFocus();
         searchField.setText("Search courses...");
     }
 
