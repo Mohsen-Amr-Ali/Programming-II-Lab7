@@ -1,6 +1,7 @@
 package util;
 
 import java.time.LocalDateTime;
+import Model.Course.Quiz;
 
 public class QuizResult {
 
@@ -38,11 +39,11 @@ public class QuizResult {
         this.attemptDate = attemptDate;
     }
 
-    public boolean isPassed() {
-        return passed;
+    public boolean checkPassed(Quiz quiz) {
+        double ratio = (double) score / maxScore;
+        boolean result = ratio >= quiz.getPassThreshold();
+        this.passed = result;
+        return result;
     }
 
-    public void setPassed(boolean passed) {
-        this.passed = passed;
-    }
 }

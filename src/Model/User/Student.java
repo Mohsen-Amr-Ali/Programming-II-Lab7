@@ -2,6 +2,8 @@ package Model.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import Model.Course.Quiz;
 import util.Certificate;
 import util.QuizResult;
 
@@ -146,4 +148,13 @@ public class Student extends User {
         }
         return results;
     }
+
+    public QuizResult getLatestQuizResult (Quiz quiz) {
+        ArrayList<QuizResult> attempts = quizResults.get(quiz.getQuizId());
+        if (attempts == null || attempts.isEmpty()) {
+            return null;
+        }
+        return attempts.get(attempts.size() - 1);
+    }
+
 }
