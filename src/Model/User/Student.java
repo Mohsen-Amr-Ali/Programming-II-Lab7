@@ -3,6 +3,8 @@ package Model.User;
 import java.util.ArrayList;
 import java.util.HashMap;
 import util.Certificate;
+import util.QuizResult;
+
 import java.util.Random;
 
 public class Student extends User {
@@ -12,6 +14,7 @@ public class Student extends User {
     private ArrayList<Integer> enrolledCourses;
     private HashMap<Integer, ArrayList<Integer>> progress; //first integer is courseID, second integer is list of completed lessonIDs
     private ArrayList<Certificate> certificates = new ArrayList<>();
+    private HashMap<Integer, ArrayList<QuizResult>> quizResults;
 
     public Student(String username, String email, String passwordHash, USER_ROLE role) {
         super(username, email, passwordHash, role);
@@ -130,4 +133,17 @@ public class Student extends User {
         } while (!isCertificateIdUnique(id));
 
         return id1; }
+
+    public void addQuizAttempt (int lessonId,  QuizResult quizResult) {
+        quizResults.putIfAbsent(lessonId, new ArrayList<>());
+        quizResults.get(lessonId).add(quizResult);
+    }
+
+    public ArrayList<QuizResult> getQuizResults() {
+        ArrayList<QuizResult> results = new ArrayList<>();
+        for (ArrayList<QuizResult> result: quizResults.values()) {
+            results.addAll(result);
+        }
+        return results;
+    }
 }
