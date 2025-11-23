@@ -23,7 +23,7 @@ public class InstructorController {
         Instructor instructor = (Instructor) dbManager.getUserById(instructorId);
         ArrayList<Course> createdCourses = new ArrayList<>();
         if (instructor != null) {
-            for (Integer courseId : instructor.getCreatedCourses()) {
+            for (int courseId : instructor.getCreatedCourses()) {
                 Course c = dbManager.getCourseById(courseId);
                 if (c != null) {
                     createdCourses.add(c);

@@ -2,6 +2,7 @@ package View.CommonComponents;
 
 import Controller.CourseController;
 import Model.Course.Course;
+import Model.Course.COURSE_STATUS;
 import View.StyledComponents.SCoursePanel;
 import View.StyledComponents.StyleColors;
 
@@ -17,70 +18,26 @@ public class CourseCard extends SCoursePanel {
     private JLabel instructorLabel;
     private JLabel progressLabel;
     private JLabel percentLabel;
+    private JLabel statusLabel;
 
-    // Fixed size for the course thumbnail
-    private static final int IMG_WIDTH = 120;
-    private static final int IMG_HEIGHT = 90;
+    private static final int IMG_WIDTH = 150;
+    private static final int IMG_HEIGHT = 100;
 
     // Basic constructor: title and instructor
     public CourseCard(Course course) {
-        String instructorName = new CourseController().getInstructorName(course.getInstructorId());
-        setLayout(new BorderLayout(15, 0)); // Gap between image and text
-        setBackground(StyleColors.BACKGROUND);
-        // Outer border + padding
-        setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(StyleColors.ACCENT, 2, true),
-                BorderFactory.createEmptyBorder(12, 12, 12, 12)
-        ));
+        initCard(course);
+    }
 
-        // --- 1. Image Section (Left) ---
-        imageLabel = new JLabel();
-        imageLabel.setPreferredSize(new Dimension(IMG_WIDTH, IMG_HEIGHT));
-        imageLabel.setMinimumSize(new Dimension(IMG_WIDTH, IMG_HEIGHT));
-        imageLabel.setMaximumSize(new Dimension(IMG_WIDTH, IMG_HEIGHT));
-        imageLabel.setBorder(BorderFactory.createLineBorder(StyleColors.ACCENT_DARK, 1));
-
-        // Load Image
-        String imagePath = "Database/Assets/Default_Img.png"; // Default
-        // Assuming Course has getImagePath(), if not, use default logic or add getter
-        // if (course.getImagePath() != null && !course.getImagePath().isEmpty()) {
-        //     imagePath = course.getImagePath();
-        // }
-        // Note: Since getImagePath() isn't in the Course Model provided yet, I'll comment it out
-        // and rely on the default for now, or reflection if you added it in memory.
-        // Ideally: imagePath = (course.getImagePath() != null) ? course.getImagePath() : "Database/Assets/Default_Img.png";
-
-        ImageIcon icon = loadResizedIcon(imagePath, IMG_WIDTH, IMG_HEIGHT);
-        imageLabel.setIcon(icon);
-        add(imageLabel, BorderLayout.WEST);
-
-        // --- 2. Info Section (Center) ---
-        JPanel infoPanel = new JPanel();
-        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-        infoPanel.setBackground(StyleColors.BACKGROUND);
-        infoPanel.setOpaque(false); // Allow parent hover color to show
-
-        titleLabel = new JLabel(course.getTitle());
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        titleLabel.setForeground(StyleColors.TEXT);
-        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        infoPanel.add(titleLabel);
-
-        instructorLabel = new JLabel("<html><b><i>Instructor: </i></b><i>" + instructorName + "</i></html>");
-        instructorLabel.setFont(new Font("Segoe UI", Font.ITALIC | Font.PLAIN, 14));
-        instructorLabel.setForeground(StyleColors.TEXT);
-        instructorLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        instructorLabel.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
-        infoPanel.add(instructorLabel);
-
-        add(infoPanel, BorderLayout.CENTER);
+    // Constructor with Status (For Admin/Instructor)
+    public CourseCard(Course course, COURSE_STATUS status) {
+        initCard(course);
+        addStatusLabel(status);
     }
 
     // Overloaded constructor: adds progress info
     public CourseCard(Course course, int numOfCompletedLessons, int totalLessons) {
         this(course);
 
-        // Get the info panel (Center component) to add more details
         JPanel infoPanel = (JPanel) ((BorderLayout)getLayout()).getLayoutComponent(BorderLayout.CENTER);
 
         if (totalLessons > 0) {
@@ -99,29 +56,123 @@ public class CourseCard extends SCoursePanel {
         infoPanel.add(progressLabel);
 
         percentLabel.setFont(new Font("Segoe UI", Font.ITALIC, 12));
-        percentLabel.setForeground(StyleColors.TEXT); // Slightly darker/different if desired
+        percentLabel.setForeground(StyleColors.TEXT);
         percentLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         percentLabel.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
         infoPanel.add(percentLabel);
     }
 
-    /**
-     * Helper to load and resize an image safely.
-     */
+    // Third constructor for Instructor view (Edit mode dummy - legacy)
+    public CourseCard(Course course, String actionText) {
+        this(course);
+    }
+
+    private void initCard(Course course) {
+        String instructorName = new CourseController().getInstructorName(course.getInstructorId());
+        setLayout(new BorderLayout(15, 0));
+        setBackground(StyleColors.BACKGROUND);
+
+        setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(StyleColors.ACCENT, 2, true),
+                BorderFactory.createEmptyBorder(12, 12, 12, 12)
+        ));
+
+        // --- Image Section ---
+        imageLabel = new JLabel();
+        imageLabel.setPreferredSize(new Dimension(IMG_WIDTH, IMG_HEIGHT));
+        imageLabel.setMinimumSize(new Dimension(IMG_WIDTH, IMG_HEIGHT));
+        imageLabel.setMaximumSize(new Dimension(IMG_WIDTH, IMG_HEIGHT));
+        imageLabel.setBorder(BorderFactory.createLineBorder(StyleColors.ACCENT_DARK, 1));
+
+        String imagePath = "Database/Assets/Default_Img.png";
+        if (course.getImagePath() != null && !course.getImagePath().isEmpty()) {
+            imagePath = course.getImagePath();
+        }
+
+        ImageIcon icon = loadResizedIcon(imagePath, IMG_WIDTH, IMG_HEIGHT);
+        if (icon == null) {
+            icon = loadResizedIcon("Database/Assets/Default_Img.png", IMG_WIDTH, IMG_HEIGHT);
+        }
+
+        if (icon != null) {
+            imageLabel.setIcon(icon);
+        } else {
+            imageLabel.setText("No Image");
+            imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            imageLabel.setForeground(StyleColors.TEXT);
+        }
+
+        add(imageLabel, BorderLayout.WEST);
+
+        // --- Info Section ---
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        infoPanel.setBackground(StyleColors.BACKGROUND);
+        infoPanel.setOpaque(false);
+
+        titleLabel = new JLabel(course.getTitle());
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        titleLabel.setForeground(StyleColors.TEXT);
+        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        infoPanel.add(titleLabel);
+
+        instructorLabel = new JLabel("<html><b><i>Instructor: </i></b><i>" + instructorName + "</i></html>");
+        instructorLabel.setFont(new Font("Segoe UI", Font.ITALIC | Font.PLAIN, 14));
+        instructorLabel.setForeground(StyleColors.TEXT);
+        instructorLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        instructorLabel.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
+        infoPanel.add(instructorLabel);
+
+        add(infoPanel, BorderLayout.CENTER);
+    }
+
+    private void addStatusLabel(COURSE_STATUS status) {
+        Color statusColor;
+        String statusText;
+
+        switch (status) {
+            case APPROVED:
+                statusColor = new Color(40, 167, 69); // Green
+                statusText = "APPROVED";
+                break;
+            case REJECTED:
+                statusColor = new Color(220, 53, 69); // Red
+                statusText = "REJECTED";
+                break;
+            default: // PENDING
+                statusColor = new Color(255, 193, 7); // Amber/Yellow
+                statusText = "PENDING";
+                break;
+        }
+
+        statusLabel = new JLabel(statusText);
+        statusLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        statusLabel.setForeground(Color.WHITE);
+        statusLabel.setOpaque(true);
+        statusLabel.setBackground(statusColor);
+        statusLabel.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+
+        // Create a panel to hold the label at the top-right or similar
+        // Since we are using BorderLayout, EAST is a good spot
+        JPanel statusPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        statusPanel.setOpaque(false);
+        statusPanel.add(statusLabel);
+
+        add(statusPanel, BorderLayout.EAST);
+    }
+
     private ImageIcon loadResizedIcon(String path, int w, int h) {
         try {
             File file = new File(path);
             if (!file.exists()) {
-                // Fallback if specific path doesn't exist, try absolute or project root
                 file = new File("src/" + path);
-                if(!file.exists()) return null; // Or return a generated placeholder
+                if(!file.exists()) return null;
             }
             BufferedImage img = ImageIO.read(file);
             Image scaled = img.getScaledInstance(w, h, Image.SCALE_SMOOTH);
             return new ImageIcon(scaled);
         } catch (Exception e) {
-            // e.printStackTrace(); // Fail silently or log
-            return null; // Return null so label is empty or we can draw a placeholder rect
+            return null;
         }
     }
 }

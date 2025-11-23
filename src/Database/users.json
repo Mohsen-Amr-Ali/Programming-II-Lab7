@@ -121,12 +121,27 @@
   },
   {
     "createdCourses": [
-      703957
+      703957,
+      707630
     ],
     "username": "Mohsen Amr",
     "id": 100461,
     "role": "INSTRUCTOR",
     "email": "mohsenium@instructor.com",
     "hashed_password": "8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e"
+  },
+  {
+    "username": "Mohsen Amr",
+    "id": 200908,
+    "role": "ADMIN",
+    "email": "mohsen@admin.com",
+    "hashed_password": "8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e"
+  },
+  {
+    "username": "Mohamed Kasem",
+    "id": 208904,
+    "role": "ADMIN",
+    "email": "mkasem@gmail.com",
+    "hashed_password": "5c8f5fd13b9cff46ae9f255144cbc0761607d7f710250e311eeac9a1f9bdfe16"
   }
 ]

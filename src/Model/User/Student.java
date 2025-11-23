@@ -36,29 +36,29 @@ public class Student extends User{
         this.progress = progress != null ? progress : new HashMap<>();
     }
 
-    public void enrollInCourse(Integer courseID){
+    public void enrollInCourse(int courseID){
         if (!enrolledCourses.contains(courseID)) {
             enrolledCourses.add(courseID);
         }
     }
 
-    public void dropCourse(Integer courseID){
+    public void dropCourse(int courseID){
         enrolledCourses.remove(courseID);
         progress.remove(courseID);
     }
 
-    public boolean isEnrolled(Integer courseID){
+    public boolean isEnrolled(int courseID){
         return enrolledCourses.contains(courseID);
     }
 
-    public void addCompletedLesson(Integer courseID, Integer lessonID){
+    public void addCompletedLesson(int courseID, int lessonID){
         progress.putIfAbsent(courseID, new ArrayList<>());
         if (!progress.get(courseID).contains(lessonID)) {
             progress.get(courseID).add(lessonID);
         }
     }
 
-    public void removeCompletedLesson(Integer courseID, Integer lessonID){
+    public void removeCompletedLesson(int courseID, int lessonID){
         if (progress.containsKey(courseID)) {
             progress.get(courseID).remove(lessonID);
         }
@@ -70,7 +70,7 @@ public class Student extends User{
     }
 
 
-    public boolean isLessonCompleted(Integer courseID, Integer lessonID){
+    public boolean isLessonCompleted(int courseID, int lessonID){
         return progress.containsKey(courseID) && progress.get(courseID).contains(lessonID);
     }
 

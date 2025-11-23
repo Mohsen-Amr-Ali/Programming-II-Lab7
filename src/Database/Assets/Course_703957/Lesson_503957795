@@ -1,0 +1,284 @@
+\section*{Swing Cheat Sheet — Student Management System (Lab 5, Swing Version)}
+
+\subsection*{1. Creating Windows (Main Frames)}
+Used for \texttt{LoginFrame} and \texttt{MainMenuFrame.}
+
+\begin{lstlisting}[language=Java]
+JFrame frame = new JFrame("Student Management System");
+frame.setSize(800, 600);
+frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+frame.setLocationRelativeTo(null);
+frame.setResizable(false);
+frame.setVisible(true);
+\end{lstlisting}
+
+\begin{itemize}
+\item \textbf{setTitle(String)} – Change window title
+\item \textbf{add(Component)} – Add panels or buttons directly
+\item \textbf{setLayout(LayoutManager)} – Control how components are arranged
+\item \textbf{dispose()} – Close this window only
+\item \textbf{setJMenuBar(JMenuBar)} – Add a menu (optional)
+\end{itemize}
+
+---
+
+\subsection*{2. Panels (Screens Inside Frames)}
+Each screen (\texttt{AddStudentPanel}, \texttt{ViewStudentsPanel}, etc.) is a \texttt{JPanel.}
+
+\begin{lstlisting}[language=Java]
+JPanel panel = new JPanel();
+panel.setLayout(new GridLayout(6, 2, 10, 10)); // rows, cols, gaps
+frame.add(panel);
+frame.revalidate();
+frame.repaint();
+\end{lstlisting}
+
+Use:
+\begin{itemize}
+\item \texttt{BorderLayout()} for header/body/footer
+\item \texttt{FlowLayout()} for simple rows
+\item \texttt{CardLayout()} for screen switching
+\end{itemize}
+
+---
+
+\subsection*{3. Labels, Text Fields, Passwords, Combo Boxes}
+
+\textbf{Labels}
+\begin{lstlisting}[language=Java]
+JLabel nameLabel = new JLabel("Full Name:");
+\end{lstlisting}
+
+\textbf{Text Fields}
+\begin{lstlisting}[language=Java]
+JTextField nameField = new JTextField(20);
+String name = nameField.getText();
+nameField.setText("");
+\end{lstlisting}
+
+\textbf{Password Field}
+\begin{lstlisting}[language=Java]
+JPasswordField passField = new JPasswordField(20);
+String password = new String(passField.getPassword());
+\end{lstlisting}
+
+\textbf{Combo Box}
+\begin{lstlisting}[language=Java]
+String[] genders = {"Male", "Female"};
+JComboBox<String> genderBox = new JComboBox<>(genders);
+String gender = (String) genderBox.getSelectedItem();
+\end{lstlisting}
+
+---
+
+\subsection*{4. Buttons and Events}
+
+\textbf{Creating Buttons}
+\begin{lstlisting}[language=Java]
+JButton addButton = new JButton("Add Student");
+addButton.setFocusPainted(false);
+\end{lstlisting}
+
+\textbf{Listening for Clicks}
+\begin{lstlisting}[language=Java]
+addButton.addActionListener(e -> {
+    controller.handleAddStudent();
+});
+\end{lstlisting}
+
+---
+
+\subsection*{5. Tables (View / Update Panels)}
+
+\textbf{Creating a Table}
+\begin{lstlisting}[language=Java]
+String[] columns = {"ID","Name","Age","Gender","Department","GPA"};
+Object[][] data = {};
+DefaultTableModel tableModel = new DefaultTableModel(data, columns);
+JTable table = new JTable(tableModel);
+JScrollPane scrollPane = new JScrollPane(table);
+panel.add(scrollPane);
+\end{lstlisting}
+
+\textbf{Common Table Methods}
+\begin{itemize}
+\item \texttt{getSelectedRow()}
+\item \texttt{getValueAt(row, col)}
+\item \texttt{setValueAt(value, row, col)}
+\item \texttt{addRow(Object[])}
+\item \texttt{removeRow(int)}
+\item \texttt{setRowCount(0)} (clear)
+\end{itemize}
+
+\textbf{Refreshing Table}
+\begin{lstlisting}[language=Java]
+tableModel.setRowCount(0);
+for (Student s : database.getAllStudents()) {
+    tableModel.addRow(new Object[]{
+        s.getId(), s.getName(), s.getAge(),
+        s.getGender(), s.getDepartment(), s.getGpa()
+    });
+}
+\end{lstlisting}
+
+---
+
+\subsection*{6. Searching Students}
+\begin{lstlisting}[language=Java]
+JTextField searchField = new JTextField(15);
+JButton searchButton = new JButton("Search");
+
+searchButton.addActionListener(e -> {
+    String query = searchField.getText().trim();
+    List<Student> results = database.findByName(query);
+    refreshTable(results);
+});
+\end{lstlisting}
+
+---
+
+\subsection*{7. Updating and Deleting}
+
+\textbf{Selecting from Table}
+\begin{lstlisting}[language=Java]
+int row = table.getSelectedRow();
+if (row >= 0) {
+    int id = (int) table.getValueAt(row, 0);
+    Student s = database.findById(id);
+}
+\end{lstlisting}
+
+\textbf{Deleting}
+\begin{lstlisting}[language=Java]
+int confirm = JOptionPane.showConfirmDialog(frame, "Delete this student?");
+if (confirm == JOptionPane.YES_OPTION) {
+    int id = (int) table.getValueAt(row, 0);
+    database.deleteStudent(id);
+    tableModel.removeRow(row);
+}
+\end{lstlisting}
+
+\textbf{Updating}
+\begin{lstlisting}[language=Java]
+Student s = new Student(...);
+database.updateStudent(s);
+refreshTable(database.getAllStudents());
+JOptionPane.showMessageDialog(frame, "Student updated successfully!");
+\end{lstlisting}
+
+---
+
+\subsection*{8. Dialogs and Alerts}
+\begin{itemize}
+\item Info: \texttt{JOptionPane.showMessageDialog(frame, "Student added!")}
+\item Error: \texttt{JOptionPane.showMessageDialog(frame, "Invalid input!", "Error", JOptionPane.ERROR\_MESSAGE)}
+\item Confirm: \texttt{JOptionPane.showConfirmDialog(frame, "Are you sure?")}
+\item Input: \texttt{String name = JOptionPane.showInputDialog("Enter name:");}
+\end{itemize}
+
+---
+
+\subsection*{9. Switching Screens (Dashboard Navigation)}
+
+\begin{lstlisting}[language=Java]
+CardLayout layout = new CardLayout();
+JPanel contentPanel = new JPanel(layout);
+contentPanel.add(addPanel, "ADD");
+contentPanel.add(viewPanel, "VIEW");
+contentPanel.add(updatePanel, "UPDATE");
+layout.show(contentPanel, "ADD");
+\end{lstlisting}
+
+Switch with buttons:
+\begin{lstlisting}[language=Java]
+viewButton.addActionListener(e -> layout.show(contentPanel, "VIEW"));
+\end{lstlisting}
+
+---
+
+\subsection*{10. Layouts Used}
+
+\begin{itemize}
+\item \texttt{GridLayout(6,2)} – Add Student form
+\item \texttt{BorderLayout()} – Frame structure
+\item \texttt{CardLayout()} – Switching panels
+\item \texttt{FlowLayout()} – Simple rows
+\end{itemize}
+
+---
+
+\subsection*{11. Login Screen Essentials}
+
+\begin{lstlisting}[language=Java]
+JFrame loginFrame = new JFrame("Login");
+JPanel loginPanel = new JPanel(new GridLayout(3,2,10,10));
+
+JTextField userField = new JTextField(15);
+JPasswordField passField = new JPasswordField(15);
+JButton loginButton = new JButton("Login");
+
+loginPanel.add(new JLabel("Username:"));
+loginPanel.add(userField);
+loginPanel.add(new JLabel("Password:"));
+loginPanel.add(passField);
+loginPanel.add(loginButton);
+
+loginButton.addActionListener(e -> {
+    String user = userField.getText();
+    String pass = new String(passField.getPassword());
+    if (user.equals("admin") && pass.equals("123")) {
+        loginFrame.dispose();
+        new MainMenuFrame();
+    } else {
+        JOptionPane.showMessageDialog(loginFrame, "Invalid credentials!");
+    }
+});
+\end{lstlisting}
+
+---
+
+\subsection*{12. Most-Used Swing Methods}
+\begin{itemize}
+\item \textbf{JFrame:} \texttt{setSize, setTitle, add, setLayout, dispose}
+\item \textbf{JPanel:} \texttt{setLayout, add, revalidate, repaint}
+\item \textbf{JLabel:} constructor \texttt{new JLabel(String)}
+\item \textbf{JTextField:} \texttt{getText, setText}
+\item \textbf{JButton:} \texttt{addActionListener, setEnabled}
+\item \textbf{JTable:} \texttt{getSelectedRow, getValueAt, setValueAt}
+\item \textbf{DefaultTableModel:} \texttt{addRow, removeRow, setRowCount}
+\item \textbf{JOptionPane:} \texttt{showMessageDialog, showConfirmDialog}
+\item \textbf{Layouts:} \texttt{GridLayout, FlowLayout, BorderLayout, CardLayout}
+\end{itemize}
+
+---
+
+\subsection*{13. Example Add Student Panel}
+
+\begin{lstlisting}[language=Java]
+JPanel addPanel = new JPanel(new GridLayout(7,2,10,10));
+
+addPanel.add(new JLabel("ID:")); addPanel.add(idField);
+addPanel.add(new JLabel("Full Name:")); addPanel.add(nameField);
+addPanel.add(new JLabel("Age:")); addPanel.add(ageField);
+addPanel.add(new JLabel("Gender:")); addPanel.add(genderBox);
+addPanel.add(new JLabel("Department:")); addPanel.add(deptBox);
+addPanel.add(new JLabel("GPA:")); addPanel.add(gpaField);
+addPanel.add(addButton); addPanel.add(clearButton);
+\end{lstlisting}
+
+---
+
+\subsection*{14. Minimal Frame Navigation Structure}
+
+\begin{lstlisting}[language=Java]
+JFrame mainFrame = new JFrame("Dashboard");
+CardLayout card = new CardLayout();
+JPanel container = new JPanel(card);
+
+container.add(addStudentPanel, "ADD");
+container.add(viewStudentsPanel, "VIEW");
+container.add(updateDeletePanel, "UPDATE");
+
+JButton addBtn = new JButton("Add Student");
+addBtn.addActionListener(e -> card.show(container, "ADD"));
+\end{lstlisting}

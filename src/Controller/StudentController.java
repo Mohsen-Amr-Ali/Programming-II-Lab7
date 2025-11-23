@@ -18,7 +18,7 @@ public class StudentController {
         Student student = (Student) dbManager.getUserById(studentId);
         ArrayList<Course> enrolledCourses = new ArrayList<>();
         if (student != null) {
-            for (Integer courseId : student.getEnrolledCoursesIDs()) {
+            for (int courseId : student.getEnrolledCoursesIDs()) {
                 enrolledCourses.add(dbManager.getCourseById(courseId));
             }
         }

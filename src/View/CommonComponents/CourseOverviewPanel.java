@@ -2,21 +2,37 @@ package View.CommonComponents;
 
 import Controller.CourseController;
 import Model.Course.Course;
+import Model.Course.COURSE_STATUS;
 import View.StyledComponents.StyleColors;
 
 import javax.swing.*;
 import java.awt.*;
-
+import java.awt.image.BufferedImage;
+import java.io.File;
+import javax.imageio.ImageIO;
 
 public class CourseOverviewPanel extends JPanel {
     Course course;
     String instructorName;
+    private static final int IMG_WIDTH = 300;
+    private static final int IMG_HEIGHT = 200;
+
+    // Basic constructor
     public CourseOverviewPanel(Course course) {
+        initPanel(course, null);
+    }
+
+    // Constructor with Status (For Admin/Instructor view)
+    public CourseOverviewPanel(Course course, COURSE_STATUS status) {
+        initPanel(course, status);
+    }
+
+    private void initPanel(Course course, COURSE_STATUS status) {
         this.course = course;
         this.instructorName = new CourseController().getInstructorName(course.getInstructorId());
         setLayout(new BorderLayout(0, 0));
         setBackground(StyleColors.BACKGROUND);
-        // Add 10px margin outside the border, then the colored border, then padding inside
+
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createEmptyBorder(10, 10, 10, 10),
                 BorderFactory.createCompoundBorder(
@@ -25,61 +41,137 @@ public class CourseOverviewPanel extends JPanel {
                 )
         ));
 
-        // Title label
-        JLabel titleLabel = new JLabel(course.getTitle());
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        titleLabel.setForeground(StyleColors.TEXT);
-        titleLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        // --- IMAGE SECTION ---
+        JLabel imageLabel = new JLabel();
+        imageLabel.setPreferredSize(new Dimension(IMG_WIDTH, IMG_HEIGHT));
+        imageLabel.setMinimumSize(new Dimension(IMG_WIDTH, IMG_HEIGHT));
+        imageLabel.setMaximumSize(new Dimension(IMG_WIDTH, IMG_HEIGHT));
+        imageLabel.setBorder(BorderFactory.createLineBorder(StyleColors.ACCENT_DARK, 1));
 
-        // Panel for title and instructor to control spacing
+        String imagePath = (course.getImagePath() != null && !course.getImagePath().isEmpty())
+                ? course.getImagePath()
+                : "Database/Assets/Default_Img.png";
+        ImageIcon icon = loadResizedIcon(imagePath, IMG_WIDTH, IMG_HEIGHT);
+        if (icon == null) {
+            icon = loadResizedIcon("Database/Assets/Default_Img.png", IMG_WIDTH, IMG_HEIGHT);
+        }
+        imageLabel.setIcon(icon);
+
+        // --- HEADER SECTION ---
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
         topPanel.setBackground(StyleColors.BACKGROUND);
         topPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+
+        topPanel.add(imageLabel);
+        topPanel.add(Box.createVerticalStrut(15)); // Space between image and title
+
+        // Status Banner (if provided)
+        if (status != null) {
+            JLabel statusLabel = createStatusLabel(status);
+            // Add status at the top right or just above title?
+            // Above title is cleaner in vertical layout
+            JPanel statusWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+            statusWrapper.setBackground(StyleColors.BACKGROUND);
+            statusWrapper.add(statusLabel);
+            topPanel.add(statusWrapper);
+            topPanel.add(Box.createVerticalStrut(8));
+        }
+
+        // Title
+        JLabel titleLabel = new JLabel(course.getTitle());
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 26)); // Slightly larger title
+        titleLabel.setForeground(StyleColors.TEXT);
+        titleLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         topPanel.add(titleLabel);
 
+        // Instructor
         JLabel instructorLabel = new JLabel();
         instructorLabel.setText("<html><b><i>Instructor: </i></b><i>" + instructorName + "</i></html>");
-        instructorLabel.setFont(new Font("Segoe UI", Font.ITALIC | Font.BOLD, 15));
+        instructorLabel.setFont(new Font("Segoe UI", Font.ITALIC | Font.BOLD, 16));
         instructorLabel.setForeground(StyleColors.TEXT);
         instructorLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        // Reduce vertical space between title and instructor
-        instructorLabel.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
+        instructorLabel.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
         topPanel.add(instructorLabel);
 
         add(topPanel, BorderLayout.NORTH);
 
+        // --- DESCRIPTION SECTION ---
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         infoPanel.setBackground(StyleColors.BACKGROUND);
-        infoPanel.setBorder(BorderFactory.createEmptyBorder(18, 0, 0, 0)); // Increase space between instructor and description
+        infoPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
 
         JLabel descLabel = new JLabel("Description:");
-        descLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        descLabel.setForeground(StyleColors.TEXT);
+        descLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        descLabel.setForeground(StyleColors.ACCENT); // Accent color for section header
         descLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        descLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         infoPanel.add(descLabel);
+        infoPanel.add(Box.createVerticalStrut(5));
 
-    JTextArea descriptionArea = new JTextArea(course.getDescription());
-    descriptionArea.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-    descriptionArea.setForeground(StyleColors.TEXT);
-    descriptionArea.setBackground(StyleColors.BACKGROUND);
-    descriptionArea.setLineWrap(true);
-    descriptionArea.setWrapStyleWord(true);
-    descriptionArea.setEditable(false);
-    descriptionArea.setFocusable(false);
-    descriptionArea.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
-    descriptionArea.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JTextArea descriptionArea = new JTextArea(course.getDescription());
+        descriptionArea.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        descriptionArea.setForeground(StyleColors.TEXT);
+        descriptionArea.setBackground(StyleColors.BACKGROUND);
+        descriptionArea.setLineWrap(true);
+        descriptionArea.setWrapStyleWord(true);
+        descriptionArea.setEditable(false);
+        descriptionArea.setFocusable(false);
+        descriptionArea.setBorder(null);
+        descriptionArea.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-    // Make the description scrollable
-    JScrollPane scrollPane = new JScrollPane(descriptionArea);
-    scrollPane.setBorder(null);
-    scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
-    scrollPane.setPreferredSize(new Dimension(0, 100)); // Adjust height as needed
-    infoPanel.add(scrollPane);
+        // Make the description scrollable
+        JScrollPane scrollPane = new JScrollPane(descriptionArea);
+        scrollPane.setBorder(null);
+        scrollPane.getViewport().setBackground(StyleColors.BACKGROUND);
+        scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+        // Flexible height
+        infoPanel.add(scrollPane);
 
         add(infoPanel, BorderLayout.CENTER);
+    }
+
+    private JLabel createStatusLabel(COURSE_STATUS status) {
+        Color statusColor;
+        String statusText;
+
+        switch (status) {
+            case APPROVED:
+                statusColor = new Color(40, 167, 69); // Green
+                statusText = "APPROVED";
+                break;
+            case REJECTED:
+                statusColor = new Color(220, 53, 69); // Red
+                statusText = "REJECTED";
+                break;
+            default: // PENDING
+                statusColor = new Color(255, 193, 7); // Amber/Yellow
+                statusText = "PENDING APPROVAL";
+                break;
+        }
+
+        JLabel label = new JLabel(statusText);
+        label.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        label.setForeground(Color.WHITE); // White text on colored bg
+        label.setOpaque(true);
+        label.setBackground(statusColor);
+        label.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+        return label;
+    }
+
+    private ImageIcon loadResizedIcon(String path, int w, int h) {
+        try {
+            File file = new File(path);
+            if (!file.exists()) {
+                file = new File("src/" + path);
+                if(!file.exists()) return null;
+            }
+            BufferedImage img = ImageIO.read(file);
+            Image scaled = img.getScaledInstance(w, h, Image.SCALE_SMOOTH);
+            return new ImageIcon(scaled);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

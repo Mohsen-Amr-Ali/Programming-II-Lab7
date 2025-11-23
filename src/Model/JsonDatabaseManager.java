@@ -1,9 +1,11 @@
 package Model;
 
 //Instructor IDs start with 10----
+//Admin Ids start with 20----
 //Student IDs start with 90----
 //Course IDs start with 70----
 //Lesson IDs start with 50----***
+//Quiz IDs start with 40----***
 
 import java.io.FileReader;
 import java.io.FileWriter;

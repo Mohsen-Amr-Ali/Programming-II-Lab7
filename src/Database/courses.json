@@ -218,6 +218,12 @@
     "instructorId": 100461,
     "lessons": [
       {
+        "lessonId": 503957477,
+        "courseId": 0,
+        "title": "Lesson number 2",
+        "content": "Database/Assets/Course_703957/Lesson_503957477"
+      },
+      {
         "lessonId": 503957950,
         "courseId": 0,
         "title": "First lesson",
@@ -230,14 +236,24 @@
         "content": "Database/Assets/Course_703957/Lesson_503957388"
       },
       {
-        "lessonId": 503957477,
+        "lessonId": 503957795,
         "courseId": 0,
-        "title": "Lesson number 2",
-        "content": "Database/Assets/Course_703957/Lesson_503957477"
+        "title": "Swing cheat sheet",
+        "content": "Database/Assets/Course_703957/Lesson_503957795"
       }
     ],
     "students": [],
     "imagePath": "Database/Assets/Default_Img.png",
-    "status": "PENDING"
+    "status": "REJECTED"
+  },
+  {
+    "courseId": 707630,
+    "title": "Image testing",
+    "description": "some desc",
+    "instructorId": 100461,
+    "lessons": [],
+    "students": [],
+    "imagePath": "Database/Assets/Course_707630/title.jpg",
+    "status": "APPROVED"
   }
 ]

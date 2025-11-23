@@ -3,7 +3,6 @@ package View;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
@@ -16,7 +15,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
 import Controller.CourseController;
@@ -30,7 +28,7 @@ import View.CommonComponents.CourseOverviewPanel;
 import View.CommonComponents.LessonCard;
 import View.CommonComponents.LessonViewPanel;
 import View.StyledComponents.*;
-import View.StudentDashboardComponents.StudentNavBar;
+import View.StudentComponents.StudentNavBar;
 
 public class StudentDashboardFrame extends JFrame {
     private Student student;

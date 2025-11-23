@@ -24,7 +24,7 @@ public class SignupPanel extends JPanel {
         emailField = new STField(20);
         passwordField = new JPasswordField(20);
         confirmPasswordField = new JPasswordField(20);
-        roleComboBox = new JComboBox<>(new String[]{"Instructor", "Student"});
+        roleComboBox = new JComboBox<>(new String[]{"Instructor", "Student", "Admin"});
         signupButton = new SBtn("Sign Up");
 
         //---------------------- Styling ----------------------//

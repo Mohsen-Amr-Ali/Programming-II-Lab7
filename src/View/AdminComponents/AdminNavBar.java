@@ -1,25 +1,26 @@
-package View.StudentDashboardComponents;
+package View.AdminComponents;
 
-import Model.User.Student;
+import Model.User.Admin;
 import View.StyledComponents.*;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class StudentNavBar extends JPanel {
-    private Student student;
-    private SBtn enrolledCoursesBtn;
-    private SBtn availableCoursesBtn;
+public class AdminNavBar extends JPanel {
+    private Admin admin;
+    private SBtn logoutBtn;
     private STField searchField;
     private SBtn searchBtn;
-    private SBtn logoutBtn;
+    private SBtn refreshBtn;
+    private SBtn dashboardBtn;
+    private SBtn analyticsBtn;
 
-    public StudentNavBar(Student student) {
-        this.student = student;
+    public AdminNavBar(Admin admin) {
+        this.admin = admin;
         setLayout(new BorderLayout(0, 8));
         setBackground(StyleColors.BACKGROUND);
 
-        // Consistent styling with InstructorNavBar
+        // Consistent styling with other NavBars
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createEmptyBorder(15, 17, 17, 17),
                 BorderFactory.createCompoundBorder(
@@ -32,7 +33,7 @@ public class StudentNavBar extends JPanel {
         JPanel upperSection = createUpperSection();
         add(upperSection, BorderLayout.NORTH);
 
-        // Lower section: Course buttons, search field, and search button
+        // Lower section: Navigation and Search
         JPanel lowerSection = createLowerSection();
         add(lowerSection, BorderLayout.CENTER);
     }
@@ -45,24 +46,23 @@ public class StudentNavBar extends JPanel {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.weightx = 0;
 
-        // Welcome label with student name
-        JLabel welcomeLabel = new JLabel("Welcome, " + student.getUsername());
+        // Welcome label
+        JLabel welcomeLabel = new JLabel("Welcome, " + admin.getUsername());
         welcomeLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
         welcomeLabel.setForeground(StyleColors.TEXT);
         gbc.gridx = 0;
         gbc.gridy = 0;
         upperPanel.add(welcomeLabel, gbc);
 
-        // Student role label (smaller, italic)
-        JLabel roleLabel = new JLabel("Student");
+        // Role label
+        JLabel roleLabel = new JLabel("Administrator");
         roleLabel.setFont(new Font("Segoe UI", Font.ITALIC, 14));
-        roleLabel.setForeground(StyleColors.TEXT.darker());
+        roleLabel.setForeground(StyleColors.ACCENT); // Highlight Admin role
         gbc.gridx = 1;
         gbc.gridy = 0;
-        gbc.insets = new Insets(0, 0, 0, 0);
         upperPanel.add(roleLabel, gbc);
 
-        // Spacer to push logout button to the right
+        // Spacer
         gbc.gridx = 2;
         gbc.gridy = 0;
         gbc.weightx = 1.0;
@@ -89,25 +89,21 @@ public class StudentNavBar extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 0;
-        gbc.weighty = 0;
 
-        // Enrolled Courses button
-        enrolledCoursesBtn = new SBtn("Enrolled Courses");
+        // Navigation Buttons
+        dashboardBtn = new SBtn("Dashboard");
         gbc.gridx = 0;
         gbc.gridy = 0;
-        lowerPanel.add(enrolledCoursesBtn, gbc);
+        gbc.weightx = 0;
+        lowerPanel.add(dashboardBtn, gbc);
 
-        // Available Courses button
-        availableCoursesBtn = new SBtn("Available Courses");
+        analyticsBtn = new SBtn("Platform Analytics");
         gbc.gridx = 1;
         gbc.gridy = 0;
-        lowerPanel.add(availableCoursesBtn, gbc);
+        lowerPanel.add(analyticsBtn, gbc);
 
-        // Search field (spans remaining width)
+        // Search Field (Takes up remaining space)
         searchField = new STField("Search courses...");
-
-        // Add focus listener logic for placeholder
         searchField.addFocusListener(new java.awt.event.FocusAdapter() {
             @Override
             public void focusGained(java.awt.event.FocusEvent e) {
@@ -125,51 +121,41 @@ public class StudentNavBar extends JPanel {
 
         gbc.gridx = 2;
         gbc.gridy = 0;
-        gbc.weightx = 1.0; // Takes up remaining space
+        gbc.weightx = 1.0;
         lowerPanel.add(searchField, gbc);
 
-        // Search button (to the right of search field)
+        // Search Button
         searchBtn = new SBtn("Search");
         gbc.gridx = 3;
         gbc.gridy = 0;
         gbc.weightx = 0;
         lowerPanel.add(searchBtn, gbc);
 
+        // Refresh Button
+        refreshBtn = new SBtn("Refresh");
+        gbc.gridx = 4;
+        gbc.gridy = 0;
+        lowerPanel.add(refreshBtn, gbc);
+
         return lowerPanel;
     }
 
-    // Getter methods and listeners
-    public SBtn getEnrolledCoursesBtn() { return enrolledCoursesBtn; }
-    public SBtn getAvailableCoursesBtn() { return availableCoursesBtn; }
-    public STField getSearchField() { return searchField; }
-    public SBtn getSearchBtn() { return searchBtn; }
     public SBtn getLogoutBtn() { return logoutBtn; }
+    public SBtn getSearchBtn() { return searchBtn; }
+    public SBtn getRefreshBtn() { return refreshBtn; }
+    public SBtn getDashboardBtn() { return dashboardBtn; }
+    public SBtn getAnalyticsBtn() { return analyticsBtn; }
+    public String getSearchText() { return searchField.getText(); }
 
-    public void addEnrolledCoursesButtonListener(java.awt.event.ActionListener listener) {
-        enrolledCoursesBtn.addActionListener(listener);
+    public void addSearchListener(java.awt.event.ActionListener l) {
+        searchBtn.addActionListener(l);
     }
 
-    public void addAvailableCoursesButtonListener(java.awt.event.ActionListener listener) {
-        availableCoursesBtn.addActionListener(listener);
+    public void addRefreshListener(java.awt.event.ActionListener l) {
+        refreshBtn.addActionListener(l);
     }
 
-    public void addSearchButtonListener(java.awt.event.ActionListener listener) {
-        searchBtn.addActionListener(listener);
-    }
-
-    public String getSearchText() {
-        String text = searchField.getText();
-        if (text.equals("Search courses...")) {
-            return "";
-        }
-        return text;
-    }
-
-    public void clearSearchText() {
+    public void clearSearch() {
         searchField.setText("Search courses...");
-    }
-
-    public Student getStudent() {
-        return student;
     }
 }
