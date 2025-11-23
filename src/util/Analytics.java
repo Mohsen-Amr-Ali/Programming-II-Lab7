@@ -13,7 +13,59 @@ import java.util.*;
 public class Analytics {
 
     // instructor analytics //
+    public double getCourseCompletionPercentage (Course course) {
+        JsonDatabaseManager dbManager = JsonDatabaseManager.getInstance();
+        ArrayList<Integer> enrolledStudentIds = course.getStudents();
+        if (enrolledStudentIds == null || enrolledStudentIds.isEmpty()) {
+            return 0;
+        }
 
+        int completed = 0;
+
+        for (Integer studentId : enrolledStudentIds)
+        {
+            User user = dbManager.getUserById(studentId);
+            if (user instanceof Student) {
+                Student student = (Student) user;
+                if (hasCompletedCourse(student, course)) {
+                    completed++;
+                }
+            }
+        }
+        return (completed * 100.0) / enrolledStudentIds.size();
+    }
+
+    public Map<String, Double> getAverageQuizScorePerLesson (Course course) {
+        Map<String, Double> avgScores = new HashMap<>();
+
+        for (Lesson lesson : course.getLessons()) {
+            Quiz quiz = lesson.getQuiz();
+            if (quiz == null)
+            {
+                continue;
+            }
+
+            ArrayList<QuizResult> attempts = quiz.getAttempts();
+            if (attempts.isEmpty())
+            {
+                avgScores.put(lesson.getTitle(), 0.0);
+                continue;
+            }
+
+            double total = 0;
+            for (QuizResult result : attempts)
+            {
+                total += result.getScore();
+            }
+
+            avgScores.put(lesson.getTitle(), total/attempts.size());
+        }
+        return avgScores;
+    }
+
+    public Map<String, Double> getClassPerformanceTimeline (Course course) {
+        return getAverageQuizScorePerLesson(course);
+    }
 
     // student analytics //
     public String getQuizResult (QuizResult result) {
