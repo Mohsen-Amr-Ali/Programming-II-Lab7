@@ -1,9 +1,11 @@
 package util;
 
 import Model.Course.Course;
+import Model.Course.COURSE_STATUS;
 import Model.Course.Lesson;
 import Model.Course.Quiz;
 import Model.User.Student;
+import Model.User.User;
 
 import java.util.*;
 
@@ -49,5 +51,53 @@ public class Analytics {
         }
 
         return (passed * 100.0) / lessons.size();
+    }
+
+    // admin analytics
+    public int getPendingCourseCount (ArrayList<Course> courses) {
+        int pending = 0;
+
+        for (Course course : courses) {
+            if (course.getStatus() == COURSE_STATUS.PENDING)
+            {
+                pending++;
+            }
+        }
+
+        return pending;
+    }
+
+    public Map<String, Integer> systemHealth (ArrayList<User> users, ArrayList<Course> courses) {
+        int students = 0, instructors = 0, approved = 0, pending = 0;
+
+        for (User u : users) {
+            if (u instanceof Student) {
+                students++;
+            }
+            else
+            {
+                instructors++;
+            }
+        }
+
+        for (Course course : courses) {
+            if (course.getStatus() == COURSE_STATUS.APPROVED)
+            {
+                approved++;
+            }
+            if (course.getStatus() == COURSE_STATUS.PENDING)
+            {
+                pending++;
+            }
+        }
+
+        Map<String, Integer> health = new LinkedHashMap<>();
+        health.put("students", students);
+        health.put("instructors", instructors);
+        health.put("total_courses", courses.size());
+        health.put("approved", approved);
+        health.put("pending", pending);
+
+        return health;
     }
 }
