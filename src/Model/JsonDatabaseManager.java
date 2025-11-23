@@ -468,20 +468,4 @@ public class JsonDatabaseManager {
 
         saveCourses();
     }
-
-    public ArrayList<Student> getEnrolledStudents (Course course, ArrayList<Student> students) {
-        ArrayList<Student> enrolledStudents = new ArrayList<>();
-
-        if (course == null || students == null)
-        {
-            return enrolledStudents;
-        }
-
-        for (Student student : students) {
-            if (student != null && student.isEnrolled(course.getCourseId())) {
-                enrolledStudents.add(student);
-            }
-        }
-        return enrolledStudents;
-    }
 }
