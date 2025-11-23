@@ -1,10 +1,15 @@
 package Controller;
 
 import Model.Course.Course;
+import Model.Course.Lesson;
+import Model.Course.Question;
+import Model.Course.Quiz;
 import Model.JsonDatabaseManager;
 import Model.User.Student;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class StudentController {
 
@@ -69,5 +74,38 @@ public class StudentController {
             student.removeCompletedLesson(courseId, lessonId);
             dbManager.updateUser(student);
         }
+    }
+
+    public void submitQuiz(int studentId, int courseId, int lessonId, HashMap<Integer, Integer> answers) {
+        Student student = (Student) dbManager.getUserById(studentId);
+        Course course = dbManager.getCourseById(courseId);
+        if (student == null || course == null) {
+            return; // Or throw an exception
+        }
+
+        Lesson lesson = course.getLessonById(lessonId);
+        if (lesson == null || lesson.getQuiz() == null) {
+            return; // Or throw an exception
+        }
+
+        Quiz quiz = lesson.getQuiz();
+        double score = calculateScore(quiz, answers);
+        student.addQuizScore(lessonId, score);
+
+        if (student.hasPassedQuiz(lessonId, quiz.getPassThreshold())) {
+            markLessonAsCompleted(studentId, courseId, lessonId);
+        }
+
+        dbManager.updateUser(student);
+    }
+
+    private double calculateScore(Quiz quiz, HashMap<Integer, Integer> answers) {
+        int correctAnswers = 0;
+        for (Question question : quiz.getQuestions()) {
+            if (answers.containsKey(question.getQuestionId()) && answers.get(question.getQuestionId()).equals(question.getCorrectAnswerIndex())) {
+                correctAnswers++;
+            }
+        }
+        return (double) correctAnswers / quiz.getQuestions().size() * 100;
     }
 }

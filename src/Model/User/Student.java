@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 public class Student extends User{
 
+    private HashMap<Integer, ArrayList<Double>> quizScores; // Integer is quizID, Double is List of scores from attempts
     private ArrayList<Integer> enrolledCourses;
     private HashMap<Integer, ArrayList<Integer>> progress; //first integer is courseID, second integer is list of completed lessonIDs
 
@@ -12,12 +13,14 @@ public class Student extends User{
         super(username, email, passwordHash, role);
         enrolledCourses = new ArrayList<>();
         progress = new HashMap<>();
+        quizScores = new HashMap<>();
     }
 
-    public Student(ArrayList<Integer> enrolledCourses, HashMap<Integer, ArrayList<Integer>> progress, int studentID, String username, String email, String passwordHash, USER_ROLE role) {
+    public Student(ArrayList<Integer> enrolledCourses, HashMap<Integer, ArrayList<Integer>> progress, int studentID, String username, String email, String passwordHash, HashMap<Integer, ArrayList<Double>> quizScores, USER_ROLE role) {
         super(studentID, username, email, passwordHash, role);
         this.enrolledCourses = enrolledCourses != null ? enrolledCourses : new ArrayList<>();
         this.progress = progress != null ? progress : new HashMap<>();
+        this.quizScores = quizScores != null ? quizScores : new HashMap<>();
     }
 
     public ArrayList<Integer> getEnrolledCoursesIDs() {
@@ -72,6 +75,29 @@ public class Student extends User{
 
     public boolean isLessonCompleted(int courseID, int lessonID){
         return progress.containsKey(courseID) && progress.get(courseID).contains(lessonID);
+    }
+
+    public void addQuizScore(int lessonID, double score)
+    {
+        quizScores.putIfAbsent(lessonID, new ArrayList<>());
+        quizScores.get(lessonID).add(score);
+    }
+
+    public ArrayList<Double> getQuizAttempts(int lessonID) {
+        return quizScores.getOrDefault(lessonID, new ArrayList<>());
+    }
+
+    public double getLatestQuizScore(int lessonID) {
+        ArrayList<Double> attempts = getQuizAttempts(lessonID);
+        if (attempts.isEmpty()) {
+            return -1.0; // No attempts made
+        }
+        return attempts.getLast();
+    }
+
+    public boolean hasPassedQuiz(int lessonID, double passMark) {
+        double latestScore = getLatestQuizScore(lessonID);
+        return latestScore >= passMark;
     }
 
 }

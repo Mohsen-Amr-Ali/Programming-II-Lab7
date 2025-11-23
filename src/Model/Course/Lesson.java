@@ -6,12 +6,15 @@ public class Lesson {
     private int courseId;
     private String title;
     private String content;
+    private Quiz quiz;
 //                                              CONSTRUCTOR
 
-    public Lesson(int lessonId, String title, String content) {
+    public Lesson(int lessonId, int courseId, String title, String content, Quiz quiz) {
         this.lessonId = lessonId;
+        this.courseId = courseId;
         this.title = title;
         this.content = content;
+        this.quiz = quiz;
     }
 //                                              GETTERS AND SETTERS
 
@@ -41,5 +44,13 @@ public class Lesson {
 
     public int getCourseId(){
         return courseId;
+    }
+
+    public Quiz getQuiz() {
+        return quiz;
+    }
+
+    public void setQuiz(Quiz quiz) {
+        this.quiz = quiz;
     }
 }
