@@ -24,7 +24,6 @@ public class SComboBox<E> extends JComboBox<E> {
         setForeground(StyleColors.TEXT);
         setBackground(StyleColors.CARD);
 
-        // Use a custom UI to control the arrow button and popup
         setUI(new ModernComboBoxUI());
 
         // Border similar to STField
@@ -32,11 +31,12 @@ public class SComboBox<E> extends JComboBox<E> {
         Border padding = BorderFactory.createEmptyBorder(5, 8, 5, 8);
         setBorder(BorderFactory.createCompoundBorder(flatBorder, padding));
 
-        // Ensure the renderer (the list items) matches the theme
+        // Custom Renderer for BOTH the list items and the selected item view
         setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
                 if (isSelected) {
                     setBackground(StyleColors.ACCENT);
                     setForeground(StyleColors.TEXT);
@@ -44,7 +44,14 @@ public class SComboBox<E> extends JComboBox<E> {
                     setBackground(StyleColors.CARD);
                     setForeground(StyleColors.TEXT);
                 }
-                setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+
+                // If index is -1, it means we are rendering the selected item in the combo box itself
+                if (index == -1) {
+                    setBackground(StyleColors.CARD);
+                    setForeground(StyleColors.TEXT);
+                }
+
+                setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
                 return this;
             }
         });
@@ -56,11 +63,11 @@ public class SComboBox<E> extends JComboBox<E> {
             JButton button = new JButton() {
                 @Override
                 public void paint(Graphics g) {
-                    // Paint the background
+                    // Paint background of the arrow button area
                     g.setColor(StyleColors.CARD);
                     g.fillRect(0, 0, getWidth(), getHeight());
 
-                    // Paint the arrow
+                    // Paint arrow
                     int width = getWidth();
                     int height = getHeight();
                     int size = 8;
@@ -71,7 +78,6 @@ public class SComboBox<E> extends JComboBox<E> {
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                     g2.setColor(StyleColors.ACCENT);
 
-                    // Draw an inverted triangle
                     Polygon arrow = new Polygon();
                     arrow.addPoint(x, y);
                     arrow.addPoint(x + size, y);
@@ -85,18 +91,36 @@ public class SComboBox<E> extends JComboBox<E> {
         }
 
         @Override
+        public void paintCurrentValueBackground(Graphics g, Rectangle bounds, boolean hasFocus) {
+            // Override this to force the background of the "selected item" area
+            g.setColor(StyleColors.CARD);
+            g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+        }
+
+        @Override
         protected ComboPopup createPopup() {
             BasicComboPopup popup = new BasicComboPopup(comboBox) {
                 @Override
                 protected JScrollPane createScroller() {
-                    // Use our styled scroll pane for the dropdown list
                     SScrollPane scroller = new SScrollPane(list);
                     scroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
                     scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+                    // Force viewport background
+                    scroller.getViewport().setBackground(StyleColors.CARD);
+                    scroller.setBackground(StyleColors.CARD);
                     return scroller;
                 }
+
+                @Override
+                protected void configurePopup() {
+                    super.configurePopup();
+                    list.setBackground(StyleColors.CARD);
+                    list.setForeground(StyleColors.TEXT);
+                    list.setSelectionBackground(StyleColors.ACCENT);
+                    list.setSelectionForeground(StyleColors.TEXT);
+                    setBorder(BorderFactory.createLineBorder(StyleColors.ACCENT_DARK, 1));
+                }
             };
-            popup.setBorder(BorderFactory.createLineBorder(StyleColors.ACCENT_DARK, 1));
             return popup;
         }
     }

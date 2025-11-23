@@ -14,7 +14,7 @@ public class LessonViewPanel extends JPanel {
         setLayout(new BorderLayout(0, 0));
         setBackground(StyleColors.BACKGROUND);
 
-        // Consistent Styling
+        // Consistent Styling with padding around the whole panel
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createEmptyBorder(10, 10, 10, 10),
                 BorderFactory.createCompoundBorder(
@@ -33,7 +33,9 @@ public class LessonViewPanel extends JPanel {
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
         topPanel.setBackground(StyleColors.BACKGROUND);
-        topPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+
+        // FIX: Add Padding (EmptyBorder) between the label and the content below
+        topPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
         topPanel.add(titleLabel);
 
         add(topPanel, BorderLayout.NORTH);

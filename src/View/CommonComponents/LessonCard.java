@@ -8,6 +8,7 @@ import java.awt.*;
 
 public class LessonCard extends JPanel {
     private JLabel titleLabel;
+    private JLabel numberLabel; // Make accessible for hover updates
     private SCheckBox completedCheckBox;
 
     // Colors
@@ -29,9 +30,9 @@ public class LessonCard extends JPanel {
                 BorderFactory.createEmptyBorder(12, 18, 12, 18)
         ));
 
-        JLabel numberLabel = new JLabel(String.valueOf(number));
+        numberLabel = new JLabel(String.valueOf(number));
         numberLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        numberLabel.setForeground(StyleColors.ACCENT);
+        numberLabel.setForeground(StyleColors.ACCENT); // Default color
         numberLabel.setHorizontalAlignment(SwingConstants.CENTER);
         numberLabel.setPreferredSize(new Dimension(36, 36));
         numberLabel.setOpaque(false);
@@ -65,36 +66,33 @@ public class LessonCard extends JPanel {
         add(rightPanel, BorderLayout.EAST);
     }
 
-    // Third constructor: adds an 'Edit Lesson' stylized button instead of the checkbox
-    public LessonCard(int number, Lesson lesson, String dummy) {
-        this(number, lesson);
-        SBtn editButton = new SBtn("Edit Lesson");
-        editButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        editButton.setBackground(StyleColors.ACCENT);
-        editButton.setForeground(Color.WHITE);
-
-        JPanel rightPanel = new JPanel(new BorderLayout());
-        rightPanel.setOpaque(false);
-        rightPanel.add(editButton, BorderLayout.EAST);
-        add(rightPanel, BorderLayout.EAST);
-    }
+    // Removed the Edit Button constructor as requested.
+    // Instructor view will use the basic constructor and handle actions externally.
 
     private void addHoverEffect() {
         this.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent e) {
-                // Update hover color based on current background if it changed externally
-                // But typically we stick to the theme.
-                // Just set background to hover color.
+                // Hover state
                 setBackground(hoverColor);
-                // Checkbox needs manual update if it's opaque
                 if (completedCheckBox != null) completedCheckBox.setBackground(hoverColor);
+
+                // Change number color to white on hover/select
+                numberLabel.setForeground(Color.WHITE);
             }
             @Override
             public void mouseExited(java.awt.event.MouseEvent e) {
-                // Revert to the stored original color
+                // Revert state
                 setBackground(originalColor);
                 if (completedCheckBox != null) completedCheckBox.setBackground(originalColor);
+
+                // Only revert number color if this isn't the "selected" card (handled via setBackground check usually)
+                // For simplicity in hover: revert to accent.
+                if (!getBackground().equals(StyleColors.ACCENT)) {
+                    numberLabel.setForeground(StyleColors.ACCENT);
+                } else {
+                    numberLabel.setForeground(Color.WHITE); // Stay white if selected
+                }
             }
         });
     }
@@ -102,11 +100,13 @@ public class LessonCard extends JPanel {
     @Override
     public void setBackground(Color bg) {
         super.setBackground(bg);
-        // Update originalColor if set externally (except when hovering)
-        // This ensures that if we change the card color programmatically,
-        // the hover effect respects it.
-        // Simple heuristic: if bg is not the hover color, update original.
-        if (hoverColor != null && !bg.equals(hoverColor)) {
+        // If the background is set to Accent (Selected state), ensure text is white
+        if (bg.equals(StyleColors.ACCENT)) {
+            if (numberLabel != null) numberLabel.setForeground(Color.WHITE);
+            if (completedCheckBox != null) completedCheckBox.setBackground(bg);
+        } else if (bg.equals(StyleColors.CARD)) {
+            // If reverting to default, revert text color
+            if (numberLabel != null) numberLabel.setForeground(StyleColors.ACCENT);
             this.originalColor = bg;
             this.hoverColor = StyleColors.lightenColor(originalColor, 0.12f);
             if (completedCheckBox != null) completedCheckBox.setBackground(bg);

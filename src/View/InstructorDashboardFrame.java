@@ -101,12 +101,19 @@ public class InstructorDashboardFrame extends JFrame {
         statusTabs.addTab("Pending", new SScrollPane(pendingCoursesPanel));
         statusTabs.addTab("Rejected", new SScrollPane(rejectedCoursesPanel));
 
-        mainPanel.add(statusTabs, BorderLayout.CENTER);
+        // WRAP TABS IN A PANEL TO ADD MARGINS (Align with Navbar)
+        JPanel tabsWrapper = new JPanel(new BorderLayout());
+        tabsWrapper.setBackground(StyleColors.BACKGROUND);
+        // Add 15px horizontal margin to align with navbar inner content
+        tabsWrapper.setBorder(BorderFactory.createEmptyBorder(10, 15, 0, 15));
+        tabsWrapper.add(statusTabs, BorderLayout.CENTER);
+
+        mainPanel.add(tabsWrapper, BorderLayout.CENTER);
 
         // --- Bottom Action Bar (Add Course) ---
         JPanel bottomBar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottomBar.setBackground(StyleColors.BACKGROUND);
-        bottomBar.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        bottomBar.setBorder(BorderFactory.createEmptyBorder(10, 15, 15, 15)); // Add margins
 
         SBtn addCourseBtn = new SBtn("Create New Course");
         addCourseBtn.setBackground(StyleColors.ACCENT);
@@ -139,7 +146,7 @@ public class InstructorDashboardFrame extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(StyleColors.BACKGROUND);
-        panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5)); // Inner padding for scroll content
         return panel;
     }
 
@@ -245,38 +252,7 @@ public class InstructorDashboardFrame extends JFrame {
         sidePanel.setBackground(StyleColors.BACKGROUND);
         sidePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // --- Top Buttons (Edit/Delete Course) ---
-        JPanel courseActionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        courseActionsPanel.setBackground(StyleColors.BACKGROUND);
-
-        SBtn editCourseBtn = new SBtn("Edit Course");
-        editCourseBtn.addActionListener(e -> showEditCourseDialog(course));
-
-        SBtn deleteCourseBtn = new SBtn("Delete Course");
-        deleteCourseBtn.setBackground(new Color(220, 53, 69));
-        deleteCourseBtn.setForeground(Color.WHITE);
-        deleteCourseBtn.addActionListener(e -> {
-            int result = SOptionPane.showConfirmDialog(
-                    this,
-                    "<html>Are you sure you want to delete this course?<br><b>This action is irreversible!</b></html>",
-                    "Delete Course",
-                    JOptionPane.YES_NO_OPTION
-            );
-            if (result == JOptionPane.YES_OPTION) {
-                instructorController.deleteCourse(course);
-                loadAllCourses();
-                // Go back to main
-                cardLayout.show(getContentPane(), MAIN_PANEL);
-                // Remove the view panel
-                getContentPane().remove(1);
-            }
-        });
-
-        courseActionsPanel.add(editCourseBtn);
-        courseActionsPanel.add(deleteCourseBtn);
-        sidePanel.add(courseActionsPanel, BorderLayout.NORTH);
-
-        // --- Lessons List ---
+        // --- Lessons List (Top/Center) ---
         JPanel lessonsContainer = new JPanel(new BorderLayout());
         lessonsContainer.setBackground(StyleColors.BACKGROUND);
 
@@ -293,7 +269,7 @@ public class InstructorDashboardFrame extends JFrame {
         for (int i = 0; i < lessons.size(); i++) {
             Lesson lesson = lessons.get(i);
             // Use LessonCard with Edit button (Constructor 3)
-            LessonCard lessonCard = new LessonCard(i + 1, lesson, "Edit");
+            LessonCard lessonCard = new LessonCard(i + 1, lesson);
 
             // Make the whole card clickable to view
             lessonCard.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -323,17 +299,45 @@ public class InstructorDashboardFrame extends JFrame {
 
         sidePanel.add(lessonsContainer, BorderLayout.CENTER);
 
-        // --- Back Button ---
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        bottomPanel.setBackground(StyleColors.BACKGROUND);
-        SBtn backButton = new SBtn("Back to Dashboard");
+        // --- Bottom Action Bar (Back, Edit, Delete) ---
+        JPanel bottomBar = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        bottomBar.setBackground(StyleColors.BACKGROUND);
+
+        SBtn backButton = new SBtn("Back");
         backButton.addActionListener(e -> {
             loadAllCourses();
             cardLayout.show(getContentPane(), MAIN_PANEL);
             getContentPane().remove(1); // Cleanup
         });
-        bottomPanel.add(backButton);
-        sidePanel.add(bottomPanel, BorderLayout.SOUTH);
+
+        SBtn editCourseBtn = new SBtn("Edit Course");
+        editCourseBtn.addActionListener(e -> showEditCourseDialog(course));
+
+        SBtn deleteCourseBtn = new SBtn("Delete Course");
+        deleteCourseBtn.setBackground(new Color(220, 53, 69));
+        deleteCourseBtn.setForeground(Color.WHITE);
+        deleteCourseBtn.addActionListener(e -> {
+            int result = SOptionPane.showConfirmDialog(
+                    this,
+                    "<html>Are you sure you want to delete this course?<br><b>This action is irreversible!</b></html>",
+                    "Delete Course",
+                    JOptionPane.YES_NO_OPTION
+            );
+            if (result == JOptionPane.YES_OPTION) {
+                instructorController.deleteCourse(course);
+                loadAllCourses();
+                // Go back to main
+                cardLayout.show(getContentPane(), MAIN_PANEL);
+                // Remove the view panel
+                getContentPane().remove(1);
+            }
+        });
+
+        bottomBar.add(backButton);
+        bottomBar.add(editCourseBtn);
+        bottomBar.add(deleteCourseBtn);
+
+        sidePanel.add(bottomBar, BorderLayout.SOUTH);
 
         // Use SSplitPane
         SSplitPane splitPane = new SSplitPane(JSplitPane.HORIZONTAL_SPLIT, courseViewPanel, sidePanel);
@@ -407,12 +411,9 @@ public class InstructorDashboardFrame extends JFrame {
         java.util.List<Lesson> allLessons = course.getLessons();
         for(int i=0; i<allLessons.size(); i++) {
             Lesson l = allLessons.get(i);
-            // Simple buttons or cards for navigation
-            // Highlighting current lesson if needed
+            // Highlighting current lesson
             boolean isCurrent = (l == lesson);
 
-            // We can reuse LessonCard but maybe smaller or just a button
-            // Let's use a simple LessonCard
             LessonCard card = new LessonCard(i+1, l);
             if (isCurrent) {
                 card.setBackground(StyleColors.ACCENT); // Highlight current

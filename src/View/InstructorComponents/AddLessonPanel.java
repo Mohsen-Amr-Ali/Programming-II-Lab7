@@ -14,21 +14,15 @@ public class AddLessonPanel {
     protected SLabel titleLabel;
     protected STField titleTextField;
 
-    // Content Type Selection
     protected SLabel contentTypeLabel;
     protected JRadioButton typeTextRadio;
     protected JRadioButton typeFileRadio;
     protected ButtonGroup typeGroup;
 
-    // Content Input Area (Card Layout to switch)
     protected JPanel contentInputContainer;
     protected CardLayout contentCardLayout;
-
-    // Card 1: Text Area
     protected JTextArea contentTextArea;
     protected JScrollPane contentScroll;
-
-    // Card 2: File Upload
     protected JPanel fileUploadPanel;
     protected SBtn uploadFileBtn;
     protected JLabel selectedFileLabel;
@@ -42,30 +36,25 @@ public class AddLessonPanel {
     public AddLessonPanel() {
         // --- Instantiation ---
 
-        // Title
         titleLabel = new SLabel("Lesson Title: ");
         titleTextField = new STField(20);
 
-        // Content Type Switch
         contentTypeLabel = new SLabel("Content Type: ");
         typeTextRadio = new JRadioButton("Text");
         typeFileRadio = new JRadioButton("File Upload");
-
-        // Style Radio Buttons
         styleRadioButton(typeTextRadio);
         styleRadioButton(typeFileRadio);
-        typeTextRadio.setSelected(true); // Default
+        typeTextRadio.setSelected(true);
 
         typeGroup = new ButtonGroup();
         typeGroup.add(typeTextRadio);
         typeGroup.add(typeFileRadio);
 
-        // --- Content Cards ---
+        // Content Cards
         contentCardLayout = new CardLayout();
         contentInputContainer = new JPanel(contentCardLayout);
         contentInputContainer.setOpaque(false);
 
-        // Card 1: Text Area
         contentTextArea = new JTextArea(6, 20);
         contentTextArea.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         contentTextArea.setLineWrap(true);
@@ -81,7 +70,6 @@ public class AddLessonPanel {
         contentScroll.setBorder(null);
         contentScroll.getViewport().setBackground(StyleColors.CARD);
 
-        // Card 2: File Upload
         fileUploadPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         fileUploadPanel.setOpaque(false);
         uploadFileBtn = new SBtn("Select Text File");
@@ -93,27 +81,27 @@ public class AddLessonPanel {
         fileUploadPanel.add(uploadFileBtn);
         fileUploadPanel.add(selectedFileLabel);
 
-        // Add cards
         contentInputContainer.add(contentScroll, "TEXT");
         contentInputContainer.add(fileUploadPanel, "FILE");
 
-        // Switch Logic
         typeTextRadio.addActionListener(e -> contentCardLayout.show(contentInputContainer, "TEXT"));
         typeFileRadio.addActionListener(e -> contentCardLayout.show(contentInputContainer, "FILE"));
 
-        // File Upload Logic
         uploadFileBtn.addActionListener(e -> chooseFile());
 
         // Position Section
         positionLabel = new SLabel("Position: ");
         positionComboBox = new SComboBox<>();
-        // Default populate with just "1" until setLessonCount is called
         positionComboBox.addItem(1);
+
+        // FIX: Set specific disabled color so it's visible
+        // This overrides the default "grayed out" look that makes it invisible on dark backgrounds
+        UIManager.put("ComboBox.disabledForeground", StyleColors.TEXT.darker());
+        positionComboBox.setEnabled(false);
 
         addAtEndCheckBox = new SCheckBox();
         addAtEndCheckBox.setText("Add at the end of the course");
-        addAtEndCheckBox.setSelected(true); // Default to checked
-        positionComboBox.setEnabled(false); // Disable combo by default
+        addAtEndCheckBox.setSelected(true);
 
         addAtEndCheckBox.addActionListener(e -> {
             positionComboBox.setEnabled(!addAtEndCheckBox.isSelected());
@@ -142,21 +130,18 @@ public class AddLessonPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(7, 7, 7, 7);
 
-        // Row 0: Title
         gbc.gridx = 0; gbc.gridy = 0;
         gbc.gridwidth = 1;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         rootPanel.add(titleLabel, gbc);
 
-        // Row 1: Title input
         gbc.gridx = 0; gbc.gridy = 1;
         gbc.gridwidth = 2;
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         rootPanel.add(titleTextField, gbc);
 
-        // Row 2: Content Type
         gbc.gridx = 0; gbc.gridy = 2;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -170,7 +155,6 @@ public class AddLessonPanel {
         typePanel.add(typeFileRadio);
         rootPanel.add(typePanel, gbc);
 
-        // Row 3: Content Input (Dynamic Area)
         gbc.gridx = 0; gbc.gridy = 3;
         gbc.gridwidth = 2;
         gbc.weightx = 1.0;
@@ -178,7 +162,6 @@ public class AddLessonPanel {
         gbc.fill = GridBagConstraints.BOTH;
         rootPanel.add(contentInputContainer, gbc);
 
-        // Row 4: Position Controls
         JPanel posPanel = new JPanel();
         posPanel.setLayout(new BoxLayout(posPanel, BoxLayout.X_AXIS));
         posPanel.setOpaque(false);
@@ -197,7 +180,6 @@ public class AddLessonPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         rootPanel.add(posPanel, gbc);
 
-        // Row 5: Add button
         gbc.gridx = 0; gbc.gridy = 5;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
@@ -208,11 +190,9 @@ public class AddLessonPanel {
     private void styleRadioButton(JRadioButton rb) {
         rb.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         rb.setForeground(StyleColors.TEXT);
-        rb.setBackground(StyleColors.BACKGROUND); // Matches panel bg
+        rb.setBackground(StyleColors.BACKGROUND);
         rb.setFocusPainted(false);
         rb.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        // Custom icon logic could be added here for perfect theming,
-        // but default is acceptable if bg matches.
     }
 
     private void chooseFile() {
@@ -229,67 +209,34 @@ public class AddLessonPanel {
         }
     }
 
-    /**
-     * Populates the position combo box based on the current number of lessons.
-     * Adds 1 to N+1.
-     * @param currentLessonCount The number of existing lessons in the course.
-     */
     public void setLessonCount(int currentLessonCount) {
         positionComboBox.removeAllItems();
         for (int i = 1; i <= currentLessonCount + 1; i++) {
             positionComboBox.addItem(i);
         }
-        // Select the last one (N+1) by default if logical, but here we select 1
-        // usually user wants to append, which is covered by checkbox.
         if (positionComboBox.getItemCount() > 0) {
             positionComboBox.setSelectedIndex(positionComboBox.getItemCount() - 1);
         }
     }
 
-    public JPanel getRootPanel() {
-        return rootPanel;
-    }
-
-    public String getTitleText() {
-        return titleTextField.getText();
-    }
-    public void setTitleText(String text) {
-        titleTextField.setText(text);
-    }
-
-    public boolean isFileMode() {
-        return typeFileRadio.isSelected();
-    }
-
-    public String getContentText() {
-        return contentTextArea.getText();
-    }
-    public void setContentText(String text) {
-        contentTextArea.setText(text);
-    }
-
-    public File getSelectedContentFile() {
-        return selectedContentFile;
-    }
-
+    public JPanel getRootPanel() { return rootPanel; }
+    public String getTitleText() { return titleTextField.getText(); }
+    public void setTitleText(String text) { titleTextField.setText(text); }
+    public boolean isFileMode() { return typeFileRadio.isSelected(); }
+    public String getContentText() { return contentTextArea.getText(); }
+    public void setContentText(String text) { contentTextArea.setText(text); }
+    public File getSelectedContentFile() { return selectedContentFile; }
     public int getSelectedPosition() {
-        // Return 0-based index
         if (addAtEndCheckBox.isSelected()) {
-            return -1; // logic for "end"
+            return -1;
         }
         Integer pos = (Integer) positionComboBox.getSelectedItem();
         return (pos != null) ? pos - 1 : -1;
     }
-
-    public boolean isAddAtEndChecked() {
-        return addAtEndCheckBox.isSelected();
-    }
+    public boolean isAddAtEndChecked() { return addAtEndCheckBox.isSelected(); }
     public void setAddAtEndChecked(boolean checked) {
         addAtEndCheckBox.setSelected(checked);
         positionComboBox.setEnabled(!checked);
     }
-
-    public SBtn getAddButton() {
-        return addButton;
-    }
+    public SBtn getAddButton() { return addButton; }
 }
