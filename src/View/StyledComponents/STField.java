@@ -30,6 +30,7 @@ public class STField extends JTextField {
         setFont(new Font("Segoe UI", Font.PLAIN, 14));
         setForeground(StyleColors.TEXT);
         setBackground(StyleColors.CARD);
+        setCaretColor(StyleColors.TEXT); // White cursor to match text color
 
         Border flatBorder = BorderFactory.createLineBorder(StyleColors.ACCENT_DARK, 1 );
         Border padding = BorderFactory.createEmptyBorder(5, 8, 5, 8);

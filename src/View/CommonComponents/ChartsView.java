@@ -7,6 +7,7 @@ import Model.Course.QuizResult;
 import Model.JsonDatabaseManager;
 import Model.User.Student;
 import Model.User.User;
+import View.StyledComponents.StyleColors;
 import util.Analytics;
 
 import javax.swing.*;
@@ -16,6 +17,9 @@ import java.util.Map;
 
 import org.jfree.chart.*;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PiePlot;
+import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 
@@ -25,7 +29,53 @@ public class ChartsView extends JPanel {
     public ChartsView() {
         this.analytics = new Analytics();
         setLayout(new GridLayout(0, 1, 10, 10)); // Flexible grid
-        setBackground(Color.WHITE); // Or theme color if preferred
+        setBackground(StyleColors.BACKGROUND); // Dark theme background
+    }
+
+    // Helper method to apply dark theme styling to charts
+    private void styleChart(JFreeChart chart) {
+        // Chart background
+        chart.setBackgroundPaint(StyleColors.BACKGROUND);
+        chart.getTitle().setPaint(StyleColors.TEXT);
+
+        // Legend styling
+        if (chart.getLegend() != null) {
+            chart.getLegend().setBackgroundPaint(StyleColors.BACKGROUND);
+            chart.getLegend().setItemPaint(StyleColors.TEXT);
+        }
+
+        // Plot styling
+        if (chart.getPlot() instanceof CategoryPlot) {
+            CategoryPlot plot = chart.getCategoryPlot();
+            plot.setBackgroundPaint(StyleColors.CARD);
+            plot.setDomainGridlinePaint(StyleColors.HOVER);
+            plot.setRangeGridlinePaint(StyleColors.HOVER);
+            plot.setOutlinePaint(StyleColors.ACCENT_DARK);
+
+            // Axis styling
+            plot.getDomainAxis().setLabelPaint(StyleColors.TEXT);
+            plot.getDomainAxis().setTickLabelPaint(StyleColors.TEXT);
+            plot.getRangeAxis().setLabelPaint(StyleColors.TEXT);
+            plot.getRangeAxis().setTickLabelPaint(StyleColors.TEXT);
+
+            // Bar renderer styling
+            BarRenderer renderer = (BarRenderer) plot.getRenderer();
+            renderer.setSeriesPaint(0, StyleColors.ACCENT);
+        } else if (chart.getPlot() instanceof PiePlot) {
+            PiePlot plot = (PiePlot) chart.getPlot();
+            plot.setBackgroundPaint(StyleColors.CARD);
+            plot.setOutlinePaint(StyleColors.ACCENT_DARK);
+            plot.setLabelBackgroundPaint(StyleColors.BACKGROUND);
+            plot.setLabelPaint(StyleColors.TEXT);
+            plot.setLabelOutlinePaint(StyleColors.ACCENT_DARK);
+
+            // Pie section colors
+            plot.setSectionPaint("Completed", new Color(40, 167, 69)); // Green
+            plot.setSectionPaint("In Progress", StyleColors.ACCENT);
+            plot.setSectionPaint("Approved", new Color(40, 167, 69)); // Green
+            plot.setSectionPaint("Pending", new Color(255, 193, 7)); // Yellow
+            plot.setSectionPaint("Rejected", new Color(220, 53, 69)); // Red
+        }
     }
 
     // --- STUDENT ANALYTICS ---
@@ -109,7 +159,10 @@ public class ChartsView extends JPanel {
                 PlotOrientation.VERTICAL,
                 false, true, false
         );
-        add(new ChartPanel(avgChart));
+        styleChart(avgChart);
+        ChartPanel avgChartPanel = new ChartPanel(avgChart);
+        avgChartPanel.setBackground(StyleColors.BACKGROUND);
+        add(avgChartPanel);
 
         // 2. Course Completion Rate (Pie Chart)
         double completionRate = analytics.getCourseCompletionPercentage(course);
@@ -122,7 +175,10 @@ public class ChartsView extends JPanel {
                 pieDataset,
                 true, true, false
         );
-        add(new ChartPanel(pieChart));
+        styleChart(pieChart);
+        ChartPanel pieChartPanel = new ChartPanel(pieChart);
+        pieChartPanel.setBackground(StyleColors.BACKGROUND);
+        add(pieChartPanel);
 
         revalidate();
         repaint();
@@ -183,7 +239,10 @@ public class ChartsView extends JPanel {
                 PlotOrientation.VERTICAL,
                 false, true, false
         );
-        add(new ChartPanel(coursesChart));
+        styleChart(coursesChart);
+        ChartPanel coursesChartPanel = new ChartPanel(coursesChart);
+        coursesChartPanel.setBackground(StyleColors.BACKGROUND);
+        add(coursesChartPanel);
 
         revalidate();
         repaint();

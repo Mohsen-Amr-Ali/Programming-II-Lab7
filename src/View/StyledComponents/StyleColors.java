@@ -15,10 +15,20 @@ public class StyleColors {
 
     // Initialize global UI defaults
     static {
+        // Caret colors for text fields
         UIManager.put("TextField.caretForeground", Color.WHITE);
         UIManager.put("TextArea.caretForeground", Color.WHITE);
         UIManager.put("PasswordField.caretForeground", Color.WHITE);
         UIManager.put("FormattedTextField.caretForeground", Color.WHITE);
+
+        // JOptionPane/SOptionPane dialog styling
+        UIManager.put("OptionPane.background", BACKGROUND);
+        UIManager.put("OptionPane.messageForeground", TEXT);
+        UIManager.put("Panel.background", BACKGROUND);
+        UIManager.put("Button.background", CARD);
+        UIManager.put("Button.foreground", TEXT);
+        UIManager.put("Button.focus", ACCENT);
+        UIManager.put("Button.select", ACCENT);
     }
 
     private StyleColors() {}
