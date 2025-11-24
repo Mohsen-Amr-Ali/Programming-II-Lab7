@@ -208,8 +208,10 @@ public class QuizPanel extends JPanel {
 
         if (percentage >= quiz.getPassThreshold()) {
             scoreLabel.setForeground(new Color(40, 167, 69)); // Green
+            SOptionPane.showMessageDialog(this, "Congratulations! You passed the quiz.", "Passed", JOptionPane.INFORMATION_MESSAGE);
         } else {
             scoreLabel.setForeground(new Color(220, 53, 69)); // Red
+            SOptionPane.showMessageDialog(this, "You did not pass. Please review the material and try again.", "Failed", JOptionPane.WARNING_MESSAGE);
         }
 
         // Re-render to show correct/incorrect highlights

@@ -669,14 +669,12 @@ public class StudentDashboardFrame extends JFrame {
         quizWrapper.setBackground(StyleColors.BACKGROUND);
         quizWrapper.add(panelHolder[0], BorderLayout.CENTER);
 
-        SBtn cancelBtn = new SBtn("Cancel Quiz");
-        cancelBtn.setBackground(new Color(220, 53, 69));
-        cancelBtn.setForeground(Color.WHITE);
-        cancelBtn.addActionListener(e -> showLessonView(course, lessonIndex));
+        SBtn backToLessonBtn = new SBtn("Back to Lesson");
+        backToLessonBtn.addActionListener(e -> showLessonView(course, lessonIndex));
 
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         btnPanel.setBackground(StyleColors.BACKGROUND);
-        btnPanel.add(cancelBtn);
+        btnPanel.add(backToLessonBtn);
         quizWrapper.add(btnPanel, BorderLayout.NORTH);
 
         SSplitPane splitPane = new SSplitPane(JSplitPane.HORIZONTAL_SPLIT, quizWrapper, rightPanel);

@@ -1,0 +1,1 @@
+﻿Exception handling helps manage runtime errors. Use try-catch blocks to handle exceptions and finally blocks for cleanup code.
