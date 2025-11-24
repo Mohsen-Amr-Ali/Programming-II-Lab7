@@ -134,6 +134,7 @@ public class StudentDashboardFrame extends JFrame {
         });
 
         navBar.addMyCertificatesButtonListener(e -> {
+            certificatesPanel.loadCertificates(); // Refresh the list
             coursesCardLayout.show(coursesContainer, "Certificates");
             navBar.clearSearchText();
         });

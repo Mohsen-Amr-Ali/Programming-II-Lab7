@@ -42,7 +42,7 @@ public class CertificatesPanel extends JPanel {
         loadCertificates();
     }
 
-    private void loadCertificates() {
+    public void loadCertificates() {
         certificatesContainer.removeAll();
         ArrayList<Course> completedCourses = studentController.getCompletedCourses(student.getId());
 
