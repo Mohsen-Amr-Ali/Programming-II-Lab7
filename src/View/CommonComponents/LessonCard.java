@@ -46,6 +46,7 @@ public class LessonCard extends JPanel {
         add(titleLabel, BorderLayout.CENTER);
 
         setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
+        setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         // Hover effect
         addHoverEffect();

@@ -12,7 +12,7 @@ public class SignupPanel extends JPanel {
     private STField emailField;
     private JPasswordField passwordField;
     private JPasswordField confirmPasswordField;
-    private JComboBox<String> roleComboBox;
+    private SComboBox<String> roleComboBox;
     private SBtn signupButton;
     private LoginAndSignupFrame parentFrame;
 
@@ -24,7 +24,7 @@ public class SignupPanel extends JPanel {
         emailField = new STField(20);
         passwordField = new JPasswordField(20);
         confirmPasswordField = new JPasswordField(20);
-        roleComboBox = new JComboBox<>(new String[]{"Instructor", "Student", "Admin"});
+        roleComboBox = new SComboBox<>(new String[]{"Instructor", "Student", "Admin"});
         signupButton = new SBtn("Sign Up");
 
         //---------------------- Styling ----------------------//
@@ -60,10 +60,7 @@ public class SignupPanel extends JPanel {
         confirmPasswordField.setCaretColor(StyleColors.TEXT);
         confirmPasswordField.setBorder(BorderFactory.createCompoundBorder(flatBorder, padding));
 
-        // Role ComboBox Styling
-        roleComboBox.setBackground(StyleColors.CARD);
-        roleComboBox.setForeground(StyleColors.TEXT);
-        roleComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        // Role ComboBox - SComboBox handles styling automatically
 
         //---------------------- Adding Components ----------------------//
         GridBagConstraints gbc = new GridBagConstraints();

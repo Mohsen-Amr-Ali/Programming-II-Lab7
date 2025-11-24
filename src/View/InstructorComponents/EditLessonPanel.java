@@ -49,7 +49,7 @@ public class EditLessonPanel extends AddLessonPanel {
                     displayContent = FileManager.readBinaryToText(contentPath);
                 } else {
                     // Assume it was raw text (legacy support)
-                    displayContent = contentPath;
+                    displayContent = contentPath; // legacy raw text
                 }
             }
         }
@@ -62,9 +62,7 @@ public class EditLessonPanel extends AddLessonPanel {
         // 3. Pre-fill Position
         setLessonCount(totalLessons - 1); // 1..N
         positionComboBox.removeAllItems();
-        for (int i = 1; i <= totalLessons; i++) {
-            positionComboBox.addItem(i);
-        }
+        for (int i = 1; i <= totalLessons; i++) positionComboBox.addItem(i);
 
         // Select current
         if (currentLessonIndex >= 0 && currentLessonIndex < totalLessons) {
@@ -74,21 +72,21 @@ public class EditLessonPanel extends AddLessonPanel {
             setAddAtEndChecked(true);
         }
 
-        // 4. Update Button Text
+        // 4. Update Save button text & styling
         getAddButton().setText("Save Changes");
+        getAddButton().setBackground(StyleColors.ACCENT);
+        getAddButton().setForeground(Color.WHITE);
 
-        // 5. Add "Manage Quiz" Button
+        // 5. Add Manage Quiz button
         addQuizButton();
     }
 
     private void addQuizButton() {
         // Create the button
         manageQuizBtn = new SBtn(lesson.getQuiz() == null ? "Create Quiz" : "Edit Quiz");
-        manageQuizBtn.setBackground(new Color(255, 193, 7)); // Yellow/Orange for distinction
-        manageQuizBtn.setForeground(Color.WHITE); // Text color might need adjustment against yellow, trying white
-        // Or use StyleColors.ACCENT if preferred, but distinct is nice.
-        // Let's stick to Accent for consistency if yellow is too bright.
+        // Use accent dark consistently as secondary action style
         manageQuizBtn.setBackground(StyleColors.ACCENT_DARK);
+        manageQuizBtn.setForeground(Color.WHITE);
 
         manageQuizBtn.addActionListener(e -> {
             Window parentWindow = SwingUtilities.getWindowAncestor(getRootPanel());
@@ -118,34 +116,14 @@ public class EditLessonPanel extends AddLessonPanel {
             }
         });
 
-        // Add to layout (Row 6, shifting Add button to Row 7)
+        // Adjust layout: insert above save button
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(7, 7, 7, 7);
-        gbc.gridx = 0;
-        gbc.gridy = 5; // Where Add button was? No, Add button was row 5 in parent.
-        // Parent layout:
-        // 0: Title
-        // 1: Title Input
-        // 2: Type
-        // 3: Content
-        // 4: Position
-        // 5: Add Button
-
-        // We want to insert Quiz button before Add Button.
-        // Remove Add Button first?
+        gbc.gridx = 0; gbc.gridwidth = 2; gbc.fill = GridBagConstraints.NONE; gbc.anchor = GridBagConstraints.CENTER;
+        // Original save button at row 5 -> move it to 6
         rootPanel.remove(getAddButton());
-
-        // Add Quiz Button at Row 5
-        gbc.gridy = 5;
-        gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.CENTER;
-        rootPanel.add(manageQuizBtn, gbc);
-
-        // Re-add Add Button at Row 6
-        gbc.gridy = 6;
-        rootPanel.add(getAddButton(), gbc);
-
+        gbc.gridy = 5; rootPanel.add(manageQuizBtn, gbc);
+        gbc.gridy = 6; rootPanel.add(getAddButton(), gbc);
         rootPanel.revalidate();
         rootPanel.repaint();
     }

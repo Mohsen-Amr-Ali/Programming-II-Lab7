@@ -65,10 +65,9 @@ public class AddLessonPanel {
                 BorderFactory.createLineBorder(StyleColors.ACCENT, 1, true),
                 BorderFactory.createEmptyBorder(8, 8, 8, 8)
         ));
-        contentScroll = new JScrollPane(contentTextArea);
+        contentScroll = new SScrollPane(contentTextArea);
         contentScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         contentScroll.setBorder(null);
-        contentScroll.getViewport().setBackground(StyleColors.CARD);
 
         fileUploadPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         fileUploadPanel.setOpaque(false);

@@ -2,6 +2,7 @@ package View.CommonComponents;
 
 import Model.Course.Lesson;
 import Model.FileManager;
+import View.StyledComponents.SLabel;
 import View.StyledComponents.SScrollPane;
 import View.StyledComponents.StyleColors;
 
@@ -24,9 +25,8 @@ public class LessonViewPanel extends JPanel {
         ));
 
         // Title and number
-        JLabel titleLabel = new JLabel("Lesson " + number + ": " + lesson.getTitle());
+        SLabel titleLabel = new SLabel("Lesson " + number + ": " + lesson.getTitle());
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        titleLabel.setForeground(StyleColors.TEXT);
         titleLabel.setHorizontalAlignment(SwingConstants.LEFT);
         titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 

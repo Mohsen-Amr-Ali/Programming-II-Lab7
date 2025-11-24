@@ -3,6 +3,8 @@ package View.CommonComponents;
 import Controller.CourseController;
 import Model.Course.Course;
 import Model.Course.COURSE_STATUS;
+import View.StyledComponents.SLabel;
+import View.StyledComponents.SScrollPane;
 import View.StyledComponents.StyleColors;
 
 import javax.swing.*;
@@ -71,7 +73,7 @@ public class CourseOverviewPanel extends JPanel {
 
         // Status Banner (if provided)
         if (status != null) {
-            JLabel statusLabel = createStatusLabel(status);
+            SLabel statusLabel = createStatusLabel(status);
             // Add status at the top right or just above title?
             // Above title is cleaner in vertical layout
             JPanel statusWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -135,7 +137,7 @@ public class CourseOverviewPanel extends JPanel {
         add(infoPanel, BorderLayout.CENTER);
     }
 
-    private JLabel createStatusLabel(COURSE_STATUS status) {
+    private SLabel createStatusLabel(COURSE_STATUS status) {
         Color statusColor;
         String statusText;
 
@@ -154,7 +156,7 @@ public class CourseOverviewPanel extends JPanel {
                 break;
         }
 
-        JLabel label = new JLabel(statusText);
+        SLabel label = new SLabel(statusText);
         label.setFont(new Font("Segoe UI", Font.BOLD, 12));
         label.setForeground(Color.WHITE); // White text on colored bg
         label.setOpaque(true);

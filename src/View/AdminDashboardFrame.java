@@ -96,7 +96,8 @@ public class AdminDashboardFrame extends JFrame {
         // Wrapper for margins
         JPanel tabsWrapper = new JPanel(new BorderLayout());
         tabsWrapper.setBackground(StyleColors.BACKGROUND);
-        tabsWrapper.setBorder(BorderFactory.createEmptyBorder(10, 15, 0, 15));
+        // Add 15px margin on all sides for consistent spacing
+        tabsWrapper.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         tabsWrapper.add(statusTabs, BorderLayout.CENTER);
 
         mainPanel.add(tabsWrapper, BorderLayout.CENTER);
@@ -346,22 +347,73 @@ public class AdminDashboardFrame extends JFrame {
     }
 
     private void showLessonView(Course course, Model.Course.Lesson lesson) {
-        // Simple viewer for admin to check content quality
+        // Left: Lesson Content
+        // Right: Side Panel with Lesson Navigation (like Instructor/Student)
+
+        // --- Left: Lesson Content ---
         int lessonIndex = course.getLessons().indexOf(lesson) + 1;
-        LessonViewPanel viewPanel = new LessonViewPanel(lesson, lessonIndex);
+        LessonViewPanel contentPanel = new LessonViewPanel(lesson, lessonIndex);
 
-        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        btnPanel.setBackground(StyleColors.BACKGROUND);
-        SBtn backBtn = new SBtn("Back to Course Review");
+        // --- Right: Side Panel ---
+        JPanel sidePanel = new JPanel(new BorderLayout());
+        sidePanel.setBackground(StyleColors.BACKGROUND);
+        sidePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // Lessons List Header
+        SLabel lessonsLabel = new SLabel("Course Lessons");
+        lessonsLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lessonsLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
+        sidePanel.add(lessonsLabel, BorderLayout.NORTH);
+
+        // Lessons List
+        JPanel lessonsPanel = new JPanel();
+        lessonsPanel.setLayout(new BoxLayout(lessonsPanel, BoxLayout.Y_AXIS));
+        lessonsPanel.setBackground(StyleColors.BACKGROUND);
+
+        java.util.List<Model.Course.Lesson> allLessons = course.getLessons();
+        for (int i = 0; i < allLessons.size(); i++) {
+            Model.Course.Lesson l = allLessons.get(i);
+            boolean isCurrent = (l == lesson);
+
+            LessonCard card = new LessonCard(i + 1, l);
+
+            // Highlight current lesson
+            if (isCurrent) {
+                card.setBackground(StyleColors.ACCENT);
+            }
+
+            card.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                    showLessonView(course, l); // Navigate to clicked lesson
+                }
+            });
+
+            card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
+            lessonsPanel.add(card);
+            lessonsPanel.add(Box.createRigidArea(new Dimension(0, 8)));
+        }
+
+        SScrollPane lessonsScroll = new SScrollPane(lessonsPanel);
+        sidePanel.add(lessonsScroll, BorderLayout.CENTER);
+
+        // Bottom Action Bar
+        JPanel bottomBar = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        bottomBar.setBackground(StyleColors.BACKGROUND);
+
+        SBtn backBtn = new SBtn("Back to Course");
         backBtn.addActionListener(e -> showCourseDetailView(course));
-        btnPanel.add(backBtn);
 
-        viewPanel.add(btnPanel, BorderLayout.SOUTH);
+        bottomBar.add(backBtn);
+        sidePanel.add(bottomBar, BorderLayout.SOUTH);
+
+        // Split Pane
+        SSplitPane splitPane = new SSplitPane(JSplitPane.HORIZONTAL_SPLIT, contentPanel, sidePanel);
+        splitPane.setDividerLocation(750);
 
         if (getContentPane().getComponentCount() > 1) {
             getContentPane().remove(1);
         }
-        add(viewPanel, LESSON_VIEW_PANEL);
+        add(splitPane, LESSON_VIEW_PANEL);
         cardLayout.show(getContentPane(), LESSON_VIEW_PANEL);
     }
 }

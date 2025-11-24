@@ -122,6 +122,7 @@ public class QuizPanel extends JPanel {
             rb.setForeground(StyleColors.TEXT);
             rb.setBackground(StyleColors.CARD);
             rb.setFocusPainted(false);
+            rb.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             rb.setAlignmentX(Component.LEFT_ALIGNMENT);
 
             // Interaction Logic

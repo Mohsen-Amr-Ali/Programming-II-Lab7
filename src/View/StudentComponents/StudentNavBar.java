@@ -43,14 +43,13 @@ public class StudentNavBar extends JPanel {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.weightx = 0;
 
-        JLabel welcomeLabel = new JLabel("Welcome, " + student.getUsername());
+        SLabel welcomeLabel = new SLabel("Welcome, " + student.getUsername());
         welcomeLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        welcomeLabel.setForeground(StyleColors.TEXT);
         gbc.gridx = 0;
         gbc.gridy = 0;
         upperPanel.add(welcomeLabel, gbc);
 
-        JLabel roleLabel = new JLabel("Student");
+        SLabel roleLabel = new SLabel("Student");
         roleLabel.setFont(new Font("Segoe UI", Font.ITALIC, 14));
         roleLabel.setForeground(StyleColors.TEXT.darker());
         gbc.gridx = 1;

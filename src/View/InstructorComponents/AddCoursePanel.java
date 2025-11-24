@@ -44,10 +44,9 @@ public class AddCoursePanel {
                 BorderFactory.createEmptyBorder(8, 8, 8, 8)
         ));
 
-        JScrollPane descScroll = new JScrollPane(descTextArea);
+        SScrollPane descScroll = new SScrollPane(descTextArea);
         descScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         descScroll.setBorder(null);
-        descScroll.getViewport().setBackground(StyleColors.CARD);
 
         // Image Upload
         imageLabel = new SLabel("Course Image: ");

@@ -4,6 +4,8 @@ import Model.Course.Course;
 import View.StyledComponents.SOptionPane;
 import View.StyledComponents.StyleColors;
 
+import java.awt.Color; // Added for explicit foreground setting
+
 import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -26,8 +28,10 @@ public class EditCoursePanel extends AddCoursePanel {
         // String imgPath = course.getImagePath();
         // if (imgPath != null && !imgPath.isEmpty()) { ... }
 
-        // 4. Update Button Text
+        // 4. Update Button Text & Emphasize Styling
         getAddButton().setText("Save Changes");
+        getAddButton().setBackground(StyleColors.ACCENT); // Accent to highlight edit action
+        getAddButton().setForeground(Color.WHITE); // Ensure high contrast
     }
 
     /**

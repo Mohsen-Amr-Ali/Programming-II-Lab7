@@ -3,6 +3,7 @@ package View.InstructorComponents;
 import Model.Course.Question;
 import Model.Course.Quiz;
 import View.StyledComponents.*;
+import View.StyledComponents.STField;
 
 import javax.swing.*;
 import java.awt.*;
@@ -164,8 +165,8 @@ public class AddQuizDialog extends JDialog {
 
     // --- Inner Class: Question Editor ---
     private class QuestionEditorPanel extends JPanel {
-        private JTextField questionField;
-        private ArrayList<JTextField> answerFields;
+        private STField questionField;
+        private ArrayList<STField> answerFields;
         private ArrayList<JRadioButton> correctRadios;
         private ButtonGroup radioGroup;
         private Runnable onRemove;
@@ -222,6 +223,10 @@ public class AddQuizDialog extends JDialog {
 
                 JRadioButton rb = new JRadioButton();
                 rb.setOpaque(false);
+                rb.setForeground(StyleColors.TEXT);
+                rb.setBackground(StyleColors.CARD);
+                rb.setFocusPainted(false);
+                rb.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 radioGroup.add(rb);
                 correctRadios.add(rb);
 
@@ -253,7 +258,7 @@ public class AddQuizDialog extends JDialog {
 
         public boolean validateInput() {
             if (questionField.getText().trim().isEmpty()) return false;
-            for (JTextField tf : answerFields) {
+            for (STField tf : answerFields) {
                 if (tf.getText().trim().isEmpty()) return false;
             }
             return true;
@@ -263,7 +268,7 @@ public class AddQuizDialog extends JDialog {
 
         public ArrayList<String> getAnswers() {
             ArrayList<String> ans = new ArrayList<>();
-            for (JTextField tf : answerFields) ans.add(tf.getText().trim());
+            for (STField tf : answerFields) ans.add(tf.getText().trim());
             return ans;
         }
 

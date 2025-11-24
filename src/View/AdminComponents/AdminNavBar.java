@@ -47,15 +47,14 @@ public class AdminNavBar extends JPanel {
         gbc.weightx = 0;
 
         // Welcome label
-        JLabel welcomeLabel = new JLabel("Welcome, " + admin.getUsername());
+        SLabel welcomeLabel = new SLabel("Welcome, " + admin.getUsername());
         welcomeLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        welcomeLabel.setForeground(StyleColors.TEXT);
         gbc.gridx = 0;
         gbc.gridy = 0;
         upperPanel.add(welcomeLabel, gbc);
 
         // Role label
-        JLabel roleLabel = new JLabel("Administrator");
+        SLabel roleLabel = new SLabel("Administrator");
         roleLabel.setFont(new Font("Segoe UI", Font.ITALIC, 14));
         roleLabel.setForeground(StyleColors.ACCENT); // Highlight Admin role
         gbc.gridx = 1;

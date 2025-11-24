@@ -115,24 +115,23 @@ public class InstructorDashboardFrame extends JFrame {
         // WRAP TABS IN A PANEL TO ADD MARGINS (Align with Navbar)
         JPanel tabsWrapper = new JPanel(new BorderLayout());
         tabsWrapper.setBackground(StyleColors.BACKGROUND);
-        // Add 15px horizontal margin to align with navbar inner content
-        tabsWrapper.setBorder(BorderFactory.createEmptyBorder(10, 15, 0, 15));
-        tabsWrapper.add(statusTabs, BorderLayout.CENTER);
+        tabsWrapper.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        mainPanel.add(tabsWrapper, BorderLayout.CENTER);
+        // Add Course Button at Top Right (above tabs)
+        JPanel topBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        topBar.setBackground(StyleColors.BACKGROUND);
+        topBar.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
-        // --- Bottom Action Bar (Add Course) ---
-        JPanel bottomBar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        bottomBar.setBackground(StyleColors.BACKGROUND);
-        bottomBar.setBorder(BorderFactory.createEmptyBorder(10, 15, 15, 15)); // Add margins
-
-        SBtn addCourseBtn = new SBtn("Create New Course");
+        SBtn addCourseBtn = new SBtn("+ Create New Course");
         addCourseBtn.setBackground(StyleColors.ACCENT);
         addCourseBtn.setForeground(Color.WHITE);
         addCourseBtn.addActionListener(e -> showAddCourseDialog());
+        topBar.add(addCourseBtn);
 
-        bottomBar.add(addCourseBtn);
-        mainPanel.add(bottomBar, BorderLayout.SOUTH);
+        tabsWrapper.add(topBar, BorderLayout.NORTH);
+        tabsWrapper.add(statusTabs, BorderLayout.CENTER);
+
+        mainPanel.add(tabsWrapper, BorderLayout.CENTER);
 
         // Navbar Listeners
         navBar.addSearchButtonListener(e -> {

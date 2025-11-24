@@ -45,15 +45,14 @@ public class InstructorNavBar extends JPanel {
         gbc.weightx = 0;
 
         // Welcome label with instructor name
-        JLabel welcomeLabel = new JLabel("Welcome, " + instructor.getUsername());
+        SLabel welcomeLabel = new SLabel("Welcome, " + instructor.getUsername());
         welcomeLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        welcomeLabel.setForeground(StyleColors.TEXT);
         gbc.gridx = 0;
         gbc.gridy = 0;
         upperPanel.add(welcomeLabel, gbc);
 
         // Instructor role label (smaller, italic)
-        JLabel roleLabel = new JLabel("Instructor");
+        SLabel roleLabel = new SLabel("Instructor");
         roleLabel.setFont(new Font("Segoe UI", Font.ITALIC, 14));
         roleLabel.setForeground(StyleColors.TEXT.darker());
         gbc.gridx = 1;
