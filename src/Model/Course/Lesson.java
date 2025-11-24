@@ -8,18 +8,16 @@ public class Lesson {
     private Quiz quiz; // Optional: Null if no quiz exists
 
     // Constructor WITHOUT Quiz (For initial creation)
-    public Lesson(int lessonId, int courseId, String title, String content) {
+    public Lesson(int lessonId, String title, String content) {
         this.lessonId = lessonId;
-        this.courseId = courseId;
         this.title = title;
         this.content = content;
         this.quiz = null; // Default to no quiz
     }
 
     // Full Constructor (if loading from DB with a quiz)
-    public Lesson(int lessonId, int courseId, String title, String content, Quiz quiz) {
+    public Lesson(int lessonId, String title, String content, Quiz quiz) {
         this.lessonId = lessonId;
-        this.courseId = courseId;
         this.title = title;
         this.content = content;
         this.quiz = quiz;

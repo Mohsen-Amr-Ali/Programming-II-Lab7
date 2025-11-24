@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -22,6 +23,9 @@ import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 
 public class JsonDatabaseManager {
+    // Set the parent path for all file operations
+    private static final String parentPath = "Y:\\AlexU\\Term 5\\Programming 2\\Programming-II-Lab7\\src\\";
+
     private static JsonDatabaseManager instance; //conventional name for a singleton instnace, it'll be just one instance for the entire program
     private ArrayList<Student> students = new ArrayList<>();
     private ArrayList<Instructor> instructors = new ArrayList<>();
@@ -31,10 +35,14 @@ public class JsonDatabaseManager {
     private ArrayList<Course> approvedCourses = new ArrayList<>();
     private ArrayList<Course> rejectedCourses = new ArrayList<>();
 
-    private String usersFile = "y:\\AlexU\\Term 5\\Programming 2\\Programming-II-Lab7\\src\\Database\\users.json";
-    private String coursesFile = "y:\\AlexU\\Term 5\\Programming 2\\Programming-II-Lab7\\src\\Database\\courses.json";
+    // Use parentPath for all file operations
+    private String usersFile = parentPath + "Database\\users.json";
+    private String coursesFile = parentPath + "Database\\courses.json";
 
-    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+            .setPrettyPrinting()
+            .create();
     private static final Random random = new Random();
 
 
@@ -70,6 +78,18 @@ public class JsonDatabaseManager {
         return rejectedCourses;
     }
 
+    /**
+     * Returns a list of all users in the system (Students, Instructors, Admins).
+     * Useful for system-wide analytics.
+     */
+    public ArrayList<User> getAllUsers() {
+        ArrayList<User> allUsers = new ArrayList<>();
+        allUsers.addAll(students);
+        allUsers.addAll(instructors);
+        allUsers.addAll(admins);
+        return allUsers;
+    }
+
     //================= Load Functions =================\\
     private boolean isStudent(int id){
         while(id >= 100) id /=10;
@@ -84,17 +104,37 @@ public class JsonDatabaseManager {
 
     private void loadUsers(){
         try(FileReader reader = new FileReader(usersFile)){
-            JsonArray jsonArray = JsonParser.parseReader(reader).getAsJsonArray();
-            
+            JsonElement fileElement = JsonParser.parseReader(reader);
+
+            if (fileElement == null || fileElement.isJsonNull()) {
+                System.out.println("\nNo users found in file (null)");
+                return;
+            }
+
+            JsonArray jsonArray = fileElement.getAsJsonArray();
+
             if (jsonArray == null || jsonArray.size() == 0) {
-                System.out.println("\nNo users found in file");
+                System.out.println("\nNo users found in file (empty)");
                 return;
             }
 
             for (JsonElement userElement : jsonArray) {
                 JsonObject userObject = userElement.getAsJsonObject();
 
-                USER_ROLE role = USER_ROLE.valueOf(userObject.get("role").getAsString().toUpperCase());
+                // FIX: Check if "role" exists before accessing
+                if (!userObject.has("role") || userObject.get("role").isJsonNull()) {
+                    System.out.println("Skipping invalid user entry: Missing role");
+                    continue;
+                }
+
+                String roleStr = userObject.get("role").getAsString().toUpperCase();
+                USER_ROLE role;
+                try {
+                    role = USER_ROLE.valueOf(roleStr);
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Skipping user with invalid role: " + roleStr);
+                    continue;
+                }
 
                 if (role == USER_ROLE.STUDENT) {
                     Student student = gson.fromJson(userObject, Student.class);
@@ -110,7 +150,10 @@ public class JsonDatabaseManager {
 
             System.out.println("\nUsers loaded successfully");
         } catch (IOException e) {
-            System.out.println("\nException in JsonDatabaseManager - loadUsers()");
+            System.out.println("\nException in JsonDatabaseManager - loadUsers(): " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("\nError parsing users: " + e.getMessage());
+            e.printStackTrace();
         }
 
     }
@@ -125,6 +168,11 @@ public class JsonDatabaseManager {
             if (loadedCourses != null) {
                 courses = loadedCourses;
                 for (Course course : loadedCourses) {
+                    // Fix: Set default status if null
+                    if (course.getStatus() == null) {
+                        course.setStatus(COURSE_STATUS.PENDING);
+                    }
+
                     if (course.getStatus() == COURSE_STATUS.PENDING) {
                         pendingCourses.add(course);
                     } else if (course.getStatus() == COURSE_STATUS.APPROVED) {
@@ -425,9 +473,9 @@ public class JsonDatabaseManager {
     public void removeLesson(Lesson removedLesson){
         Course course = getCourseById(removedLesson.getCourseId());
         if (course == null) return;
-        
+
         course.removeLesson(removedLesson.getLessonId());
-        
+
         for (Student student : students) {
             if (student.isEnrolled(course.getCourseId())) {
                 ArrayList<Integer> completedLessons = student.getCompletedLessons(course.getCourseId());
@@ -436,7 +484,7 @@ public class JsonDatabaseManager {
                 }
             }
         }
-        
+
         saveCourses();
         saveUsers();
     }

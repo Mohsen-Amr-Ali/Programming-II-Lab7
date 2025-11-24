@@ -11,6 +11,9 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class InstructorController {
+    // Set the parent path for all file/image operations
+    private static final String parentPath = "Y:\\AlexU\\Term 5\\Programming 2\\Programming-II-Lab7\\";
+
     private JsonDatabaseManager dbManager;
 
     public InstructorController() {
@@ -77,7 +80,7 @@ public class InstructorController {
             }
         } else {
             // Default image logic
-            newCourse.setImagePath("Database/Assets/Default_Img.png");
+            newCourse.setImagePath(parentPath + "Database\\Assets\\Default_Img.png");
             assetsUpdated = true;
         }
 
@@ -129,10 +132,10 @@ public class InstructorController {
         String savedContentPath;
         if (isFile) {
             // Input is file path -> copy file to assets -> return new path
-            savedContentPath = FileManager.saveFileToBinary(contentOrPath, courseId, finalLessonId);
+            savedContentPath = FileManager.saveFileToBinary(contentOrPath.replace("/", "\\"), courseId, finalLessonId);
         } else {
             // Input is text -> save text to file -> return new path
-            savedContentPath = FileManager.saveTextToBinary(contentOrPath, courseId, finalLessonId);
+            savedContentPath = FileManager.saveTextToBinary(contentOrPath.replace("/", "\\"), courseId, finalLessonId);
         }
 
         if (savedContentPath != null) {

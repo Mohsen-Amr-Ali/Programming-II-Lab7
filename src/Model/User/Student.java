@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import Model.Course.Course;
+import Model.Course.Lesson;
 import Model.Course.Quiz;
 import Model.Course.Certificate;
 import Model.Course.QuizResult;
@@ -108,12 +110,6 @@ public class Student extends User {
 
     // --- Quiz Methods ---
 
-    /**
-     * Records a quiz attempt for a specific lesson.
-     * Use this method instead of addQuizScore to track full attempt history.
-     * @param lessonId The ID of the lesson taken.
-     * @param quizResult The result object containing score, date, and pass status.
-     */
     public void addQuizAttempt(int lessonId, QuizResult quizResult) {
         if (quizResults == null) quizResults = new HashMap<>();
         quizResults.putIfAbsent(lessonId, new ArrayList<>());
@@ -131,16 +127,23 @@ public class Student extends User {
     }
 
     public QuizResult getLatestQuizResult(Quiz quiz) {
-        // Helper to get the latest attempt if needed, but logic should likely reside in controller
+        // Helper to get the latest attempt if needed
+        // This requires mapping logic (QuizID vs LessonID).
+        // Assuming LessonID key for simplicity as per addQuizAttempt.
+        // This method signature might be tricky without LessonID context.
         return null;
     }
 
     /**
-     * Checks if the student has passed the quiz for a given lesson.
-     * @param lessonId The ID of the lesson associated with the quiz.
-     * @param threshold The passing score percentage (e.g., 60.0).
-     * @return true if any attempt for this lesson has a passing score.
+     * Helper to get result by Lesson ID directly.
      */
+    public QuizResult getLatestQuizResultByLessonId(int lessonId) {
+        if (quizResults == null || !quizResults.containsKey(lessonId)) return null;
+        List<QuizResult> attempts = quizResults.get(lessonId);
+        if (attempts.isEmpty()) return null;
+        return attempts.get(attempts.size() - 1); // Return last attempt
+    }
+
     public boolean hasPassedQuiz(int lessonId, double threshold) {
         if (quizResults == null || !quizResults.containsKey(lessonId)) {
             return false;
@@ -148,15 +151,36 @@ public class Student extends User {
 
         List<QuizResult> attempts = quizResults.get(lessonId);
         for (QuizResult result : attempts) {
-            // Result should store pass status, but we can double check against threshold
-            // or rely on result.isPassed() if we trust it was set correctly.
-            // Here we calculate percentage to be safe.
             double percentage = (double) result.getScore() / result.getMaxScore() * 100.0;
             if (percentage >= threshold) {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * Checks if the student has completed all requirements for a course.
+     * A course is complete if all lessons with quizzes have been passed.
+     */
+    public boolean isCourseComplete(Course course) {
+        if (course == null) return false;
+
+        for (Lesson lesson : course.getLessons()) {
+            // If lesson has a quiz, it MUST be passed
+            if (lesson.getQuiz() != null) {
+                if (!hasPassedQuiz(lesson.getLessonId(), lesson.getQuiz().getPassThreshold())) {
+                    return false;
+                }
+            } else {
+                // If no quiz, just check if marked complete (optional, usually we just care about quizzes for certs)
+                // But for 100% progress visually, we check manual completion too.
+                if (!isLessonCompleted(course.getCourseId(), lesson.getLessonId())) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     // --- Certificate Methods ---

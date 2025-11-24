@@ -1,5 +1,6 @@
 package Controller;
 
+import Model.Course.Certificate;
 import Model.Course.Course;
 import Model.Course.Lesson;
 import Model.Course.Question;
@@ -7,7 +8,9 @@ import Model.Course.Quiz;
 import Model.Course.QuizResult;
 import Model.JsonDatabaseManager;
 import Model.User.Student;
+import util.CertificatePDFGenerator;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -81,16 +84,10 @@ public class StudentController {
     public void submitQuiz(int studentId, int courseId, int lessonId, HashMap<Integer, Integer> answers) {
         Student student = (Student) dbManager.getUserById(studentId);
         Course course = dbManager.getCourseById(courseId);
-        if (student == null || course == null) {
-            return; // Or handle error
-        }
+        if (student == null || course == null) return;
 
         Lesson lesson = course.getLessonById(lessonId);
-        if (lesson == null || lesson.getQuiz() == null) {
-            // If no quiz exists, maybe mark complete immediately?
-            // For now, do nothing if quiz logic was requested but missing.
-            return;
-        }
+        if (lesson == null || lesson.getQuiz() == null) return;
 
         Quiz quiz = lesson.getQuiz();
 
@@ -100,7 +97,7 @@ public class StudentController {
 
         // 2. Determine Pass/Fail
         double percentage = (double) correctAnswers / maxScore * 100.0;
-        boolean passed = percentage >= quiz.getPassThreshold(); // Assuming threshold is e.g. 60.0
+        boolean passed = percentage >= quiz.getPassThreshold();
 
         // 3. Create Result Object
         QuizResult result = new QuizResult(correctAnswers, maxScore, LocalDateTime.now(), passed);
@@ -108,12 +105,9 @@ public class StudentController {
         // 4. Save Attempt
         student.addQuizAttempt(lessonId, result);
 
-        // 5. Mark Lesson Complete if Passed (Check history to be safe)
+        // 5. Mark Lesson Complete if Passed
         if (student.hasPassedQuiz(lessonId, quiz.getPassThreshold())) {
             markLessonAsCompleted(studentId, courseId, lessonId);
-        } else {
-            // Optionally remove completion if they failed a re-take?
-            // Usually we keep completion once earned.
         }
 
         dbManager.updateUser(student);
@@ -122,12 +116,47 @@ public class StudentController {
     private int calculateCorrectAnswers(Quiz quiz, HashMap<Integer, Integer> answers) {
         int correctAnswers = 0;
         for (Question question : quiz.getQuestions()) {
-            // Check if answer exists and matches correct index
             if (answers.containsKey(question.getQuestionId()) &&
                     answers.get(question.getQuestionId()).equals(question.getCorrectAnswerIndex())) {
                 correctAnswers++;
             }
         }
         return correctAnswers;
+    }
+
+    /**
+     * Generates a certificate PDF for a completed course.
+     * @param studentId The student ID.
+     * @param courseId The course ID.
+     * @param filePath The path where the PDF should be saved.
+     * @return true if generation successful, false otherwise.
+     */
+    public boolean generateCertificate(int studentId, int courseId, String filePath) {
+        Student student = (Student) dbManager.getUserById(studentId);
+        Course course = dbManager.getCourseById(courseId);
+
+        if (student == null || course == null) return false;
+
+        // Verify Completion
+        if (!student.isCourseComplete(course)) {
+            System.out.println("Cannot generate certificate: Course not complete.");
+            return false;
+        }
+
+        // Create Certificate Data
+        // Check if certificate already exists for this course?
+        // For now, we generate a new instance each download or retrieve existing if we tracked it.
+        // We will generate a new ID for the record.
+        int certId = student.generateCertificateId();
+        String date = LocalDate.now().toString();
+
+        Certificate cert = new Certificate(certId, course, student, date);
+
+        // Save the record to student profile (optional, but good for history)
+        student.getCertificates().add(cert);
+        dbManager.updateUser(student);
+
+        // Generate PDF
+        return CertificatePDFGenerator.generateCertificatePDF(cert, filePath);
     }
 }

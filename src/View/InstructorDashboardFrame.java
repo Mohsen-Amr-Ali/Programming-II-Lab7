@@ -12,6 +12,7 @@ import Model.Course.Course;
 import Model.Course.Lesson;
 import Model.Course.COURSE_STATUS;
 import Model.User.Instructor;
+import View.CommonComponents.ChartsView; // Import ChartsView
 import View.CommonComponents.CourseCard;
 import View.CommonComponents.CourseOverviewPanel;
 import View.CommonComponents.LessonCard;
@@ -38,6 +39,12 @@ public class InstructorDashboardFrame extends JFrame {
     private JPanel pendingCoursesPanel;
     private JPanel approvedCoursesPanel;
     private JPanel rejectedCoursesPanel;
+
+    // Analytics Tab Components
+    private JPanel insightsPanel;
+    private SComboBox<String> courseSelector;
+    private ChartsView chartsView;
+    private ArrayList<Course> instructorCourses;
 
     private static final String MAIN_PANEL = "MainPanel";
     private static final String COURSE_VIEW_PANEL = "CourseViewPanel";
@@ -95,11 +102,15 @@ public class InstructorDashboardFrame extends JFrame {
         approvedCoursesPanel = createCourseGridPanel();
         rejectedCoursesPanel = createCourseGridPanel();
 
+        // Insights Panel Setup
+        createInsightsPanel();
+
         // Wrap in ScrollPanes using SScrollPane
         statusTabs.addTab("All Courses", new SScrollPane(allCoursesPanel));
         statusTabs.addTab("Approved", new SScrollPane(approvedCoursesPanel));
         statusTabs.addTab("Pending", new SScrollPane(pendingCoursesPanel));
         statusTabs.addTab("Rejected", new SScrollPane(rejectedCoursesPanel));
+        statusTabs.addTab("Insights", insightsPanel); // Add Insights Tab
 
         // WRAP TABS IN A PANEL TO ADD MARGINS (Align with Navbar)
         JPanel tabsWrapper = new JPanel(new BorderLayout());
@@ -136,10 +147,74 @@ public class InstructorDashboardFrame extends JFrame {
         navBar.addRefreshButtonListener(e -> {
             navBar.clearSearchText();
             loadAllCourses();
+            refreshInsights(); // Refresh insights too
+        });
+
+        // Tab Change Listener for Insights
+        statusTabs.addChangeListener(e -> {
+            if (statusTabs.getSelectedIndex() == 4) { // Index 4 is Insights
+                refreshInsights();
+            }
         });
 
         // Initial Load
         loadAllCourses();
+    }
+
+    private void createInsightsPanel() {
+        insightsPanel = new JPanel(new BorderLayout());
+        insightsPanel.setBackground(StyleColors.BACKGROUND);
+        insightsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // Top: Course Selector
+        JPanel selectorPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        selectorPanel.setBackground(StyleColors.BACKGROUND);
+
+        SLabel selectLabel = new SLabel("Select Course for Analysis: ");
+        selectLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+
+        courseSelector = new SComboBox<>();
+        courseSelector.setPreferredSize(new Dimension(300, 30));
+        courseSelector.addActionListener(e -> updateCharts());
+
+        selectorPanel.add(selectLabel);
+        selectorPanel.add(courseSelector);
+
+        insightsPanel.add(selectorPanel, BorderLayout.NORTH);
+
+        // Center: Charts View
+        chartsView = new ChartsView();
+        // Wrap in ScrollPane in case charts are tall
+        SScrollPane chartsScroll = new SScrollPane(chartsView);
+        insightsPanel.add(chartsScroll, BorderLayout.CENTER);
+    }
+
+    private void refreshInsights() {
+        // Reload instructor courses for the dropdown
+        instructorCourses = instructorController.getCreatedCourses(instructor.getId());
+        courseSelector.removeAllItems();
+
+        if (instructorCourses.isEmpty()) {
+            courseSelector.addItem("No Courses Available");
+            courseSelector.setEnabled(false);
+        } else {
+            courseSelector.setEnabled(true);
+            for (Course c : instructorCourses) {
+                courseSelector.addItem(c.getTitle()); // Store title, map index to list
+            }
+            // Select first by default
+            if (courseSelector.getItemCount() > 0) {
+                courseSelector.setSelectedIndex(0);
+            }
+        }
+    }
+
+    private void updateCharts() {
+        int selectedIndex = courseSelector.getSelectedIndex();
+        if (selectedIndex >= 0 && selectedIndex < instructorCourses.size()) {
+            Course selectedCourse = instructorCourses.get(selectedIndex);
+            chartsView.updateInstructorStats(selectedCourse);
+        }
     }
 
     private JPanel createCourseGridPanel() {
@@ -402,6 +477,8 @@ public class InstructorDashboardFrame extends JFrame {
 
         SLabel listLabel = new SLabel("Course Lessons");
         listLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        // Fix: Add Padding between label and list
+        listLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
         sidePanel.add(listLabel, BorderLayout.NORTH);
 
         JPanel listContainer = new JPanel();

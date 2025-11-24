@@ -39,7 +39,8 @@
     "students": [
       900003,
       904683
-    ]
+    ],
+    "status": "PENDING"
   },
   {
     "courseId": 700002,
@@ -83,7 +84,8 @@
       900001,
       900001,
       900001
-    ]
+    ],
+    "status": "PENDING"
   },
   {
     "courseId": 700003,
@@ -122,7 +124,8 @@
         "content": "Hash functions and collision resolution."
       }
     ],
-    "students": []
+    "students": [],
+    "status": "PENDING"
   },
   {
     "courseId": 700004,
@@ -166,7 +169,8 @@
       900001,
       900001,
       900001
-    ]
+    ],
+    "status": "PENDING"
   },
   {
     "courseId": 700005,
@@ -209,7 +213,8 @@
       900002,
       900001,
       900001
-    ]
+    ],
+    "status": "PENDING"
   },
   {
     "courseId": 703957,
@@ -251,8 +256,51 @@
     "title": "Image testing",
     "description": "some desc",
     "instructorId": 100461,
-    "lessons": [],
-    "students": [],
+    "lessons": [
+      {
+        "lessonId": 507630960,
+        "courseId": 0,
+        "title": "what\u0027s a camera",
+        "content": "Database/Assets/Course_707630/Lesson_507630960",
+        "quiz": {
+          "quizId": 0,
+          "questions": [
+            {
+              "questionId": 0,
+              "questionText": "What\u0027s a camera?",
+              "answers": [
+                "An advanced technological device",
+                "Anything with a pinhole",
+                "A piece of wood",
+                "Something in a pocket"
+              ],
+              "correctAnswerIndex": 1
+            },
+            {
+              "questionId": 0,
+              "questionText": "How to use a camera?",
+              "answers": [
+                "correct choice",
+                "wrong choice",
+                "false",
+                "not correct"
+              ],
+              "correctAnswerIndex": 0
+            }
+          ],
+          "passThreshold": 60.0
+        }
+      },
+      {
+        "lessonId": 507630920,
+        "courseId": 0,
+        "title": "how to import images",
+        "content": "Database/Assets/Course_707630/Lesson_507630920"
+      }
+    ],
+    "students": [
+      900003
+    ],
     "imagePath": "Database/Assets/Course_707630/title.jpg",
     "status": "APPROVED"
   }

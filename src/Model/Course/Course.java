@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Course {
+    // Set the parent path for all file/image operations
+    private static final String parentPath = "Y:\\AlexU\\Term 5\\Programming 2\\Programming-II-Lab7\\src\\";
     private int courseId;
     private String title;
     private String description;
@@ -23,6 +25,7 @@ public class Course {
         this.instructorId = instructorId;
         this.lessons = new ArrayList<>();
         this.students = new ArrayList<>();
+        this.status = COURSE_STATUS.PENDING; // Default status
     }
 
     // GETTERS AND SETTERS
@@ -117,6 +120,10 @@ public class Course {
     }
 
     public String getImagePath() {
-        return imagePath;
+        // If imagePath is not set, return the default absolute path
+        if (imagePath == null || imagePath.isEmpty()) {
+            return parentPath + "Database\\Assets\\Default_Img.png";
+        }
+        return parentPath + "Database\\Assets\\" + imagePath;
     }
 }

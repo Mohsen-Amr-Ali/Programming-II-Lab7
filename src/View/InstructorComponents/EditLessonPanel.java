@@ -1,17 +1,21 @@
 package View.InstructorComponents;
 
 import Model.Course.Lesson;
+import Model.Course.Quiz;
 import Model.FileManager;
+import View.StyledComponents.SBtn;
 import View.StyledComponents.SOptionPane;
 import View.StyledComponents.StyleColors;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.File;
 
 public class EditLessonPanel extends AddLessonPanel {
     private Lesson lesson;
     private int currentLessonIndex;
+    private SBtn manageQuizBtn;
 
     /**
      * Constructor for EditLessonPanel
@@ -56,29 +60,94 @@ public class EditLessonPanel extends AddLessonPanel {
         contentCardLayout.show(contentInputContainer, "TEXT");
 
         // 3. Pre-fill Position
-        // Populate the dropdown with 1..N (we don't need N+1 for editing, just N is fine,
-        // but standardizing on the AddLessonPanel logic is okay).
-        // We need to populate it first.
-        setLessonCount(totalLessons - 1); // -1 because we are one of them?
-        // Actually, if we move it, we can move to any slot 1..N.
-        // If we use setLessonCount(totalLessons), we get 1..N+1.
-        // For editing, we usually want to just swap positions.
-        // Let's populate 1 to Total.
+        setLessonCount(totalLessons - 1); // 1..N
         positionComboBox.removeAllItems();
         for (int i = 1; i <= totalLessons; i++) {
             positionComboBox.addItem(i);
         }
 
-        // Select current (currentLessonIndex is 0-based, combo is 1-based)
+        // Select current
         if (currentLessonIndex >= 0 && currentLessonIndex < totalLessons) {
             positionComboBox.setSelectedIndex(currentLessonIndex);
-            setAddAtEndChecked(false); // Explicitly enable the dropdown
+            setAddAtEndChecked(false);
         } else {
             setAddAtEndChecked(true);
         }
 
         // 4. Update Button Text
         getAddButton().setText("Save Changes");
+
+        // 5. Add "Manage Quiz" Button
+        addQuizButton();
+    }
+
+    private void addQuizButton() {
+        // Create the button
+        manageQuizBtn = new SBtn(lesson.getQuiz() == null ? "Create Quiz" : "Edit Quiz");
+        manageQuizBtn.setBackground(new Color(255, 193, 7)); // Yellow/Orange for distinction
+        manageQuizBtn.setForeground(Color.WHITE); // Text color might need adjustment against yellow, trying white
+        // Or use StyleColors.ACCENT if preferred, but distinct is nice.
+        // Let's stick to Accent for consistency if yellow is too bright.
+        manageQuizBtn.setBackground(StyleColors.ACCENT_DARK);
+
+        manageQuizBtn.addActionListener(e -> {
+            Window parentWindow = SwingUtilities.getWindowAncestor(getRootPanel());
+            AddQuizDialog dialog = new AddQuizDialog(parentWindow, lesson.getQuiz(), () -> {
+                // On Save Callback
+                // The dialog updates the 'quiz' object passed to it or creates a new one.
+                // We need to retrieve it. The dialog logic updates the object reference if passed?
+                // Actually, AddQuizDialog updates the 'quiz' field inside itself. We need to get it back.
+                // However, since 'lesson.getQuiz()' might be null, passing null means the dialog creates a NEW object.
+                // We need to capture that new object.
+            });
+
+            // Wait, the runnable in AddQuizDialog runs *before* dispose.
+            // We need to access the quiz from the dialog instance.
+            // Refactoring logic slightly:
+
+            // Show the dialog
+            dialog.setVisible(true);
+
+            // After dialog closes (it is modal), check if we have a quiz
+            Quiz updatedQuiz = dialog.getQuiz();
+            if (updatedQuiz != null) {
+                // Update the lesson object immediately in memory
+                lesson.setQuiz(updatedQuiz);
+                manageQuizBtn.setText("Edit Quiz");
+                SOptionPane.showMessageDialog(getRootPanel(), "Quiz attached to lesson. Click 'Save Changes' to persist.", "Quiz Updated", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        // Add to layout (Row 6, shifting Add button to Row 7)
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(7, 7, 7, 7);
+        gbc.gridx = 0;
+        gbc.gridy = 5; // Where Add button was? No, Add button was row 5 in parent.
+        // Parent layout:
+        // 0: Title
+        // 1: Title Input
+        // 2: Type
+        // 3: Content
+        // 4: Position
+        // 5: Add Button
+
+        // We want to insert Quiz button before Add Button.
+        // Remove Add Button first?
+        rootPanel.remove(getAddButton());
+
+        // Add Quiz Button at Row 5
+        gbc.gridy = 5;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.CENTER;
+        rootPanel.add(manageQuizBtn, gbc);
+
+        // Re-add Add Button at Row 6
+        gbc.gridy = 6;
+        rootPanel.add(getAddButton(), gbc);
+
+        rootPanel.revalidate();
+        rootPanel.repaint();
     }
 
     /**

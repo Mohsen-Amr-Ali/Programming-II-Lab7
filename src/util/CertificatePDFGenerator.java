@@ -46,7 +46,9 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
                 content.close();
 
-                document.save(filePath);
+                // Ensure filePath uses double backslashes for Windows
+                String winPath = filePath.replace("/", "\\");
+                document.save(winPath);
                 document.close();
 
                 return true;

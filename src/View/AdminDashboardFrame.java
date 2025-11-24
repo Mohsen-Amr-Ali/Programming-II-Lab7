@@ -4,8 +4,10 @@ import Controller.AdminController;
 import Controller.CourseController;
 import Model.Course.Course;
 import Model.Course.COURSE_STATUS;
+import Model.JsonDatabaseManager;
 import Model.User.Admin;
 import View.AdminComponents.AdminNavBar;
+import View.CommonComponents.ChartsView; // Import ChartsView
 import View.CommonComponents.CourseCard;
 import View.CommonComponents.CourseOverviewPanel;
 import View.CommonComponents.LessonCard;
@@ -105,12 +107,8 @@ public class AdminDashboardFrame extends JFrame {
             cardLayout.show(getContentPane(), MAIN_PANEL);
         });
 
-        navBar.getAnalyticsBtn().addActionListener(e -> {
-            SOptionPane.showMessageDialog(this,
-                    "Platform Analytics feature is coming in Phase 4.",
-                    "Coming Soon",
-                    JOptionPane.INFORMATION_MESSAGE);
-        });
+        // UPDATED: Analytics Button Listener
+        navBar.getAnalyticsBtn().addActionListener(e -> showAnalyticsDialog());
 
         navBar.addRefreshListener(e -> {
             navBar.clearSearch();
@@ -128,6 +126,20 @@ public class AdminDashboardFrame extends JFrame {
 
         // Initial Load
         loadAllLists();
+    }
+
+    private void showAnalyticsDialog() {
+        JDialog statsDialog = new JDialog(this, "Platform Analytics", true);
+        statsDialog.setSize(900, 600);
+        statsDialog.setLocationRelativeTo(this);
+
+        ChartsView chartsView = new ChartsView();
+        // Assuming JsonDatabaseManager is singleton and accessible via getInstance inside
+        // AdminController or we can call getInstance here directly.
+        chartsView.updateAdminStats(Model.JsonDatabaseManager.getInstance());
+
+        statsDialog.setContentPane(chartsView);
+        statsDialog.setVisible(true);
     }
 
     private JPanel createCourseGridPanel() {
@@ -260,8 +272,17 @@ public class AdminDashboardFrame extends JFrame {
 
             // Placeholder for Statistics
             SBtn statsBtn = new SBtn("View Statistics");
-            statsBtn.setEnabled(false); // Disabled as per instructions
-            statsBtn.setToolTipText("Analytics coming soon");
+            statsBtn.setEnabled(true); // Enabled now!
+            statsBtn.addActionListener(e -> {
+                // Open charts view for this specific course (Instructor view reused)
+                JDialog statsDialog = new JDialog(this, "Course Analytics: " + course.getTitle(), true);
+                statsDialog.setSize(900, 600);
+                statsDialog.setLocationRelativeTo(this);
+                ChartsView chartsView = new ChartsView();
+                chartsView.updateInstructorStats(course); // Reuse instructor view for admin details
+                statsDialog.setContentPane(chartsView);
+                statsDialog.setVisible(true);
+            });
             actionPanel.add(statsBtn);
         }
 

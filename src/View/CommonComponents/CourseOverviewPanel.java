@@ -12,6 +12,9 @@ import java.io.File;
 import javax.imageio.ImageIO;
 
 public class CourseOverviewPanel extends JPanel {
+    // Set the parent path for all file/image operations
+    private static final String parentPath = "Y:\\AlexU\\Term 5\\Programming 2\\Programming-II-Lab7\\";
+
     Course course;
     String instructorName;
     private static final int IMG_WIDTH = 300;
@@ -48,14 +51,14 @@ public class CourseOverviewPanel extends JPanel {
         imageLabel.setMaximumSize(new Dimension(IMG_WIDTH, IMG_HEIGHT));
         imageLabel.setBorder(BorderFactory.createLineBorder(StyleColors.ACCENT_DARK, 1));
 
-        String imagePath = (course.getImagePath() != null && !course.getImagePath().isEmpty())
-                ? course.getImagePath()
-                : "Database/Assets/Default_Img.png";
-        ImageIcon icon = loadResizedIcon(imagePath, IMG_WIDTH, IMG_HEIGHT);
-        if (icon == null) {
-            icon = loadResizedIcon("Database/Assets/Default_Img.png", IMG_WIDTH, IMG_HEIGHT);
-        }
-        imageLabel.setIcon(icon);
+    String imagePath = (course.getImagePath() != null && !course.getImagePath().isEmpty())
+        ? course.getImagePath()
+        : parentPath + "Database\\Assets\\Default_Img.png";
+    ImageIcon icon = loadResizedIcon(imagePath, IMG_WIDTH, IMG_HEIGHT);
+    if (icon == null) {
+        icon = loadResizedIcon(parentPath + "Database\\Assets\\Default_Img.png", IMG_WIDTH, IMG_HEIGHT);
+    }
+    imageLabel.setIcon(icon);
 
         // --- HEADER SECTION ---
         JPanel topPanel = new JPanel();
@@ -164,7 +167,8 @@ public class CourseOverviewPanel extends JPanel {
         try {
             File file = new File(path);
             if (!file.exists()) {
-                file = new File("src/" + path);
+                // Try fallback to default image
+                file = new File(parentPath + "Database\\Assets\\Default_Img.png");
                 if(!file.exists()) return null;
             }
             BufferedImage img = ImageIO.read(file);

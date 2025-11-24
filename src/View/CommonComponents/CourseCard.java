@@ -5,6 +5,7 @@ import Model.Course.Course;
 import Model.Course.COURSE_STATUS;
 import View.StyledComponents.SCoursePanel;
 import View.StyledComponents.StyleColors;
+import View.StyledComponents.SLabel; // Added import
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,12 +14,16 @@ import java.io.File;
 import javax.imageio.ImageIO;
 
 public class CourseCard extends SCoursePanel {
-    private JLabel imageLabel;
-    private JLabel titleLabel;
-    private JLabel instructorLabel;
-    private JLabel progressLabel;
-    private JLabel percentLabel;
-    private JLabel statusLabel;
+    // Set the parent path for all file/image operations
+    private static final String parentPath = "Y:\\AlexU\\Term 5\\Programming 2\\Programming-II-Lab7\\src\\";
+
+    // Use SLabel for all textual/image labels for consistent styling
+    private SLabel imageLabel;
+    private SLabel titleLabel;
+    private SLabel instructorLabel;
+    private SLabel progressLabel;
+    private SLabel percentLabel;
+    private SLabel statusLabel;
 
     private static final int IMG_WIDTH = 150;
     private static final int IMG_HEIGHT = 100;
@@ -42,11 +47,11 @@ public class CourseCard extends SCoursePanel {
 
         if (totalLessons > 0) {
             int percent = (int) Math.round((numOfCompletedLessons * 100.0) / totalLessons);
-            progressLabel = new JLabel(numOfCompletedLessons + " out of " + totalLessons + " Completed");
-            percentLabel = new JLabel("Progress: " + percent + "%");
+            progressLabel = new SLabel(numOfCompletedLessons + " out of " + totalLessons + " Completed");
+            percentLabel = new SLabel("Progress: " + percent + "%");
         } else {
-            progressLabel = new JLabel("No lessons");
-            percentLabel = new JLabel("Progress: 0%");
+            progressLabel = new SLabel("No lessons");
+            percentLabel = new SLabel("Progress: 0%");
         }
 
         progressLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
@@ -70,7 +75,8 @@ public class CourseCard extends SCoursePanel {
     private void initCard(Course course) {
         String instructorName = new CourseController().getInstructorName(course.getInstructorId());
         setLayout(new BorderLayout(15, 0));
-        setBackground(StyleColors.BACKGROUND);
+        // Use CARD color for the card surface while the parent list uses BACKGROUND
+        setBackground(StyleColors.CARD);
 
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(StyleColors.ACCENT, 2, true),
@@ -78,20 +84,20 @@ public class CourseCard extends SCoursePanel {
         ));
 
         // --- Image Section ---
-        imageLabel = new JLabel();
+        imageLabel = new SLabel();
         imageLabel.setPreferredSize(new Dimension(IMG_WIDTH, IMG_HEIGHT));
         imageLabel.setMinimumSize(new Dimension(IMG_WIDTH, IMG_HEIGHT));
         imageLabel.setMaximumSize(new Dimension(IMG_WIDTH, IMG_HEIGHT));
         imageLabel.setBorder(BorderFactory.createLineBorder(StyleColors.ACCENT_DARK, 1));
 
-        String imagePath = "Database/Assets/Default_Img.png";
+        String imagePath = parentPath + "Database\\Assets\\Default_Img.png";
         if (course.getImagePath() != null && !course.getImagePath().isEmpty()) {
             imagePath = course.getImagePath();
         }
 
         ImageIcon icon = loadResizedIcon(imagePath, IMG_WIDTH, IMG_HEIGHT);
         if (icon == null) {
-            icon = loadResizedIcon("Database/Assets/Default_Img.png", IMG_WIDTH, IMG_HEIGHT);
+            icon = loadResizedIcon(parentPath + "Database\\Assets\\Default_Img.png", IMG_WIDTH, IMG_HEIGHT);
         }
 
         if (icon != null) {
@@ -99,7 +105,6 @@ public class CourseCard extends SCoursePanel {
         } else {
             imageLabel.setText("No Image");
             imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            imageLabel.setForeground(StyleColors.TEXT);
         }
 
         add(imageLabel, BorderLayout.WEST);
@@ -107,18 +112,16 @@ public class CourseCard extends SCoursePanel {
         // --- Info Section ---
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-        infoPanel.setBackground(StyleColors.BACKGROUND);
+        infoPanel.setBackground(StyleColors.CARD);
         infoPanel.setOpaque(false);
 
-        titleLabel = new JLabel(course.getTitle());
+        titleLabel = new SLabel(course.getTitle());
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        titleLabel.setForeground(StyleColors.TEXT);
         titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         infoPanel.add(titleLabel);
 
-        instructorLabel = new JLabel("<html><b><i>Instructor: </i></b><i>" + instructorName + "</i></html>");
+        instructorLabel = new SLabel("<html><b><i>Instructor: </i></b><i>" + instructorName + "</i></html>");
         instructorLabel.setFont(new Font("Segoe UI", Font.ITALIC | Font.PLAIN, 14));
-        instructorLabel.setForeground(StyleColors.TEXT);
         instructorLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         instructorLabel.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
         infoPanel.add(instructorLabel);
@@ -145,15 +148,13 @@ public class CourseCard extends SCoursePanel {
                 break;
         }
 
-        statusLabel = new JLabel(statusText);
+        statusLabel = new SLabel(statusText);
         statusLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        statusLabel.setForeground(Color.WHITE);
+        statusLabel.setForeground(Color.WHITE); // Keep high contrast inside colored badge
         statusLabel.setOpaque(true);
         statusLabel.setBackground(statusColor);
         statusLabel.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
 
-        // Create a panel to hold the label at the top-right or similar
-        // Since we are using BorderLayout, EAST is a good spot
         JPanel statusPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         statusPanel.setOpaque(false);
         statusPanel.add(statusLabel);
@@ -165,8 +166,8 @@ public class CourseCard extends SCoursePanel {
         try {
             File file = new File(path);
             if (!file.exists()) {
-                file = new File("src/" + path);
-                if(!file.exists()) return null;
+                file = new File(parentPath + "Database\\Assets\\Default_Img.png");
+                if (!file.exists()) return null;
             }
             BufferedImage img = ImageIO.read(file);
             Image scaled = img.getScaledInstance(w, h, Image.SCALE_SMOOTH);
