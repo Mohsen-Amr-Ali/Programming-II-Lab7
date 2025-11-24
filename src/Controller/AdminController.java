@@ -19,7 +19,6 @@ public class AdminController {
 
     /**
      * Retrieves all courses currently requiring review.
-     * @return A list of courses with status PENDING.
      */
     public ArrayList<Course> getPendingCourses() {
         return dbManager.getPendingCourses();
@@ -27,7 +26,6 @@ public class AdminController {
 
     /**
      * Retrieves all courses that have been approved.
-     * @return A list of courses with status APPROVED.
      */
     public ArrayList<Course> getApprovedCourses() {
         return dbManager.getApprovedCourses();
@@ -35,7 +33,6 @@ public class AdminController {
 
     /**
      * Retrieves all courses that have been rejected.
-     * @return A list of courses with status REJECTED.
      */
     public ArrayList<Course> getRejectedCourses() {
         return dbManager.getRejectedCourses();
@@ -43,7 +40,6 @@ public class AdminController {
 
     /**
      * Changes a course's status to APPROVED.
-     * @param courseId The ID of the course to approve.
      */
     public void approveCourse(int courseId) {
         // Calls the necessary method in the database manager
@@ -52,7 +48,6 @@ public class AdminController {
 
     /**
      * Changes a course's status to REJECTED.
-     * @param courseId The ID of the course to reject.
      */
     public void declineCourse(int courseId) {
         // Calls the necessary method in the database manager

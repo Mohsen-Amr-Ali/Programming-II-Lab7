@@ -23,7 +23,7 @@ public class FileManager {
         // Return the relative path (excluding "src/")
         return "Database/Assets/Course_" + courseId + "/" + fileName;
     }
-    private static final String ASSETS_DIR = "src/Database/Assets/";
+    private static final String ASSETS_DIR = "C:\\Users\\malak\\Desktop\\Programming II\\Programming-II-Lab7\\src\\Database\\Assets";
 
     // Ensures the directory exists: src/Database/Assets/Course_[ID]/
     public static void createCourseDirectory(int courseId) {

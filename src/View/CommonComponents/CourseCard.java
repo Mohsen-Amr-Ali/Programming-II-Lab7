@@ -15,7 +15,7 @@ import javax.imageio.ImageIO;
 
 public class CourseCard extends SCoursePanel {
     // Set the parent path for all file/image operations
-    private static final String parentPath = "Y:\\AlexU\\Term 5\\Programming 2\\Programming-II-Lab7\\src\\";
+    private static final String parentPath = "C:\\Users\\malak\\Desktop\\Programming II\\Programming-II-Lab7\\src\\";
 
     // Use SLabel for all textual/image labels for consistent styling
     private SLabel imageLabel;

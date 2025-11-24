@@ -23,17 +23,28 @@
         "title": "Control Flow Statements",
         "content": "Course_700001\\Lesson_501003",
         "quiz": {
+          "quizId": 0,
           "questions": [
             {
               "questionId": 0,
               "questionText": "Which statement is used for decision making in Java?",
-              "answers": ["while", "if", "for", "switch"],
+              "answers": [
+                "while",
+                "if",
+                "for",
+                "switch"
+              ],
               "correctAnswerIndex": 1
             },
             {
               "questionId": 0,
-              "questionText": "What does a 'for' loop do?",
-              "answers": ["false", "Repeats code a specific number of times", "false", "false"],
+              "questionText": "What does a \u0027for\u0027 loop do?",
+              "answers": [
+                "false",
+                "Repeats code a specific number of times",
+                "false",
+                "false"
+              ],
               "correctAnswerIndex": 1
             }
           ],
@@ -52,17 +63,28 @@
         "title": "Exception Handling",
         "content": "Course_700001\\Lesson_501005",
         "quiz": {
+          "quizId": 0,
           "questions": [
             {
               "questionId": 0,
               "questionText": "What keyword is used to throw an exception?",
-              "answers": ["false", "false", "throw", "false"],
+              "answers": [
+                "false",
+                "false",
+                "throw",
+                "false"
+              ],
               "correctAnswerIndex": 2
             },
             {
               "questionId": 0,
               "questionText": "Which block is always executed in try-catch?",
-              "answers": ["false", "finally", "false", "false"],
+              "answers": [
+                "false",
+                "finally",
+                "false",
+                "false"
+              ],
               "correctAnswerIndex": 1
             }
           ],
@@ -70,7 +92,10 @@
         }
       }
     ],
-    "students": [900001, 900002],
+    "students": [
+      900001,
+      900002
+    ],
     "imagePath": "Course_700001\\title.jpg",
     "status": "APPROVED"
   },
@@ -92,17 +117,28 @@
         "title": "Multithreading Basics",
         "content": "Course_700002\\Lesson_502002",
         "quiz": {
+          "quizId": 0,
           "questions": [
             {
               "questionId": 0,
               "questionText": "Which interface must be implemented to create a thread?",
-              "answers": ["false", "Runnable", "false", "false"],
+              "answers": [
+                "false",
+                "Runnable",
+                "false",
+                "false"
+              ],
               "correctAnswerIndex": 1
             },
             {
               "questionId": 0,
               "questionText": "What method starts a thread execution?",
-              "answers": ["false", "false", "start()", "false"],
+              "answers": [
+                "false",
+                "false",
+                "start()",
+                "false"
+              ],
               "correctAnswerIndex": 2
             }
           ],
@@ -116,59 +152,17 @@
         "content": "Course_700002\\Lesson_502003"
       }
     ],
-    "students": [900002, 900003],
+    "students": [
+      900002,
+      900003,
+      900001
+    ],
     "imagePath": "Course_700002\\title.jpg",
     "status": "APPROVED"
   },
   {
-    "courseId": 700003,
-    "title": "Python for Beginners",
-    "description": "Start your programming journey with Python. Learn syntax, data structures, and basic algorithms.",
-    "instructorId": 100002,
-    "lessons": [
-      {
-        "lessonId": 503001,
-        "courseId": 700003,
-        "title": "Python Basics",
-        "content": "Course_700003\\Lesson_503001"
-      },
-      {
-        "lessonId": 503002,
-        "courseId": 700003,
-        "title": "Lists and Dictionaries",
-        "content": "Course_700003\\Lesson_503002",
-        "quiz": {
-          "questions": [
-            {
-              "questionId": 0,
-              "questionText": "How do you create an empty list in Python?",
-              "answers": ["[]", "false", "false", "false"],
-              "correctAnswerIndex": 0
-            },
-            {
-              "questionId": 0,
-              "questionText": "What method adds an item to the end of a list?",
-              "answers": ["false", "false", "append()", "false"],
-              "correctAnswerIndex": 2
-            }
-          ],
-          "passThreshold": 60.0
-        }
-      },
-      {
-        "lessonId": 503003,
-        "courseId": 700003,
-        "title": "Functions and Modules",
-        "content": "Course_700003\\Lesson_503003"
-      }
-    ],
-    "students": [900001, 900003],
-    "imagePath": "Course_700003\\title.jpg",
-    "status": "PENDING"
-  },
-  {
     "courseId": 700004,
-    "title": "Web Development with JavaScript",
+    "title": "Web Development with JavaScript (udemy)",
     "description": "Master modern web development using JavaScript, HTML, and CSS.",
     "instructorId": 100002,
     "lessons": [
@@ -184,17 +178,28 @@
         "title": "JavaScript Basics",
         "content": "Course_700004\\Lesson_504002",
         "quiz": {
+          "quizId": 0,
           "questions": [
             {
               "questionId": 0,
               "questionText": "What keyword declares a constant in JavaScript?",
-              "answers": ["false", "const", "false", "false"],
+              "answers": [
+                "false",
+                "const",
+                "false",
+                "false"
+              ],
               "correctAnswerIndex": 1
             },
             {
               "questionId": 0,
               "questionText": "Which operator checks for equality without type coercion?",
-              "answers": ["===", "false", "false", "false"],
+              "answers": [
+                "\u003d\u003d\u003d",
+                "false",
+                "false",
+                "false"
+              ],
               "correctAnswerIndex": 0
             }
           ],
@@ -202,9 +207,10 @@
         }
       }
     ],
-    "students": [900002],
+    "students": [
+      900002
+    ],
     "imagePath": "Course_700004\\title.jpg",
-    "status": "REJECTED"
+    "status": "PENDING"
   }
 ]
-

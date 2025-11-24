@@ -37,7 +37,7 @@ import View.StudentComponents.StudentNavBar;
 
 public class StudentDashboardFrame extends JFrame {
     // Set the parent path for all file operations
-    private static final String parentPath = "Y:\\AlexU\\Term 5\\Programming 2\\Programming-II-Lab7\\";
+    private static final String parentPath = "C:\\Users\\malak\\Desktop\\Programming II\\Programming-II-Lab7\\";
     private Student student;
     private StudentController studentController;
     private CourseController courseController;

@@ -24,7 +24,7 @@ import com.google.gson.reflect.TypeToken;
 
 public class JsonDatabaseManager {
     // Set the parent path for all file operations
-    private static final String parentPath = "Y:\\AlexU\\Term 5\\Programming 2\\Programming-II-Lab7\\src\\";
+    private static final String parentPath = "C:\\Users\\malak\\Desktop\\Programming II\\Programming-II-Lab7\\src\\";
 
     private static JsonDatabaseManager instance; //conventional name for a singleton instnace, it'll be just one instance for the entire program
     private ArrayList<Student> students = new ArrayList<>();
@@ -36,8 +36,8 @@ public class JsonDatabaseManager {
     private ArrayList<Course> rejectedCourses = new ArrayList<>();
 
     // Use parentPath for all file operations
-    private String usersFile = parentPath + "Database\\users.json";
-    private String coursesFile = parentPath + "Database\\courses.json";
+    private String usersFile = parentPath + "\\Database\\users.json";
+    private String coursesFile = parentPath + "\\Database\\courses.json";
 
     private static final Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
@@ -528,4 +528,5 @@ public class JsonDatabaseManager {
         }
         return null;
     }
+
 }
