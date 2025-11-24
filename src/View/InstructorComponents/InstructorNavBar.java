@@ -165,5 +165,7 @@ public class InstructorNavBar extends JPanel {
 
     public void clearSearchText() {
         searchField.setText("Search courses...");
+        // Transfer focus away to ensure placeholder shows correctly
+        refreshButton.requestFocusInWindow();
     }
 }

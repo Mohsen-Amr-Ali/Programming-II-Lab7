@@ -15,7 +15,7 @@ import javax.imageio.ImageIO;
 
 public class CourseOverviewPanel extends JPanel {
     // Set the parent path for all file/image operations
-    private static final String parentPath = "Y:\\AlexU\\Term 5\\Programming 2\\Programming-II-Lab7\\";
+    private static final String parentPath = "Y:\\AlexU\\Term 5\\Programming 2\\Programming-II-Lab7\\src\\";
 
     Course course;
     String instructorName;
@@ -47,20 +47,28 @@ public class CourseOverviewPanel extends JPanel {
         ));
 
         // --- IMAGE SECTION ---
-        JLabel imageLabel = new JLabel();
+        SLabel imageLabel = new SLabel();
         imageLabel.setPreferredSize(new Dimension(IMG_WIDTH, IMG_HEIGHT));
         imageLabel.setMinimumSize(new Dimension(IMG_WIDTH, IMG_HEIGHT));
         imageLabel.setMaximumSize(new Dimension(IMG_WIDTH, IMG_HEIGHT));
         imageLabel.setBorder(BorderFactory.createLineBorder(StyleColors.ACCENT_DARK, 1));
 
-    String imagePath = (course.getImagePath() != null && !course.getImagePath().isEmpty())
-        ? course.getImagePath()
-        : parentPath + "Database\\Assets\\Default_Img.png";
-    ImageIcon icon = loadResizedIcon(imagePath, IMG_WIDTH, IMG_HEIGHT);
-    if (icon == null) {
-        icon = loadResizedIcon(parentPath + "Database\\Assets\\Default_Img.png", IMG_WIDTH, IMG_HEIGHT);
-    }
-    imageLabel.setIcon(icon);
+        // Construct full image path: parentPath + Database\Assets\ + (course folder + filename from imagePath)
+        String imagePath;
+        System.out.println("CourseOverviewPanel: course.getImagePath() returned: '" + course.getImagePath() + "'");
+        if (course.getImagePath() != null && !course.getImagePath().isEmpty()) {
+            imagePath = parentPath + "Database\\Assets\\" + course.getImagePath();
+            System.out.println("CourseOverviewPanel: Constructed path: '" + imagePath + "'");
+        } else {
+            imagePath = parentPath + "Database\\Assets\\Default_Img.png";
+            System.out.println("CourseOverviewPanel: Using default image path");
+        }
+
+        ImageIcon icon = loadResizedIcon(imagePath, IMG_WIDTH, IMG_HEIGHT);
+        if (icon == null) {
+            icon = loadResizedIcon(parentPath + "Database\\Assets\\Default_Img.png", IMG_WIDTH, IMG_HEIGHT);
+        }
+        imageLabel.setIcon(icon);
 
         // --- HEADER SECTION ---
         JPanel topPanel = new JPanel();
@@ -168,15 +176,30 @@ public class CourseOverviewPanel extends JPanel {
     private ImageIcon loadResizedIcon(String path, int w, int h) {
         try {
             File file = new File(path);
+            System.out.println("CourseOverviewPanel: Attempting to load image from: " + file.getAbsolutePath());
+
             if (!file.exists()) {
+                System.out.println("CourseOverviewPanel: Image not found, trying default image");
                 // Try fallback to default image
                 file = new File(parentPath + "Database\\Assets\\Default_Img.png");
-                if(!file.exists()) return null;
+                if(!file.exists()) {
+                    System.out.println("CourseOverviewPanel: Default image not found at: " + file.getAbsolutePath());
+                    return null;
+                }
             }
+
             BufferedImage img = ImageIO.read(file);
+            if (img == null) {
+                System.out.println("CourseOverviewPanel: ImageIO.read returned null for: " + file.getAbsolutePath());
+                return null;
+            }
+
             Image scaled = img.getScaledInstance(w, h, Image.SCALE_SMOOTH);
+            System.out.println("CourseOverviewPanel: Successfully loaded and scaled image");
             return new ImageIcon(scaled);
         } catch (Exception e) {
+            System.out.println("CourseOverviewPanel: Error loading image: " + e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }

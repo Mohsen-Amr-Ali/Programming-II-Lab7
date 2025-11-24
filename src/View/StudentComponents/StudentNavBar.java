@@ -11,6 +11,7 @@ public class StudentNavBar extends JPanel {
     private SBtn enrolledCoursesBtn;
     private SBtn availableCoursesBtn;
     private SBtn myStatsBtn; // New Button
+    private SBtn myCertificatesBtn;
     private STField searchField;
     private SBtn searchBtn;
     private SBtn logoutBtn;
@@ -103,7 +104,13 @@ public class StudentNavBar extends JPanel {
         gbc.gridy = 0;
         lowerPanel.add(myStatsBtn, gbc);
 
-        // 4. Search Field (Spans remaining width)
+        // 4. My Certificates
+        myCertificatesBtn = new SBtn("My Certificates");
+        gbc.gridx = 3;
+        gbc.gridy = 0;
+        lowerPanel.add(myCertificatesBtn, gbc);
+
+        // 5. Search Field (Spans remaining width)
         searchField = new STField("Search courses...");
         searchField.addFocusListener(new java.awt.event.FocusAdapter() {
             @Override
@@ -120,14 +127,14 @@ public class StudentNavBar extends JPanel {
             }
         });
 
-        gbc.gridx = 3;
+        gbc.gridx = 4;
         gbc.gridy = 0;
         gbc.weightx = 1.0; // Takes up remaining space
         lowerPanel.add(searchField, gbc);
 
-        // 5. Search Button
+        // 6. Search Button
         searchBtn = new SBtn("Search");
-        gbc.gridx = 4;
+        gbc.gridx = 5;
         gbc.gridy = 0;
         gbc.weightx = 0;
         lowerPanel.add(searchBtn, gbc);
@@ -139,6 +146,7 @@ public class StudentNavBar extends JPanel {
     public SBtn getEnrolledCoursesBtn() { return enrolledCoursesBtn; }
     public SBtn getAvailableCoursesBtn() { return availableCoursesBtn; }
     public SBtn getMyStatsBtn() { return myStatsBtn; }
+    public SBtn getMyCertificatesBtn() { return myCertificatesBtn; }
     public STField getSearchField() { return searchField; }
     public SBtn getSearchBtn() { return searchBtn; }
     public SBtn getLogoutBtn() { return logoutBtn; }
@@ -155,6 +163,10 @@ public class StudentNavBar extends JPanel {
         myStatsBtn.addActionListener(listener);
     }
 
+    public void addMyCertificatesButtonListener(java.awt.event.ActionListener listener) {
+        myCertificatesBtn.addActionListener(listener);
+    }
+
     public void addSearchButtonListener(java.awt.event.ActionListener listener) {
         searchBtn.addActionListener(listener);
     }
@@ -169,6 +181,8 @@ public class StudentNavBar extends JPanel {
 
     public void clearSearchText() {
         searchField.setText("Search courses...");
+        // Transfer focus away to ensure placeholder shows correctly
+        enrolledCoursesBtn.requestFocusInWindow();
     }
 
     public Student getStudent() {

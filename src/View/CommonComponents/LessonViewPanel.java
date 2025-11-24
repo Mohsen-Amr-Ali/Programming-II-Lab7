@@ -11,6 +11,9 @@ import java.awt.*;
 import java.io.File;
 
 public class LessonViewPanel extends JPanel {
+    // Set the parent path for all file/image operations
+    private static final String parentPath = "Y:\\AlexU\\Term 5\\Programming 2\\Programming-II-Lab7\\src\\";
+
     public LessonViewPanel(Lesson lesson, int number) {
         setLayout(new BorderLayout(0, 0));
         setBackground(StyleColors.BACKGROUND);
@@ -41,24 +44,20 @@ public class LessonViewPanel extends JPanel {
         add(topPanel, BorderLayout.NORTH);
 
         // --- Resolve Content ---
-        String displayContent = "";
+        String displayContent;
         String contentPath = lesson.getContent();
 
         if (contentPath != null && !contentPath.isEmpty()) {
-            // Try to read as file first
-            File f = new File("src/" + contentPath);
-            if (f.exists()) {
-                displayContent = FileManager.readBinaryToText(contentPath);
-            } else {
-                // Fallback for absolute paths or legacy text data
-                File abs = new File(contentPath);
-                if (abs.exists()) {
-                    displayContent = FileManager.readBinaryToText(contentPath);
-                } else {
-                    // If file not found, assume it might be legacy raw text
-                    displayContent = contentPath;
-                }
+            // Construct the full, absolute path to the lesson file
+            String fullPath = parentPath + "Database\\Assets\\" + contentPath;
+            displayContent = FileManager.readBinaryToText(fullPath);
+            if (displayContent == null) {
+                // If reading fails, show an error message with the full path for debugging
+                displayContent = "Error: Could not load lesson content from " + fullPath;
             }
+        } else {
+            // If content is empty or null, display a message
+            displayContent = "No content available for this lesson.";
         }
 
         // Content area (scrollable)

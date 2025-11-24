@@ -115,6 +115,23 @@ public class Analytics {
         return totalWithQuizzes == 0 ? 0 : (double) passed / totalWithQuizzes * 100.0;
     }
 
+    public Map<String, Double> calculateCourseProgress(Student student, JsonDatabaseManager dbManager) {
+        Map<String, Double> progressMap = new HashMap<>();
+        ArrayList<Integer> enrolledCourseIds = student.getEnrolledCoursesIDs();
+
+        for (Integer courseId : enrolledCourseIds) {
+            Course course = dbManager.getCourseById(courseId);
+            if (course != null) {
+                ArrayList<Integer> completedLessons = student.getProgress().get(courseId);
+                int completedCount = (completedLessons != null) ? completedLessons.size() : 0;
+                int totalLessons = course.getLessons().size();
+                double progress = (totalLessons > 0) ? ((double) completedCount / totalLessons) * 100.0 : 0.0;
+                progressMap.put(course.getTitle(), progress);
+            }
+        }
+        return progressMap;
+    }
+
     // admin analytics //
     public int getPendingCourseCount (ArrayList<Course> courses) {
         int pending = 0;

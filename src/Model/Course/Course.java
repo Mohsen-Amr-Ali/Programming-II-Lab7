@@ -120,10 +120,7 @@ public class Course {
     }
 
     public String getImagePath() {
-        // If imagePath is not set, return the default absolute path
-        if (imagePath == null || imagePath.isEmpty()) {
-            return parentPath + "Database\\Assets\\Default_Img.png";
-        }
-        return parentPath + "Database\\Assets\\" + imagePath;
+        // Return the raw imagePath field - UI will construct the full path
+        return imagePath;
     }
 }

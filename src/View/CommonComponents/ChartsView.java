@@ -79,29 +79,14 @@ public class ChartsView extends JPanel {
     }
 
     // --- STUDENT ANALYTICS ---
-    public void updateStudentStats(Student student) {
+    public void updateStudentStats(Student student, JsonDatabaseManager dbManager, Map<String, Double> quizPerformance) {
         removeAll();
         setLayout(new GridLayout(2, 1, 10, 10));
 
         // 1. Quiz Performance Bar Chart
         DefaultCategoryDataset scoreDataset = new DefaultCategoryDataset();
-        JsonDatabaseManager db = JsonDatabaseManager.getInstance();
-
-        // Iterate through enrolled courses to gather quiz data
-        for (int courseId : student.getEnrolledCoursesIDs()) {
-            Course course = db.getCourseById(courseId);
-            if (course == null) continue;
-
-            for (Lesson lesson : course.getLessons()) {
-                if (lesson.getQuiz() != null) {
-                    QuizResult result = student.getLatestQuizResult(lesson.getQuiz());
-                    if (result != null) {
-                        // Normalize score to %
-                        double percent = (double) result.getScore() / result.getMaxScore() * 100;
-                        scoreDataset.addValue(percent, "Score %", lesson.getTitle());
-                    }
-                }
-            }
+        for (Map.Entry<String, Double> entry : quizPerformance.entrySet()) {
+            scoreDataset.addValue(entry.getValue(), "Highest Score %", entry.getKey());
         }
 
         JFreeChart scoreChart = ChartFactory.createBarChart(
@@ -114,14 +99,11 @@ public class ChartsView extends JPanel {
         );
         add(new ChartPanel(scoreChart));
 
-        // 2. Course Progress Overview (Simple Bar for all enrolled courses)
+        // 2. Course Progress Overview
         DefaultCategoryDataset progressDataset = new DefaultCategoryDataset();
-        for (int courseId : student.getEnrolledCoursesIDs()) {
-            Course course = db.getCourseById(courseId);
-            if (course != null) {
-                double progress = analytics.getLessonProgress(student, course);
-                progressDataset.addValue(progress, "Completion %", course.getTitle());
-            }
+        Map<String, Double> progressMap = analytics.calculateCourseProgress(student, dbManager);
+        for (Map.Entry<String, Double> entry : progressMap.entrySet()) {
+            progressDataset.addValue(entry.getValue(), "Completion %", entry.getKey());
         }
 
         JFreeChart progressChart = ChartFactory.createBarChart(
@@ -224,7 +206,10 @@ public class ChartsView extends JPanel {
                 statusDataset,
                 true, true, false
         );
-        add(new ChartPanel(statusChart));
+        styleChart(statusChart);
+        ChartPanel statusChartPanel = new ChartPanel(statusChart);
+        statusChartPanel.setBackground(StyleColors.BACKGROUND);
+        add(statusChartPanel);
 
         // 2. Pending vs Total Courses (Bar)
         DefaultCategoryDataset courseDataset = new DefaultCategoryDataset();

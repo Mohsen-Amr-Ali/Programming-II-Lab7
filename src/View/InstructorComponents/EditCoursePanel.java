@@ -24,9 +24,13 @@ public class EditCoursePanel extends AddCoursePanel {
         // Description is plain text, so set it directly.
         setDescriptionText(course.getDescription());
 
-        // 3. Pre-fill Image Label (Visual indicator logic would go here)
-        // String imgPath = course.getImagePath();
-        // if (imgPath != null && !imgPath.isEmpty()) { ... }
+        // 3. Pre-fill Image Label - Show existing image filename if available
+        String imgPath = course.getImagePath();
+        if (imgPath != null && !imgPath.isEmpty()) {
+            // Extract just the filename from the path (e.g., "Course_7001\\title.jpg" -> "title.jpg")
+            String fileName = imgPath.substring(imgPath.lastIndexOf('\\') + 1);
+            setImageFileName("Current: " + fileName);
+        }
 
         // 4. Update Button Text & Emphasize Styling
         getAddButton().setText("Save Changes");

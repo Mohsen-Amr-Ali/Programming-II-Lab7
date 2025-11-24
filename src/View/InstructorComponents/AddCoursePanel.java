@@ -141,7 +141,13 @@ public class AddCoursePanel {
     }
 
     private void chooseImage() {
-        JFileChooser fileChooser = new JFileChooser();
+        // Set default directory to src folder
+        String srcPath = "Y:\\AlexU\\Term 5\\Programming 2\\Programming-II-Lab7\\src";
+        JFileChooser fileChooser = new JFileChooser(srcPath);
+
+        // Apply dark theme to file chooser
+        styleFileChooser(fileChooser);
+
         fileChooser.setDialogTitle("Select Course Image");
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         // Filter for images
@@ -153,6 +159,29 @@ public class AddCoursePanel {
             selectedImageFile = fileChooser.getSelectedFile();
             selectedFileLabel.setText(selectedImageFile.getName());
             selectedFileLabel.setForeground(StyleColors.TEXT);
+            // Force UI refresh to show the filename
+            selectedFileLabel.revalidate();
+            selectedFileLabel.repaint();
+        }
+    }
+
+    // Helper method to style JFileChooser with dark theme
+    private void styleFileChooser(JFileChooser fileChooser) {
+        fileChooser.setBackground(StyleColors.BACKGROUND);
+        fileChooser.setForeground(StyleColors.TEXT);
+
+        // Style all components recursively
+        styleComponent(fileChooser);
+    }
+
+    private void styleComponent(Component comp) {
+        comp.setBackground(StyleColors.BACKGROUND);
+        comp.setForeground(StyleColors.TEXT);
+
+        if (comp instanceof Container) {
+            for (Component child : ((Container) comp).getComponents()) {
+                styleComponent(child);
+            }
         }
     }
 
@@ -178,6 +207,11 @@ public class AddCoursePanel {
 
     public File getSelectedImageFile() {
         return selectedImageFile;
+    }
+
+    public void setImageFileName(String fileName) {
+        selectedFileLabel.setText(fileName);
+        selectedFileLabel.setForeground(StyleColors.TEXT);
     }
 
     public SBtn getAddButton() {

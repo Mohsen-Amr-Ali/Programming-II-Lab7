@@ -195,7 +195,13 @@ public class AddLessonPanel {
     }
 
     private void chooseFile() {
-        JFileChooser fileChooser = new JFileChooser();
+        // Set default directory to src folder
+        String srcPath = "Y:\\AlexU\\Term 5\\Programming 2\\Programming-II-Lab7\\src";
+        JFileChooser fileChooser = new JFileChooser(srcPath);
+
+        // Apply dark theme to file chooser
+        styleFileChooser(fileChooser);
+
         fileChooser.setDialogTitle("Select Content File");
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt", "md", "json"));
@@ -205,6 +211,29 @@ public class AddLessonPanel {
             selectedContentFile = fileChooser.getSelectedFile();
             selectedFileLabel.setText(selectedContentFile.getName());
             selectedFileLabel.setForeground(StyleColors.TEXT);
+            // Force UI refresh to show the filename
+            selectedFileLabel.revalidate();
+            selectedFileLabel.repaint();
+        }
+    }
+
+    // Helper method to style JFileChooser with dark theme
+    private void styleFileChooser(JFileChooser fileChooser) {
+        fileChooser.setBackground(StyleColors.BACKGROUND);
+        fileChooser.setForeground(StyleColors.TEXT);
+
+        // Style all components recursively
+        styleComponent(fileChooser);
+    }
+
+    private void styleComponent(java.awt.Component comp) {
+        comp.setBackground(StyleColors.BACKGROUND);
+        comp.setForeground(StyleColors.TEXT);
+
+        if (comp instanceof java.awt.Container) {
+            for (java.awt.Component child : ((java.awt.Container) comp).getComponents()) {
+                styleComponent(child);
+            }
         }
     }
 

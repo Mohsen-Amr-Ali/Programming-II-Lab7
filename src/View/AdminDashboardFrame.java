@@ -103,12 +103,7 @@ public class AdminDashboardFrame extends JFrame {
         mainPanel.add(tabsWrapper, BorderLayout.CENTER);
 
         // --- Navbar Logic ---
-        navBar.getDashboardBtn().addActionListener(e -> {
-            loadAllLists();
-            cardLayout.show(getContentPane(), MAIN_PANEL);
-        });
-
-        // UPDATED: Analytics Button Listener
+        // Analytics Button Listener
         navBar.getAnalyticsBtn().addActionListener(e -> showAnalyticsDialog());
 
         navBar.addRefreshListener(e -> {
@@ -166,14 +161,29 @@ public class AdminDashboardFrame extends JFrame {
     }
 
     private void filterLists(String query) {
-        // Just filter based on loaded data for simplicity, or re-fetch
-        // Here we filter the pending list primarily
-        ArrayList<Course> pending = adminController.getPendingCourses();
-        ArrayList<Course> filteredPending = courseController.getCourseByTitle(pending, query.toLowerCase());
-        loadCoursesToPanel(pendingPanel, filteredPending);
+        // Filter based on the currently selected tab
+        int currentTab = statusTabs.getSelectedIndex();
 
-        // Can do same for others if needed, but focusing on pending is key for admin workflow
-        statusTabs.setSelectedIndex(0);
+        switch (currentTab) {
+            case 0: // Pending tab
+                ArrayList<Course> pending = adminController.getPendingCourses();
+                ArrayList<Course> filteredPending = courseController.getCourseByTitle(pending, query.toLowerCase());
+                loadCoursesToPanel(pendingPanel, filteredPending);
+                break;
+
+            case 1: // Approved tab
+                ArrayList<Course> approved = adminController.getApprovedCourses();
+                ArrayList<Course> filteredApproved = courseController.getCourseByTitle(approved, query.toLowerCase());
+                loadCoursesToPanel(approvedPanel, filteredApproved);
+                break;
+
+            case 2: // Rejected tab
+                ArrayList<Course> rejected = adminController.getRejectedCourses();
+                ArrayList<Course> filteredRejected = courseController.getCourseByTitle(rejected, query.toLowerCase());
+                loadCoursesToPanel(rejectedPanel, filteredRejected);
+                break;
+        }
+        // Stay on current tab (don't switch)
     }
 
     private void loadCoursesToPanel(JPanel panel, ArrayList<Course> courses) {

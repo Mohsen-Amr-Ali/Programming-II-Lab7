@@ -35,6 +35,20 @@ public class StudentController {
         return enrolledCourses;
     }
 
+    public ArrayList<Course> getCompletedCourses(int studentId) {
+        Student student = (Student) dbManager.getUserById(studentId);
+        ArrayList<Course> completedCourses = new ArrayList<>();
+        if (student != null) {
+            for (int courseId : student.getEnrolledCoursesIDs()) {
+                Course course = dbManager.getCourseById(courseId);
+                if (course != null && student.isCourseComplete(course)) {
+                    completedCourses.add(course);
+                }
+            }
+        }
+        return completedCourses;
+    }
+
     public ArrayList<Integer> getCompletedLessons(int studentId, int courseId) {
         Student student = (Student) dbManager.getUserById(studentId);
         if (student != null) {
@@ -115,9 +129,10 @@ public class StudentController {
 
     private int calculateCorrectAnswers(Quiz quiz, HashMap<Integer, Integer> answers) {
         int correctAnswers = 0;
-        for (Question question : quiz.getQuestions()) {
-            if (answers.containsKey(question.getQuestionId()) &&
-                    answers.get(question.getQuestionId()).equals(question.getCorrectAnswerIndex())) {
+        // Loop by index since QuizPanel stores answers by question index, not questionId
+        for (int i = 0; i < quiz.getQuestions().size(); i++) {
+            Question question = quiz.getQuestions().get(i);
+            if (answers.containsKey(i) && answers.get(i).equals(question.getCorrectAnswerIndex())) {
                 correctAnswers++;
             }
         }
@@ -126,9 +141,10 @@ public class StudentController {
 
     /**
      * Generates a certificate PDF for a completed course.
+     *
      * @param studentId The student ID.
-     * @param courseId The course ID.
-     * @param filePath The path where the PDF should be saved.
+     * @param courseId  The course ID.
+     * @param filePath  The path where the PDF should be saved.
      * @return true if generation successful, false otherwise.
      */
     public boolean generateCertificate(int studentId, int courseId, String filePath) {
@@ -143,20 +159,75 @@ public class StudentController {
             return false;
         }
 
-        // Create Certificate Data
-        // Check if certificate already exists for this course?
-        // For now, we generate a new instance each download or retrieve existing if we tracked it.
-        // We will generate a new ID for the record.
-        int certId = student.generateCertificateId();
-        String date = LocalDate.now().toString();
+        // Check if certificate already exists for this course (in runtime cache)
+        Certificate cert = student.getCertificateByCourseId(courseId);
 
-        Certificate cert = new Certificate(certId, course, student, date);
+        if (cert == null) {
+            // First time - create new certificate
+            int certId = student.generateCertificateId();
+            String date = LocalDate.now().toString();
+            cert = new Certificate(certId, course, student, date);
 
-        // Save the record to student profile (optional, but good for history)
-        student.getCertificates().add(cert);
-        dbManager.updateUser(student);
+            // Store in cache and save ID to database
+            student.addCertificateToCache(courseId, cert);
+            dbManager.updateUser(student); // Saves certificateIds to JSON, not full objects
 
-        // Generate PDF
-        return CertificatePDFGenerator.generateCertificatePDF(cert, filePath);
+            System.out.println("New certificate created: ID " + certId + " for course " + courseId);
+        } else {
+            System.out.println("Reusing existing certificate: ID " + cert.getCertificateId() + " for course " + courseId);
+        }
+
+        // Generate PDF file
+        boolean success = CertificatePDFGenerator.generateCertificatePDF(cert, filePath);
+
+        if (success) {
+            System.out.println("Certificate PDF saved successfully at: " + filePath);
+        } else {
+            System.out.println("Failed to generate certificate PDF");
+        }
+
+        return success;
+    }
+
+    public JsonDatabaseManager getDbManager() {
+        return dbManager;
+    }
+
+    public Map<String, Double> getQuizPerformanceData(int studentId) {
+        Map<String, Double> performanceData = new HashMap<>();
+        Student student = (Student) dbManager.getUserById(studentId);
+        if (student == null) {
+            return performanceData;
+        }
+
+        // Get all quiz results for the student
+        HashMap<Integer, ArrayList<QuizResult>> allResults = student.getQuizResultsMap();
+        if (allResults == null || allResults.isEmpty()) {
+            return performanceData;
+        }
+
+        // Iterate through each lesson that has a quiz result
+        for (Map.Entry<Integer, ArrayList<QuizResult>> entry : allResults.entrySet()) {
+            int lessonId = entry.getKey();
+            ArrayList<QuizResult> results = entry.getValue();
+
+            if (results != null && !results.isEmpty()) {
+                // Find the highest score for this lesson
+                double highestPercentage = 0.0;
+                for (QuizResult result : results) {
+                    double percentage = ((double) result.getScore() / result.getMaxScore()) * 100.0;
+                    if (percentage > highestPercentage) {
+                        highestPercentage = percentage;
+                    }
+                }
+
+                // Find the lesson title from the lessonId
+                Lesson lesson = dbManager.getLessonById(lessonId);
+                if (lesson != null) {
+                    performanceData.put(lesson.getTitle(), highestPercentage);
+                }
+            }
+        }
+        return performanceData;
     }
 }

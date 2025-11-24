@@ -1,84 +1,163 @@
 [
   {
     "enrolledCourses": [
-      700002,
-      700004,
-      700005
-    ],
-    "progress": {
-      "700002": [
-        502001,
-        502002,
-        502003,
-        502004
-      ],
-      "700004": [
-        504001,
-        504002,
-        504003,
-        504004
-      ]
-    },
-    "username": "Alice",
-    "id": 900001,
-    "role": "STUDENT",
-    "email": "alice@test.com",
-    "hashed_password": "ecd71870d1963316a97e3ac3408c9835ad8cf0f3c1bc703527c30265534f75ae"
-  },
-  {
-    "enrolledCourses": [
-      700002,
-      700004,
-      700005
-    ],
-    "progress": {
-      "700002": [
-        502001,
-        502002,
-        502003
-      ],
-      "700004": [],
-      "700005": [
-        505001
-      ]
-    },
-    "username": "Bob",
-    "id": 900002,
-    "role": "STUDENT",
-    "email": "bob@test.com",
-    "hashed_password": "ecd71870d1963316a97e3ac3408c9835ad8cf0f3c1bc703527c30265534f75ae"
-  },
-  {
-    "enrolledCourses": [
       700001,
-      707630
+      700003
     ],
     "progress": {
-      "700001": [
-        501001
-      ]
-    },
-    "username": "Charlie",
-    "id": 900003,
-    "role": "STUDENT",
-    "email": "charlie@test.com",
-    "hashed_password": "ecd71870d1963316a97e3ac3408c9835ad8cf0f3c1bc703527c30265534f75ae"
-  },
-  {
-    "enrolledCourses": [
-      700001
-    ],
-    "progress": {
+      "700003": [
+        503001,
+        503002
+      ],
       "700001": [
         501001,
         501002,
         501003
       ]
     },
-    "username": "Ahmed Yasser",
-    "id": 904683,
+    "certificateIds": [],
+    "quizResults": {
+      "501003": [
+        {
+          "score": 2,
+          "maxScore": 2,
+          "passed": true
+        }
+      ],
+      "503002": [
+        {
+          "score": 1,
+          "maxScore": 2,
+          "passed": false
+        },
+        {
+          "score": 2,
+          "maxScore": 2,
+          "passed": true
+        }
+      ]
+    },
+    "username": "alice_student",
+    "id": 900001,
     "role": "STUDENT",
-    "email": "test4@test.com",
+    "email": "alice@student.edu",
+    "hashed_password": "8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e"
+  },
+  {
+    "enrolledCourses": [
+      700001,
+      700002,
+      700004
+    ],
+    "progress": {
+      "700002": [
+        502001,
+        502002
+      ],
+      "700001": [
+        501001,
+        501002,
+        501003,
+        501004,
+        501005
+      ],
+      "700004": [
+        504001
+      ]
+    },
+    "certificateIds": [
+      400900201,
+      300002305
+    ],
+    "quizResults": {
+      "502002": [
+        {
+          "score": 1,
+          "maxScore": 2,
+          "attemptDate": "2025-11-24T08:42:53.4459876",
+          "passed": false
+        },
+        {
+          "score": 2,
+          "maxScore": 2,
+          "attemptDate": "2025-11-24T08:43:01.9962913",
+          "passed": true
+        }
+      ],
+      "504002": [
+        {
+          "score": 0,
+          "maxScore": 2,
+          "attemptDate": "2025-11-24T09:26:38.3862832",
+          "passed": false
+        }
+      ],
+      "501005": [
+        {
+          "score": 2,
+          "maxScore": 2,
+          "passed": true
+        }
+      ],
+      "501003": [
+        {
+          "score": 2,
+          "maxScore": 2,
+          "passed": true
+        },
+        {
+          "score": 0,
+          "maxScore": 2,
+          "attemptDate": "2025-11-24T09:26:17.5249766",
+          "passed": false
+        },
+        {
+          "score": 0,
+          "maxScore": 2,
+          "attemptDate": "2025-11-24T09:28:50.3009413",
+          "passed": false
+        }
+      ]
+    },
+    "username": "bob_learner",
+    "id": 900002,
+    "role": "STUDENT",
+    "email": "bob@student.edu",
+    "hashed_password": "8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e"
+  },
+  {
+    "enrolledCourses": [
+      700002,
+      700003
+    ],
+    "progress": {
+      "700002": [
+        502001,
+        502002
+      ],
+      "700003": [
+        503001
+      ]
+    },
+    "certificateIds": [],
+    "quizResults": {
+      "502002": [
+        {
+          "score": 0,
+          "maxScore": 2,
+          "passed": false
+        },
+        {
+          "score": 1,
+          "maxScore": 2,
+          "passed": false
+        }
+      ]
+    },
+    "username": "carol_coder",
+    "id": 900003,
+    "role": "STUDENT",
+    "email": "carol@student.edu",
     "hashed_password": "8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e"
   },
   {
@@ -86,63 +165,35 @@
       700001,
       700002
     ],
-    "username": "Dr. Smith",
+    "username": "Prof_Smith",
     "id": 100001,
     "role": "INSTRUCTOR",
-    "email": "smith@test.com",
-    "hashed_password": "ecd71870d1963316a97e3ac3408c9835ad8cf0f3c1bc703527c30265534f75ae"
+    "email": "smith@university.edu",
+    "hashed_password": "8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e"
   },
   {
     "createdCourses": [
       700003,
-      700004,
-      700005
+      700004
     ],
-    "username": "Prof. Jones",
+    "username": "Prof_Johnson",
     "id": 100002,
     "role": "INSTRUCTOR",
-    "email": "jones@test.com",
-    "hashed_password": "ecd71870d1963316a97e3ac3408c9835ad8cf0f3c1bc703527c30265534f75ae"
-  },
-  {
-    "createdCourses": [],
-    "username": "Mohsen",
-    "id": 101072,
-    "role": "INSTRUCTOR",
-    "email": "test@test.com",
-    "hashed_password": "7f2a11755bcca294a54bb99fe2ded9f35dd4981ab0d1ed4481d9bf48fa892955"
-  },
-  {
-    "createdCourses": [],
-    "username": "Mohsen",
-    "id": 104282,
-    "role": "INSTRUCTOR",
-    "email": "test1@test.com",
+    "email": "johnson@university.edu",
     "hashed_password": "8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e"
   },
   {
-    "createdCourses": [
-      703957,
-      707630
-    ],
-    "username": "Mohsen Amr",
-    "id": 100461,
-    "role": "INSTRUCTOR",
-    "email": "mohsenium@instructor.com",
+    "username": "admin_user",
+    "id": 800001,
+    "role": "ADMIN",
+    "email": "admin@university.edu",
     "hashed_password": "8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e"
   },
   {
     "username": "Mohsen Amr",
-    "id": 200908,
+    "id": 204940,
     "role": "ADMIN",
     "email": "mohsen@admin.com",
     "hashed_password": "8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e"
-  },
-  {
-    "username": "Mohamed Kasem",
-    "id": 208904,
-    "role": "ADMIN",
-    "email": "mkasem@gmail.com",
-    "hashed_password": "5c8f5fd13b9cff46ae9f255144cbc0761607d7f710250e311eeac9a1f9bdfe16"
   }
 ]

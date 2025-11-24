@@ -89,16 +89,11 @@ public class AdminNavBar extends JPanel {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.BOTH;
 
-        // Navigation Buttons
-        dashboardBtn = new SBtn("Dashboard");
+        // Navigation Button
+        analyticsBtn = new SBtn("Platform Analytics");
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 0;
-        lowerPanel.add(dashboardBtn, gbc);
-
-        analyticsBtn = new SBtn("Platform Analytics");
-        gbc.gridx = 1;
-        gbc.gridy = 0;
         lowerPanel.add(analyticsBtn, gbc);
 
         // Search Field (Takes up remaining space)
@@ -118,21 +113,21 @@ public class AdminNavBar extends JPanel {
             }
         });
 
-        gbc.gridx = 2;
+        gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.weightx = 1.0;
         lowerPanel.add(searchField, gbc);
 
         // Search Button
         searchBtn = new SBtn("Search");
-        gbc.gridx = 3;
+        gbc.gridx = 2;
         gbc.gridy = 0;
         gbc.weightx = 0;
         lowerPanel.add(searchBtn, gbc);
 
         // Refresh Button
         refreshBtn = new SBtn("Refresh");
-        gbc.gridx = 4;
+        gbc.gridx = 3;
         gbc.gridy = 0;
         lowerPanel.add(refreshBtn, gbc);
 
@@ -142,7 +137,6 @@ public class AdminNavBar extends JPanel {
     public SBtn getLogoutBtn() { return logoutBtn; }
     public SBtn getSearchBtn() { return searchBtn; }
     public SBtn getRefreshBtn() { return refreshBtn; }
-    public SBtn getDashboardBtn() { return dashboardBtn; }
     public SBtn getAnalyticsBtn() { return analyticsBtn; }
     public String getSearchText() { return searchField.getText(); }
 
@@ -156,5 +150,7 @@ public class AdminNavBar extends JPanel {
 
     public void clearSearch() {
         searchField.setText("Search courses...");
+        // Transfer focus away to ensure placeholder shows correctly
+        refreshBtn.requestFocusInWindow();
     }
 }

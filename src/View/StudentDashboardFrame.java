@@ -3,6 +3,7 @@ package View;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
@@ -29,6 +30,7 @@ import View.CommonComponents.CourseCard;
 import View.CommonComponents.CourseOverviewPanel;
 import View.CommonComponents.LessonCard;
 import View.CommonComponents.LessonViewPanel;
+import View.StudentComponents.CertificatesPanel;
 import View.StudentComponents.QuizPanel;
 import View.StyledComponents.*;
 import View.StudentComponents.StudentNavBar;
@@ -44,6 +46,7 @@ public class StudentDashboardFrame extends JFrame {
     private JPanel mainPanel;
     private JPanel courseCardsPanel;
     private JPanel availableCoursesPanel;
+    private CertificatesPanel certificatesPanel;
     private StudentNavBar navBar;
 
     private static final String MAIN_PANEL = "MainPanel";
@@ -113,6 +116,10 @@ public class StudentDashboardFrame extends JFrame {
         coursesContainer.add(enrolledScrollPane, "Enrolled");
         coursesContainer.add(availableScrollPane, "Available");
 
+        // Add CertificatesPanel
+        certificatesPanel = new CertificatesPanel(student, studentController);
+        coursesContainer.add(certificatesPanel, "Certificates");
+
         mainPanel.add(coursesContainer, BorderLayout.CENTER);
 
         navBar.addEnrolledCoursesButtonListener(e -> {
@@ -124,6 +131,11 @@ public class StudentDashboardFrame extends JFrame {
             coursesCardLayout.show(coursesContainer, "Available");
             navBar.clearSearchText();
             loadAvailableCourses();
+        });
+
+        navBar.addMyCertificatesButtonListener(e -> {
+            coursesCardLayout.show(coursesContainer, "Certificates");
+            navBar.clearSearchText();
         });
 
         // Stats Button Listener
@@ -163,7 +175,8 @@ public class StudentDashboardFrame extends JFrame {
         statsDialog.setLocationRelativeTo(this);
 
         ChartsView chartsView = new ChartsView();
-        chartsView.updateStudentStats(student);
+        Map<String, Double> quizPerformance = studentController.getQuizPerformanceData(student.getId());
+        chartsView.updateStudentStats(student, studentController.getDbManager(), quizPerformance);
 
         statsDialog.setContentPane(chartsView);
         statsDialog.setVisible(true);
@@ -642,8 +655,8 @@ public class StudentDashboardFrame extends JFrame {
                     lesson.getLessonId(),
                     panelHolder[0].getUserAnswers()
             );
-            // Reload lesson view to show updated status
-            showLessonView(course, lessonIndex);
+            // The view will not reload automatically. The QuizPanel will show the results.
+            // The user can navigate back manually.
         };
 
         panelHolder[0] = new QuizPanel(lesson.getQuiz(), onSubmit);
@@ -791,4 +804,26 @@ public class StudentDashboardFrame extends JFrame {
 
         return sidePanel;
     }
+
+    // Helper method to style JFileChooser with dark theme
+    private void styleFileChooser(JFileChooser fileChooser) {
+        fileChooser.setBackground(StyleColors.BACKGROUND);
+        fileChooser.setForeground(StyleColors.TEXT);
+
+        // Style all components recursively
+        styleComponent(fileChooser);
+    }
+
+    private void styleComponent(java.awt.Component comp) {
+        comp.setBackground(StyleColors.BACKGROUND);
+        comp.setForeground(StyleColors.TEXT);
+
+        if (comp instanceof java.awt.Container) {
+            for (java.awt.Component child : ((java.awt.Container) comp).getComponents()) {
+                styleComponent(child);
+            }
+        }
+    }
 }
+
+

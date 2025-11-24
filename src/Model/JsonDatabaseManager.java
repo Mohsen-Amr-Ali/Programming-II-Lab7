@@ -517,4 +517,15 @@ public class JsonDatabaseManager {
 
         saveCourses();
     }
+
+    public Lesson getLessonById(int lessonId) {
+        for (Course course : courses) {
+            for (Lesson lesson : course.getLessons()) {
+                if (lesson.getLessonId() == lessonId) {
+                    return lesson;
+                }
+            }
+        }
+        return null;
+    }
 }

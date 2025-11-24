@@ -78,7 +78,7 @@ public class QuizPanel extends JPanel {
 
         for (int i = 0; i < quiz.getQuestions().size(); i++) {
             Question q = quiz.getQuestions().get(i);
-            JPanel qPanel = createQuestionPanel(q, i + 1);
+            JPanel qPanel = createQuestionPanel(q, i + 1, i); // Pass index as third parameter
             questionsContainer.add(qPanel);
             questionsContainer.add(Box.createVerticalStrut(20)); // Spacing between questions
         }
@@ -87,7 +87,7 @@ public class QuizPanel extends JPanel {
         questionsContainer.repaint();
     }
 
-    private JPanel createQuestionPanel(Question q, int number) {
+    private JPanel createQuestionPanel(Question q, int number, int questionIndex) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(StyleColors.CARD);
@@ -112,7 +112,8 @@ public class QuizPanel extends JPanel {
 
         // Options
         ButtonGroup group = new ButtonGroup();
-        int selectedAns = userAnswers.getOrDefault(q.getQuestionId(), -1);
+        final int qIndex = questionIndex; // Make final for lambda
+        int selectedAns = userAnswers.getOrDefault(qIndex, -1); // Use questionIndex
         int correctAns = q.getCorrectAnswerIndex();
 
         for (int j = 0; j < q.getAnswers().size(); j++) {
@@ -129,7 +130,7 @@ public class QuizPanel extends JPanel {
             final int optionIndex = j;
             rb.addActionListener(e -> {
                 if (!isSubmitted) {
-                    userAnswers.put(q.getQuestionId(), optionIndex);
+                    userAnswers.put(qIndex, optionIndex); // Use questionIndex, not questionId
                 }
             });
 
@@ -185,10 +186,16 @@ public class QuizPanel extends JPanel {
         submitButton.setEnabled(false);
         submitButton.setText("Submitted");
 
+        // Callback to controller to save results, which will in turn update lesson completion
+        if (onSubmitCallback != null) {
+            onSubmitCallback.run();
+        }
+
         // Calculate local score for display
         int score = 0;
-        for (Question q : quiz.getQuestions()) {
-            int selected = userAnswers.getOrDefault(q.getQuestionId(), -1);
+        for (int i = 0; i < quiz.getQuestions().size(); i++) {
+            Question q = quiz.getQuestions().get(i);
+            int selected = userAnswers.getOrDefault(i, -1); // Use index, not questionId
             if (selected == q.getCorrectAnswerIndex()) {
                 score++;
             }
@@ -201,19 +208,12 @@ public class QuizPanel extends JPanel {
 
         if (percentage >= quiz.getPassThreshold()) {
             scoreLabel.setForeground(new Color(40, 167, 69)); // Green
-            SOptionPane.showMessageDialog(this, "Congratulations! You passed the quiz.", "Passed", JOptionPane.INFORMATION_MESSAGE);
         } else {
             scoreLabel.setForeground(new Color(220, 53, 69)); // Red
-            SOptionPane.showMessageDialog(this, "You did not pass. Please review the material and try again.", "Failed", JOptionPane.WARNING_MESSAGE);
         }
 
         // Re-render to show correct/incorrect highlights
         renderQuestions();
-
-        // Callback to controller to save results
-        if (onSubmitCallback != null) {
-            onSubmitCallback.run();
-        }
     }
 
     public HashMap<Integer, Integer> getUserAnswers() {

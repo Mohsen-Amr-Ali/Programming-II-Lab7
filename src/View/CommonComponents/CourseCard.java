@@ -90,13 +90,20 @@ public class CourseCard extends SCoursePanel {
         imageLabel.setMaximumSize(new Dimension(IMG_WIDTH, IMG_HEIGHT));
         imageLabel.setBorder(BorderFactory.createLineBorder(StyleColors.ACCENT_DARK, 1));
 
-        String imagePath = parentPath + "Database\\Assets\\Default_Img.png";
+        // Construct full image path: parentPath + Database\Assets\ + (course folder + filename from imagePath)
+        String imagePath;
+        System.out.println("CourseCard: course.getImagePath() returned: '" + course.getImagePath() + "'");
         if (course.getImagePath() != null && !course.getImagePath().isEmpty()) {
-            imagePath = course.getImagePath();
+            imagePath = parentPath + "Database\\Assets\\" + course.getImagePath();
+            System.out.println("CourseCard: Constructed path: '" + imagePath + "'");
+        } else {
+            imagePath = parentPath + "Database\\Assets\\Default_Img.png";
+            System.out.println("CourseCard: Using default image path");
         }
 
         ImageIcon icon = loadResizedIcon(imagePath, IMG_WIDTH, IMG_HEIGHT);
         if (icon == null) {
+            // Fallback to default image
             icon = loadResizedIcon(parentPath + "Database\\Assets\\Default_Img.png", IMG_WIDTH, IMG_HEIGHT);
         }
 
@@ -165,14 +172,29 @@ public class CourseCard extends SCoursePanel {
     private ImageIcon loadResizedIcon(String path, int w, int h) {
         try {
             File file = new File(path);
+            System.out.println("CourseCard: Attempting to load image from: " + file.getAbsolutePath());
+
             if (!file.exists()) {
+                System.out.println("CourseCard: Image not found, trying default image");
                 file = new File(parentPath + "Database\\Assets\\Default_Img.png");
-                if (!file.exists()) return null;
+                if (!file.exists()) {
+                    System.out.println("CourseCard: Default image not found at: " + file.getAbsolutePath());
+                    return null;
+                }
             }
+
             BufferedImage img = ImageIO.read(file);
+            if (img == null) {
+                System.out.println("CourseCard: ImageIO.read returned null for: " + file.getAbsolutePath());
+                return null;
+            }
+
             Image scaled = img.getScaledInstance(w, h, Image.SCALE_SMOOTH);
+            System.out.println("CourseCard: Successfully loaded and scaled image");
             return new ImageIcon(scaled);
         } catch (Exception e) {
+            System.out.println("CourseCard: Error loading image: " + e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }

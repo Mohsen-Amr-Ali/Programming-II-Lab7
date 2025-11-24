@@ -79,8 +79,8 @@ public class InstructorController {
                 assetsUpdated = true;
             }
         } else {
-            // Default image logic
-            newCourse.setImagePath(parentPath + "Database\\Assets\\Default_Img.png");
+            // Default image - leave imagePath empty/null so UI can handle default
+            newCourse.setImagePath(null);
             assetsUpdated = true;
         }
 

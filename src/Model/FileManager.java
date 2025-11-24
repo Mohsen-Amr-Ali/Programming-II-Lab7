@@ -61,8 +61,8 @@ public class FileManager {
             return null; // or handle error as needed
         }
 
-        // Return the relative path (excluding "src/")
-        return "Database/Assets/Course_" + courseId + "/" + destFileName;
+        // Return only the course folder and filename (e.g., "Course_7001\\title.jpg")
+        return "Course_" + courseId + "\\" + destFileName;
     }
 
     public static String saveTextToBinary(String textContent, int courseId, int lessonId){
@@ -77,12 +77,12 @@ public class FileManager {
             e.printStackTrace();
             return null; // or handle error as needed
         }
-        // Return the relative path (excluding "src/")
-        return "Database/Assets/Course_" + courseId + "/" + fileName;
+        // Return only the course folder and filename
+        return "Course_" + courseId + "\\" + fileName;
     }
 
     public static String readBinaryToText(String filePath) {
-        File file = new File("src/" + filePath);
+        File file = new File(filePath); // Use the absolute path directly
         try (java.io.InputStream in = new java.io.FileInputStream(file)) {
             byte[] bytes = in.readAllBytes();
             return new String(bytes, java.nio.charset.StandardCharsets.UTF_8);

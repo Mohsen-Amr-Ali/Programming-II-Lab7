@@ -17,23 +17,28 @@ public class Student extends User {
     private static final Random random = new Random();
     private ArrayList<Integer> enrolledCourses;
     private HashMap<Integer, ArrayList<Integer>> progress; // CourseID -> List of completed LessonIDs
-    private ArrayList<Certificate> certificates;
+    private ArrayList<Integer> certificateIds; // Store only IDs in JSON to avoid circular reference
     private HashMap<Integer, ArrayList<QuizResult>> quizResults; // LessonID -> List of attempts
+
+    // Transient - not serialized to JSON, only exists at runtime
+    private transient HashMap<Integer, Certificate> certificateCache; // CourseID -> Certificate
 
     public Student(String username, String email, String passwordHash, USER_ROLE role) {
         super(username, email, passwordHash, role);
         this.enrolledCourses = new ArrayList<>();
         this.progress = new HashMap<>();
-        this.certificates = new ArrayList<>();
+        this.certificateIds = new ArrayList<>();
         this.quizResults = new HashMap<>();
+        this.certificateCache = new HashMap<>();
     }
 
     public Student(ArrayList<Integer> enrolledCourses, HashMap<Integer, ArrayList<Integer>> progress, int studentID, String username, String email, String passwordHash, USER_ROLE role) {
         super(studentID, username, email, passwordHash, role);
         this.enrolledCourses = enrolledCourses != null ? enrolledCourses : new ArrayList<>();
         this.progress = progress != null ? progress : new HashMap<>();
-        this.certificates = new ArrayList<>();
+        this.certificateIds = new ArrayList<>();
         this.quizResults = new HashMap<>();
+        this.certificateCache = new HashMap<>();
     }
 
     // --- Getters & Setters ---
@@ -54,12 +59,33 @@ public class Student extends User {
         this.progress = progress != null ? progress : new HashMap<>();
     }
 
-    public ArrayList<Certificate> getCertificates() {
-        return certificates;
+    public ArrayList<Integer> getCertificateIds() {
+        return certificateIds;
     }
 
-    public void setCertificates(ArrayList<Certificate> certificates) {
-        this.certificates = certificates != null ? certificates : new ArrayList<>();
+    public void setCertificateIds(ArrayList<Integer> certificateIds) {
+        this.certificateIds = certificateIds != null ? certificateIds : new ArrayList<>();
+    }
+
+    // Certificate cache management (runtime only, not serialized to JSON)
+    public void addCertificateToCache(int courseId, Certificate certificate) {
+        if (certificateCache == null) {
+            certificateCache = new HashMap<>();
+        }
+        certificateCache.put(courseId, certificate);
+
+        // Also add the certificate ID to the persistent list if not already there
+        if (!certificateIds.contains(certificate.getCertificateId())) {
+            certificateIds.add(certificate.getCertificateId());
+        }
+    }
+
+    // Helper method to get certificate by course ID from runtime cache
+    public Certificate getCertificateByCourseId(int courseId) {
+        if (certificateCache == null) {
+            certificateCache = new HashMap<>();
+        }
+        return certificateCache.get(courseId);
     }
 
     public HashMap<Integer, ArrayList<QuizResult>> getQuizResultsMap() {
@@ -186,20 +212,15 @@ public class Student extends User {
     // --- Certificate Methods ---
 
     private boolean isCertificateIdUnique(int certificateId) {
-        if (certificates == null) return true;
-        for (Certificate cert : certificates) {
-            if (cert.getCertificateId() == certificateId) {
-                return false;
-            }
-        }
-        return true;
+        if (certificateIds == null) return true;
+        return !certificateIds.contains(certificateId);
     }
 
     public int generateCertificateId(){
         int baseId = this.id % 10000;
         int newId;
         do {
-            newId = 400000000 + (baseId * 1000) + random.nextInt(1000);
+            newId = 300000000 + (baseId * 1000) + random.nextInt(1000);
         } while (!isCertificateIdUnique(newId));
         return newId;
     }

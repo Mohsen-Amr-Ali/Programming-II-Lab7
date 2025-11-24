@@ -1,6 +1,7 @@
 package View.StyledComponents;
 
 import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
 import java.awt.*;
 
 public class StyleColors {
@@ -27,8 +28,17 @@ public class StyleColors {
         UIManager.put("Panel.background", BACKGROUND);
         UIManager.put("Button.background", CARD);
         UIManager.put("Button.foreground", TEXT);
-        UIManager.put("Button.focus", ACCENT);
         UIManager.put("Button.select", ACCENT);
+
+        // Remove white border around button text (focus border)
+        UIManager.put("Button.focus", new ColorUIResource(new Color(0, 0, 0, 0))); // Transparent
+        UIManager.put("Button.border", BorderFactory.createLineBorder(ACCENT, 1));
+        UIManager.put("Button.focusPainted", Boolean.FALSE);
+
+        // Add padding to buttons so text fits properly
+        UIManager.put("Button.margin", new java.awt.Insets(8, 15, 8, 15)); // top, left, bottom, right
+        UIManager.put("OptionPane.buttonPadding", 10);
+        UIManager.put("OptionPane.buttonMinimumWidth", 80);
     }
 
     private StyleColors() {}
